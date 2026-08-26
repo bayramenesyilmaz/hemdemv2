@@ -4,6 +4,7 @@ const en = {
     tests: "Tests",
     posts: "Posts",
     messages: "Messages",
+    logout: "Log Out",
   },
   home: {
     title: "Discover your personality, find real matches",
@@ -11,6 +12,54 @@ const en = {
       "Take personality tests, match with like-minded people, build real connections.",
     ctaRegister: "Sign Up",
     ctaLogin: "Log In",
+  },
+  auth: {
+    nameLabel: "Name",
+    emailLabel: "Email",
+    passwordLabel: "Password",
+    register: {
+      title: "Sign Up",
+      submit: "Sign Up",
+      hasAccount: "Already have an account?",
+      loginLink: "Log in",
+      confirmEmailNotice: "Check your email and click the confirmation link to finish signing up.",
+      errorGeneric: "Something went wrong during sign up, please try again.",
+    },
+    login: {
+      title: "Log In",
+      submit: "Log In",
+      noAccount: "Don't have an account?",
+      registerLink: "Sign up",
+      forgotPasswordLink: "Forgot password?",
+      errorGeneric: "Something went wrong during login, please try again.",
+    },
+    forgotPassword: {
+      title: "Forgot Password",
+      submit: "Send reset link",
+      success: "We've sent a password reset link to your email.",
+    },
+    resetPassword: {
+      title: "Reset Password",
+      newPasswordLabel: "New password",
+      submit: "Update password",
+      success: "Your password has been updated, redirecting you to login.",
+    },
+    onboarding: {
+      title: "Complete Your Profile",
+      genderLabel: "Gender",
+      genderMale: "Male",
+      genderFemale: "Female",
+      birthdateLabel: "Birthdate",
+      interestedInLabel: "Interested in",
+      interestedMale: "Male",
+      interestedFemale: "Female",
+      interestedBoth: "Both",
+      submit: "Continue",
+    },
+  },
+  discover: {
+    placeholderTitle: "Hi, {name}!",
+    placeholderBody: "The discover screen is coming soon.",
   },
 };
 

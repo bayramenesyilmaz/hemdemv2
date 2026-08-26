@@ -62,6 +62,19 @@ export function validateProfile(input) {
 }
 
 /**
+ * İlk-giriş profil tamamlama akışının hangi kullanıcılara gösterileceğini
+ * belirler: kayıt sırasında sadece isim alınır, geri kalan zorunlu alanlar
+ * (cinsiyet, doğum tarihi, ilgi tercihi) onboarding'de tamamlanır.
+ *
+ * @param {Partial<Profile>|null} profile
+ * @returns {boolean}
+ */
+export function isProfileComplete(profile) {
+  if (!profile) return false;
+  return Boolean(profile.name && profile.gender && profile.birthdate && profile.interestedIn);
+}
+
+/**
  * @param {string} birthdate - ISO date string
  * @returns {number}
  */
