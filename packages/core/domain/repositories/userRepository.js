@@ -7,7 +7,7 @@
  * @property {(id: string, patch: Partial<import("../entities/user.js").Profile>) => Promise<import("../entities/user.js").Profile>} update
  * @property {(profile: Partial<import("../entities/user.js").Profile> & { id: string }) => Promise<import("../entities/user.js").Profile>} create
  * @property {(id: string) => Promise<void>} delete
- * @property {(filters: object, excludeUserId: string) => Promise<import("../entities/user.js").Profile[]>} findDiscoverCandidates
+ * @property {(filters: { gender?: string, country?: string, minBirthdate?: string, maxBirthdate?: string, excludeIds?: string[], limit?: number }, excludeUserId?: string) => Promise<import("../entities/user.js").Profile[]>} findDiscoverCandidates
  */
 
 export {};

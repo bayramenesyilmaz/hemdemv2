@@ -5,6 +5,7 @@ const en = {
     posts: "Posts",
     messages: "Messages",
     leaderboard: "Leaderboard",
+    likes: "Likes",
     profile: "My Profile",
     logout: "Log Out",
   },
@@ -61,8 +62,29 @@ const en = {
     },
   },
   discover: {
-    placeholderTitle: "Hi, {name}!",
-    placeholderBody: "The discover screen is coming soon.",
+    title: "Discover",
+    filter: "Filter",
+    filterTitle: "Filter Discover",
+    genderLabel: "Gender",
+    anyGender: "Any",
+    minAgeLabel: "Min age",
+    maxAgeLabel: "Max age",
+    hasGateTest: "Has a gate test",
+    like: "LIKE",
+    nope: "NOPE",
+    guestLikeNotAllowed: "You need to sign up to like this profile.",
+    emptyTitle: "No one to show right now",
+    emptyBody: "Try widening your filters or check back later.",
+    matchTitle: "It's a match! 🎉",
+    matchBody: "You matched with {name}! You can chat now.",
+    keepSwiping: "Keep Swiping",
+    quickSignUpTitle: "Sign up quickly to like {name}",
+    quickSignUpBody: "Just a few details and your like will be sent right away.",
+    quickSignUpSubmit: "Sign Up & Like",
+    errors: {
+      gate_test_not_completed: "You need to take their gate test before liking them.",
+      gate_test_threshold_not_met: "You don't meet their gate test similarity threshold.",
+    },
   },
   profile: {
     title: "My Profile",
@@ -156,6 +178,12 @@ const en = {
   leaderboard: {
     title: "Leaderboard",
     emptyTitle: "No one has earned points yet",
+  },
+  likes: {
+    emptyTitle: "No likes yet",
+    emptyBody: "People who like you will show up here.",
+    accept: "Like Back",
+    reject: "Pass",
   },
 };
 

@@ -104,3 +104,34 @@ export function calculateAge(birthdate) {
   }
   return age;
 }
+
+/**
+ * Keşfet filtresindeki yaş aralığını (ör. 25-35) veritabanında
+ * sorgulanabilir bir doğum tarihi aralığına çevirir. `minAge` en genç,
+ * `maxAge` en yaşlı kişiyi belirler; bu yüzden `minAge` en YAKIN
+ * (büyük) doğum tarihine, `maxAge` en ESKİ (küçük) doğum tarihine
+ * karşılık gelir.
+ *
+ * @param {number} [minAge]
+ * @param {number} [maxAge]
+ * @returns {{ minBirthdate?: string, maxBirthdate?: string }}
+ */
+export function ageRangeToBirthdateRange(minAge, maxAge) {
+  const today = new Date();
+  const range = {};
+
+  if (minAge != null) {
+    const maxBirthdate = new Date(today);
+    maxBirthdate.setFullYear(today.getFullYear() - minAge);
+    range.maxBirthdate = maxBirthdate.toISOString().slice(0, 10);
+  }
+
+  if (maxAge != null) {
+    const minBirthdate = new Date(today);
+    minBirthdate.setFullYear(today.getFullYear() - maxAge - 1);
+    minBirthdate.setDate(minBirthdate.getDate() + 1);
+    range.minBirthdate = minBirthdate.toISOString().slice(0, 10);
+  }
+
+  return range;
+}

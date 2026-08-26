@@ -5,6 +5,7 @@ const tr = {
     posts: "Gönderiler",
     messages: "Mesajlar",
     leaderboard: "Liderlik Tablosu",
+    likes: "Beğenenler",
     profile: "Profilim",
     logout: "Çıkış Yap",
   },
@@ -63,8 +64,29 @@ const tr = {
     },
   },
   discover: {
-    placeholderTitle: "Merhaba, {name}!",
-    placeholderBody: "Keşfet ekranı yakında burada olacak.",
+    title: "Keşfet",
+    filter: "Filtrele",
+    filterTitle: "Keşfeti Filtrele",
+    genderLabel: "Cinsiyet",
+    anyGender: "Fark etmez",
+    minAgeLabel: "Min. yaş",
+    maxAgeLabel: "Maks. yaş",
+    hasGateTest: "Kapı testi var",
+    like: "BEĞEN",
+    nope: "GEÇ",
+    guestLikeNotAllowed: "Bu profili beğenmek için üye olmalısın.",
+    emptyTitle: "Şu an gösterilecek kimse yok",
+    emptyBody: "Filtreleri genişletmeyi dene ya da daha sonra tekrar bak.",
+    matchTitle: "Yeni bir eşleşme! 🎉",
+    matchBody: "{name} ile eşleştin! Şimdi sohbet edebilirsin.",
+    keepSwiping: "Keşfetmeye Devam Et",
+    quickSignUpTitle: "{name} kişisini beğenmek için hızlı kayıt ol",
+    quickSignUpBody: "Sadece birkaç bilgi yeterli, beğenin hemen gönderilecek.",
+    quickSignUpSubmit: "Kayıt Ol ve Beğen",
+    errors: {
+      gate_test_not_completed: "Bu kişiyi beğenmek için önce kapı testini çözmelisin.",
+      gate_test_threshold_not_met: "Kapı testi benzerlik eşiğini karşılamıyorsun.",
+    },
   },
   profile: {
     title: "Profilim",
@@ -158,6 +180,12 @@ const tr = {
   leaderboard: {
     title: "Liderlik Tablosu",
     emptyTitle: "Henüz kimse puan kazanmadı",
+  },
+  likes: {
+    emptyTitle: "Henüz beğenen yok",
+    emptyBody: "Seni beğenen kişiler burada görünecek.",
+    accept: "Sen de Beğen",
+    reject: "Geç",
   },
 };
 

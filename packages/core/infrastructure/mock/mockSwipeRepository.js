@@ -25,6 +25,10 @@ export function createMockSwipeRepository(store) {
         .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
     },
 
+    async findByFromUser(fromUser) {
+      return [...store.swipes.values()].filter((s) => s.fromUser === fromUser);
+    },
+
     async delete(fromUser, toUser) {
       store.swipes.delete(`${fromUser}:${toUser}`);
     },

@@ -83,14 +83,14 @@ export function createSupabaseUserRepository(client) {
     },
 
     async findDiscoverCandidates(filters, excludeUserId) {
-      let query = client
-        .from("profiles")
-        .select("*")
-        .neq("id", excludeUserId)
-        .eq("is_banned", false);
+      let query = client.from("profiles").select("*").eq("is_banned", false);
 
+      if (excludeUserId) query = query.neq("id", excludeUserId);
+      if (filters?.excludeIds?.length) query = query.not("id", "in", `(${filters.excludeIds.join(",")})`);
       if (filters?.gender) query = query.eq("gender", filters.gender);
       if (filters?.country) query = query.eq("country", filters.country);
+      if (filters?.minBirthdate) query = query.gte("birthdate", filters.minBirthdate);
+      if (filters?.maxBirthdate) query = query.lte("birthdate", filters.maxBirthdate);
 
       const { data, error } = await query.limit(filters?.limit ?? 50);
       if (error) throw error;

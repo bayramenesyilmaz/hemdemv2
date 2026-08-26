@@ -54,6 +54,12 @@ export function createSupabaseSwipeRepository(client) {
       return (data ?? []).map(toSwipe);
     },
 
+    async findByFromUser(fromUser) {
+      const { data, error } = await client.from("swipes").select("*").eq("from_user", fromUser);
+      if (error) throw error;
+      return (data ?? []).map(toSwipe);
+    },
+
     async delete(fromUser, toUser) {
       const { error } = await client
         .from("swipes")

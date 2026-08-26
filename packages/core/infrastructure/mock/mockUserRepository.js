@@ -44,11 +44,18 @@ export function createMockUserRepository(store) {
     },
 
     async findDiscoverCandidates(filters, excludeUserId) {
+      const excludeIds = new Set(filters?.excludeIds ?? []);
       let candidates = [...store.profiles.values()].filter(
-        (p) => p.id !== excludeUserId && !p.isBanned
+        (p) => p.id !== excludeUserId && !p.isBanned && !excludeIds.has(p.id)
       );
       if (filters?.gender) candidates = candidates.filter((p) => p.gender === filters.gender);
       if (filters?.country) candidates = candidates.filter((p) => p.country === filters.country);
+      if (filters?.minBirthdate) {
+        candidates = candidates.filter((p) => p.birthdate && p.birthdate >= filters.minBirthdate);
+      }
+      if (filters?.maxBirthdate) {
+        candidates = candidates.filter((p) => p.birthdate && p.birthdate <= filters.maxBirthdate);
+      }
       return candidates.slice(0, filters?.limit ?? 50);
     },
   };

@@ -19,6 +19,7 @@ export function AppNav({ locale, isAuthenticated }) {
     { href: `/${locale}/discover`, label: t("nav.discover") },
     { href: `/${locale}/tests`, label: t("nav.tests") },
     { href: `/${locale}/leaderboard`, label: t("nav.leaderboard") },
+    ...(isAuthenticated ? [{ href: `/${locale}/likes`, label: t("nav.likes") }] : []),
   ];
 
   return (
