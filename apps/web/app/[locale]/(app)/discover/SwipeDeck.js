@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useI18n } from "@/locales/client";
 import { EmptyState } from "@/components/EmptyState";
 import { Button } from "@/components/ui/Button";
+import { CloseIcon, HeartIcon } from "@/components/icons";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/Dialog";
 import { swipeAction } from "@/lib/actions/discoverActions";
 import { SwipeCard } from "./SwipeCard";
@@ -56,37 +57,48 @@ export function SwipeDeck({ locale, initialCandidates, isGuest }) {
   }
 
   if (!current) {
-    return <EmptyState title={t("discover.emptyTitle")} description={t("discover.emptyBody")} />;
+    return (
+      <div className="flex min-h-0 flex-1 items-center">
+        <EmptyState title={t("discover.emptyTitle")} description={t("discover.emptyBody")} />
+      </div>
+    );
   }
 
   return (
-    <div className="flex flex-col items-center gap-6">
-      <div className="relative h-[480px] w-full max-w-sm">
+    // Deste kalan dikey alanı doldurur (sabit bir yükseklik yerine flex):
+    // böylece başlık/aksiyon çubuğu değişse de sayfa asla taşmaz.
+    // `min-h-0` olmadan flex çocuğu içeriğinden küçülemez ve taşar.
+    <div className="flex min-h-0 flex-1 flex-col items-center gap-4">
+      <div className="relative w-full min-h-0 max-w-sm flex-1">
         {upNext && <SwipeCard key={upNext.id} candidate={upNext} locale={locale} isTop={false} />}
         <SwipeCard key={current.id} candidate={current} locale={locale} isTop onSwipe={handleSwipe} />
       </div>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && <p className="shrink-0 text-center text-sm text-destructive">{error}</p>}
 
-      <div className="flex gap-6">
-        <Button
+      {/*
+        Bu iki aksiyon Button bileşenini kullanmaz: dairesel, ikon-only
+        birer FAB'lar ve Button'ın taban `rounded-lg`/`px-5` stilleriyle
+        çakışıyorlardı (cn yalnızca sınıfları birleştirir, Tailwind
+        çakışmalarını çözmez).
+      */}
+      <div className="flex shrink-0 items-center gap-6">
+        <button
           type="button"
-          variant="outline"
           onClick={() => handleSwipe("dislike")}
           aria-label={t("discover.nope")}
-          className="h-14 w-14 rounded-full text-2xl"
+          className="flex h-16 w-16 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-lg transition-transform active:scale-95"
         >
-          ✕
-        </Button>
-        <Button
+          <CloseIcon className="h-7 w-7" />
+        </button>
+        <button
           type="button"
-          variant="confirm"
           onClick={() => handleSwipe("like")}
           aria-label={t("discover.like")}
-          className="h-14 w-14 rounded-full text-2xl"
+          className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 transition-transform active:scale-95"
         >
-          ♥
-        </Button>
+          <HeartIcon className="h-7 w-7" />
+        </button>
       </div>
 
       <Dialog open={Boolean(matchedProfile)} onOpenChange={(open) => !open && setMatchedProfile(null)}>

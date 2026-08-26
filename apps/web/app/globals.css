@@ -72,7 +72,81 @@
     @apply border-border;
   }
 
+  /**
+   * Modal açılınca sayfanın yana kayması: Radix, modal açıkken gövde
+   * kaydırmasını kilitler; kaydırma çubuğu kaybolunca içerik çubuğun
+   * genişliği kadar sağa kayar. `scrollbar-gutter: stable` çubuğun yerini
+   * her zaman ayırdığı için çubuk gizlendiğinde de düzen sabit kalır.
+   */
+  html {
+    scrollbar-gutter: stable;
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
     @apply bg-background text-foreground;
+    /* Mobilde bağlantı/butonlara dokununca çıkan gri flaş kutusu. */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Dokunmatik hedefler en az 44px olmalı (WCAG 2.5.8 / iOS HIG). */
+  button,
+  [role="button"],
+  a {
+    touch-action: manipulation;
+  }
+}
+
+@layer utilities {
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes sheet-in {
+    from {
+      opacity: 0;
+      transform: translateY(1.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes dialog-in {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 150ms ease-out;
+  }
+
+  .animate-sheet-in {
+    animation: sheet-in 220ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  .animate-dialog-in {
+    animation: dialog-in 160ms ease-out;
+  }
+
+  /* Plan bölüm 7: liste öğelerinde sadece opacity fade, y-offset yok. */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in,
+    .animate-sheet-in,
+    .animate-dialog-in {
+      animation: fade-in 1ms linear;
+    }
   }
 }

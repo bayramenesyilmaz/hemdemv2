@@ -49,7 +49,10 @@ export default async function DiscoverPage({ params, searchParams }) {
   }
 
   return (
-    <main className="mx-auto flex max-w-md flex-col gap-6 px-6 py-10">
+    // Keşfet tek ekranlık bir deneyimdir: sayfa kaymaz, kart destesi
+    // kalan alanı doldurur. Yükseklik = 100dvh eksi header (3.5rem) ve
+    // alt navigasyon (4rem + safe-area); masaüstünde alt bar yoktur.
+    <main className="mx-auto flex h-[calc(100dvh-7.5rem-env(safe-area-inset-bottom))] w-full max-w-md flex-col gap-4 px-4 py-4 lg:h-[calc(100dvh-4rem)] lg:py-8">
       <PageTitle
         action={
           <DiscoverFilters

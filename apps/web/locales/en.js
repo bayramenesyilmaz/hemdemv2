@@ -9,6 +9,9 @@ const en = {
     notes: "Notes",
     help: "Help",
     admin: "Admin",
+    menu: "Menu",
+    closeMenu: "Close menu",
+    primaryNavLabel: "Main navigation",
     profile: "My Profile",
     logout: "Log Out",
   },
@@ -18,6 +21,7 @@ const en = {
       "Take personality tests, match with like-minded people, build real connections.",
     ctaRegister: "Sign Up",
     ctaLogin: "Log In",
+    ctaBrowseAsGuest: "Browse without signing up",
   },
   auth: {
     nameLabel: "Name",

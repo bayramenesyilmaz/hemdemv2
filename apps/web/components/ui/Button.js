@@ -2,8 +2,13 @@ import { forwardRef } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 
+/**
+ * `min-h-11` (44px) dokunmatik hedef alt sınırıdır (WCAG 2.5.8 / iOS
+ * HIG) — mobilde butonların ıskalanmaması için varyanttan bağımsız
+ * olarak taban stilde tutulur.
+ */
 const BASE =
-  "inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium transition-colors disabled:opacity-60 disabled:pointer-events-none";
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium transition-colors disabled:opacity-60 disabled:pointer-events-none";
 
 const VARIANTS = {
   add: "bg-primary text-primary-foreground hover:opacity-90",
@@ -13,7 +18,7 @@ const VARIANTS = {
   delete: "bg-destructive text-destructive-foreground hover:opacity-90",
   outline: "border border-border text-foreground hover:bg-muted",
   ghost: "text-foreground hover:bg-muted",
-  link: "text-foreground underline underline-offset-4 px-0 py-0",
+  link: "min-h-0 text-foreground underline underline-offset-4 px-0 py-0",
 };
 
 /**

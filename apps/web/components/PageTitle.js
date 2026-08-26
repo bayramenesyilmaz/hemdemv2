@@ -1,12 +1,12 @@
 /**
- * Sadece gerçekten gerekli olduğu sayfalarda kullanılır (plan bölüm 6) —
- * çoğu iç sayfada navigasyon zaten bağlamı verdiği için ayrı bir başlık
- * bloğu gerekmez.
+ * Sayfa başlığı ve (varsa) sağdaki birincil aksiyon. Mobilde başlık
+ * biraz küçülür ve aksiyon dar ekranlarda alta sarabilir — aksi halde
+ * "Filtrele + Test Oluştur" gibi iki butonlu başlıklar taşıyordu.
  */
 export function PageTitle({ children, action }) {
   return (
-    <div className="flex items-center justify-between gap-4">
-      <h1 className="text-2xl font-bold text-foreground">{children}</h1>
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <h1 className="text-xl font-bold text-foreground lg:text-2xl">{children}</h1>
       {action}
     </div>
   );

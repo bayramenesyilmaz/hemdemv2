@@ -23,7 +23,7 @@ export default async function CreateTestPage({ params }) {
   const t = await getI18n();
 
   return (
-    <main className="mx-auto flex max-w-2xl flex-col gap-6 px-6 py-10">
+    <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-6 lg:px-6 lg:py-8">
       <PageTitle>{t("tests.createTitle")}</PageTitle>
       <InfoBanner>
         {t("tests.createCostNotice", { cost: COIN_COSTS.createTest })} {t("tests.createApprovalNotice")}

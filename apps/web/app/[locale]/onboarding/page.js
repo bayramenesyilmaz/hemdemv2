@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { setStaticParamsLocale } from "next-international/server";
 import { getI18n } from "@/locales/server";
 import { getAuthUserId } from "@/lib/session";
+import { AuthShell } from "@/components/AuthShell";
 import { OnboardingForm } from "./OnboardingForm";
 
 export async function generateMetadata({ params }) {
@@ -27,9 +28,8 @@ export default async function OnboardingPage({ params }) {
   const t = await getI18n();
 
   return (
-    <main className="flex min-h-[80vh] flex-col items-center justify-center gap-6 px-6">
-      <h1 className="text-2xl font-bold text-foreground">{t("auth.onboarding.title")}</h1>
+    <AuthShell locale={locale} title={t("auth.onboarding.title")}>
       <OnboardingForm locale={locale} />
-    </main>
+    </AuthShell>
   );
 }

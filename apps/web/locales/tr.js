@@ -9,6 +9,9 @@ const tr = {
     notes: "Notlar",
     help: "Yardım",
     admin: "Admin",
+    menu: "Menü",
+    closeMenu: "Menüyü kapat",
+    primaryNavLabel: "Ana navigasyon",
     profile: "Profilim",
     logout: "Çıkış Yap",
   },
@@ -18,6 +21,7 @@ const tr = {
       "Kişilik testleri çöz, benzer düşünen insanlarla eşleş, gerçek bağlantılar kur.",
     ctaRegister: "Kayıt Ol",
     ctaLogin: "Giriş Yap",
+    ctaBrowseAsGuest: "Üye olmadan keşfet",
   },
   auth: {
     nameLabel: "Ad",

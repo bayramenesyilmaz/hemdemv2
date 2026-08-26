@@ -1,6 +1,7 @@
 import { setStaticParamsLocale } from "next-international/server";
 import { getI18n } from "@/locales/server";
 import { buildMetadata } from "@/lib/seo";
+import { AuthShell } from "@/components/AuthShell";
 import { RegisterForm } from "./RegisterForm";
 
 export async function generateMetadata({ params }) {
@@ -17,9 +18,8 @@ export default async function RegisterPage({ params }) {
   const t = await getI18n();
 
   return (
-    <main className="flex min-h-[80vh] flex-col items-center justify-center gap-6 px-6">
-      <h1 className="text-2xl font-bold text-foreground">{t("auth.register.title")}</h1>
+    <AuthShell locale={locale} title={t("auth.register.title")}>
       <RegisterForm locale={locale} />
-    </main>
+    </AuthShell>
   );
 }

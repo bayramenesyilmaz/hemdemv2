@@ -3,6 +3,7 @@ import { setStaticParamsLocale } from "next-international/server";
 import { getI18n } from "@/locales/server";
 import { getAuthUserId } from "@/lib/session";
 import { buildMetadata } from "@/lib/seo";
+import { PublicHeader } from "@/components/PublicHeader";
 import { Button } from "@/components/ui/Button";
 
 export async function generateMetadata({ params }) {
@@ -47,21 +48,28 @@ export default async function HomePage({ params }) {
   ];
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-6 px-6 text-center">
+    <div className="flex min-h-dvh flex-col bg-background">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <h1 className="text-3xl font-bold text-foreground sm:text-4xl">{t("home.title")}</h1>
-      <p className="max-w-xl text-muted-foreground">{t("home.subtitle")}</p>
-      <div className="flex gap-3">
-        <Button href={`/${locale}/register`} variant="confirm">
-          {t("home.ctaRegister")}
+      <PublicHeader locale={locale} />
+
+      <main className="flex flex-1 flex-col items-center justify-center gap-6 px-6 pb-[calc(2rem+env(safe-area-inset-bottom))] text-center">
+        <h1 className="text-3xl font-bold text-foreground sm:text-4xl">{t("home.title")}</h1>
+        <p className="max-w-xl text-muted-foreground">{t("home.subtitle")}</p>
+        <div className="flex w-full max-w-xs flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row">
+          <Button href={`/${locale}/register`} variant="confirm">
+            {t("home.ctaRegister")}
+          </Button>
+          <Button href={`/${locale}/login`} variant="outline">
+            {t("home.ctaLogin")}
+          </Button>
+        </div>
+        <Button href={`/${locale}/discover`} variant="link">
+          {t("home.ctaBrowseAsGuest")}
         </Button>
-        <Button href={`/${locale}/login`} variant="outline">
-          {t("home.ctaLogin")}
-        </Button>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }

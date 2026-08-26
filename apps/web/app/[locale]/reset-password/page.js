@@ -1,5 +1,6 @@
 import { setStaticParamsLocale } from "next-international/server";
 import { getI18n } from "@/locales/server";
+import { AuthShell } from "@/components/AuthShell";
 import { ResetPasswordForm } from "./ResetPasswordForm";
 
 export async function generateMetadata({ params }) {
@@ -19,9 +20,8 @@ export default async function ResetPasswordPage({ params }) {
   const t = await getI18n();
 
   return (
-    <main className="flex min-h-[80vh] flex-col items-center justify-center gap-6 px-6">
-      <h1 className="text-2xl font-bold text-foreground">{t("auth.resetPassword.title")}</h1>
+    <AuthShell locale={locale} title={t("auth.resetPassword.title")}>
       <ResetPasswordForm locale={locale} />
-    </main>
+    </AuthShell>
   );
 }

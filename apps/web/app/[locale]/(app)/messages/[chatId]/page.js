@@ -26,8 +26,11 @@ export default async function ChatPage({ params }) {
 
   const { otherUser, messages } = result.data;
 
+  // Sohbet ekranı kalan dikey alanı tam doldurur: mobilde 100dvh eksi üst
+  // header (3.5rem) ve alt navigasyon (4rem + safe-area); masaüstünde alt
+  // navigasyon olmadığı için sadece dikey boşluk düşülür.
   return (
-    <main className="mx-auto flex h-[calc(100vh-64px)] max-w-2xl flex-col gap-4 px-6 py-6">
+    <main className="mx-auto flex h-[calc(100dvh-7.5rem-env(safe-area-inset-bottom))] max-w-2xl flex-col gap-4 px-4 py-4 lg:h-[calc(100dvh-4rem)] lg:px-6">
       <PageTitle>{otherUser.name}</PageTitle>
       <ChatThread
         chatId={Number(chatId)}
