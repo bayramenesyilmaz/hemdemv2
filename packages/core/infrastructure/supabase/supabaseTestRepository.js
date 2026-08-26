@@ -145,6 +145,15 @@ export function createSupabaseTestRepository(client) {
       return (data ?? []).map(toAnswer);
     },
 
+    async findAnswersByTest(testId) {
+      const { data, error } = await client
+        .from("answers")
+        .select("*")
+        .eq("test_id", testId);
+      if (error) throw error;
+      return (data ?? []).map(toAnswer);
+    },
+
     async findLeaderboard(limit = 20) {
       const { data, error } = await client
         .from("user_points")

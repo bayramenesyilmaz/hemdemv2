@@ -9,6 +9,7 @@
  * @property {(userId: string, testId: string) => Promise<import("../entities/test.js").Answer|null>} findAnswer
  * @property {(answer: Partial<import("../entities/test.js").Answer>) => Promise<import("../entities/test.js").Answer>} saveAnswer
  * @property {(userId: string) => Promise<import("../entities/test.js").Answer[]>} findAnswersByUser
+ * @property {(testId: string) => Promise<import("../entities/test.js").Answer[]>} findAnswersByTest
  * @property {(limit: number) => Promise<{ userId: string, point: number }[]>} findLeaderboard
  */
 

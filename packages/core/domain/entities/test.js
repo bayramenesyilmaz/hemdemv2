@@ -33,6 +33,20 @@
  */
 
 /**
+ * Sabit kategori listesi — `key` alanı apps/web'de çeviri anahtarı olarak
+ * kullanılır (ör. `testCategories.love`), etiketin kendisi burada
+ * tutulmaz çünkü domain katmanı dil bilmez.
+ */
+export const TEST_CATEGORIES = [
+  { id: 1, key: "love" },
+  { id: 2, key: "personality" },
+  { id: 3, key: "fun" },
+  { id: 4, key: "career" },
+];
+
+const VALID_CATEGORY_IDS = TEST_CATEGORIES.map((c) => c.id);
+
+/**
  * @param {Partial<Test>} input
  * @returns {{ valid: boolean, errors: string[] }}
  */
@@ -44,6 +58,8 @@ export function validateTest(input) {
   }
   if (input.categoryId == null) {
     errors.push("category_required");
+  } else if (!VALID_CATEGORY_IDS.includes(input.categoryId)) {
+    errors.push("invalid_category");
   }
   if (!Array.isArray(input.questions) || input.questions.length === 0) {
     errors.push("questions_required");

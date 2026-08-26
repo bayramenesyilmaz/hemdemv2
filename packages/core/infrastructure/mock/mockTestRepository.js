@@ -74,6 +74,10 @@ export function createMockTestRepository(store) {
         .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
     },
 
+    async findAnswersByTest(testId) {
+      return [...store.answers.values()].filter((a) => a.testId === testId);
+    },
+
     async findLeaderboard(limit = 20) {
       return [...store.points.entries()]
         .map(([userId, point]) => ({ userId, point }))
