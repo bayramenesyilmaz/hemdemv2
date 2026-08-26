@@ -185,6 +185,25 @@ const en = {
     accept: "Like Back",
     reject: "Pass",
   },
+  messages: {
+    emptyTitle: "No conversations yet",
+    emptyBody: "Matches and messages you send will show up here.",
+    noMessagesYet: "No messages yet",
+    startConversation: "Say hello to start the conversation.",
+    placeholder: "Type a message…",
+    send: "Send",
+    sendMessageButton: "Send Message",
+    sendMessageTitle: "Message {name}",
+    sendMessageBody: "If you haven't matched yet, sending a message costs {cost} coins.",
+    errors: {
+      content_required: "Message cannot be empty.",
+      content_too_long: "Message is too long.",
+      insufficient_coins: "You don't have enough coins to send this message.",
+      cannot_message_self: "You can't message yourself.",
+      recipient_not_found: "This person could not be found.",
+      not_authorized: "You don't have access to this conversation.",
+    },
+  },
 };
 
 export default en;

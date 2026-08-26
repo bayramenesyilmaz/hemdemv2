@@ -5,6 +5,7 @@ import { getI18n } from "@/locales/server";
 import { getAuthUserId } from "@/lib/session";
 import { repositories } from "@/lib/repositories";
 import { SectionCard } from "@/components/SectionCard";
+import { SendMessageDialog } from "./SendMessageDialog";
 
 export async function generateMetadata({ params }) {
   const { id } = await params;
@@ -69,6 +70,12 @@ export default async function PublicProfilePage({ params }) {
                 {platform}
               </a>
             ))}
+          </div>
+        )}
+
+        {viewerId && viewerId !== profile.id && (
+          <div>
+            <SendMessageDialog locale={locale} recipientId={profile.id} recipientName={profile.name} />
           </div>
         )}
       </SectionCard>

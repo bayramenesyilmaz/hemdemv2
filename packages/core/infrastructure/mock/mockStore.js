@@ -276,9 +276,19 @@ function createSeededStore() {
     ],
   ]);
 
-  const matches = new Map();
-  const chats = new Map();
-  const messages = [];
+  const matches = new Map([
+    ["demo-user-1:demo-user-2", { id: 1, createdAt: now, userA: "demo-user-1", userB: "demo-user-2" }],
+  ]);
+  const chats = new Map([
+    [
+      "demo-user-1:demo-user-2",
+      { id: 1, createdAt: now, lastMessageAt: now, userA: "demo-user-1", userB: "demo-user-2", source: "match" },
+    ],
+  ]);
+  const messages = [
+    { id: 1, createdAt: now, chatId: 1, senderId: "demo-user-2", content: "Selam! Aşk Dili Testi'nde de eşleşmişiz, ilginç :)" },
+    { id: 2, createdAt: now, chatId: 1, senderId: "demo-user-1", content: "Selam Mert, evet gördüm! Nasılsın?" },
+  ];
 
   const posts = [
     {
@@ -339,7 +349,7 @@ function createSeededStore() {
     points,
     requests,
     authUsers,
-    nextId: { swipe: 2, match: 1, chat: 1, message: 1, post: 3, profileView: 2, request: 1 },
+    nextId: { swipe: 2, match: 2, chat: 2, message: 3, post: 3, profileView: 2, request: 1 },
   };
 }
 

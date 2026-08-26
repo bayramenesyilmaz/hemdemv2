@@ -187,6 +187,25 @@ const tr = {
     accept: "Sen de Beğen",
     reject: "Geç",
   },
+  messages: {
+    emptyTitle: "Henüz sohbetin yok",
+    emptyBody: "Eşleşmelerin ve gönderdiğin mesajlar burada görünecek.",
+    noMessagesYet: "Henüz mesaj yok",
+    startConversation: "Merhaba diyerek sohbeti başlat.",
+    placeholder: "Mesaj yaz…",
+    send: "Gönder",
+    sendMessageButton: "Mesaj Gönder",
+    sendMessageTitle: "{name} kişisine mesaj gönder",
+    sendMessageBody: "Henüz eşleşmediysen mesaj göndermek {cost} coin'e mal olur.",
+    errors: {
+      content_required: "Mesaj boş olamaz.",
+      content_too_long: "Mesaj çok uzun.",
+      insufficient_coins: "Bu mesajı göndermek için yeterli coin'in yok.",
+      cannot_message_self: "Kendine mesaj gönderemezsin.",
+      recipient_not_found: "Bu kişi bulunamadı.",
+      not_authorized: "Bu sohbete erişim yetkin yok.",
+    },
+  },
 };
 
 export default tr;

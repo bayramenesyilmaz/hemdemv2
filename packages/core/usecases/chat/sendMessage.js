@@ -11,9 +11,18 @@ import { COIN_COSTS } from "../../domain/entities/coin.js";
  * @param {string} content
  */
 export async function sendMessage(repositories, senderId, recipientId, content) {
+  if (senderId === recipientId) {
+    return { status: "error", message: "cannot_message_self" };
+  }
+
   const { valid, errors } = validateMessageContent(content);
   if (!valid) {
     return { status: "error", message: errors[0] };
+  }
+
+  const recipient = await repositories.user.findById(recipientId);
+  if (!recipient) {
+    return { status: "error", message: "recipient_not_found" };
   }
 
   let chat = await repositories.chat.findByPair(senderId, recipientId);
