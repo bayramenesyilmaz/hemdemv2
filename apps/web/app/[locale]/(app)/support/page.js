@@ -1,6 +1,7 @@
 import { setStaticParamsLocale } from "next-international/server";
 import { getI18n } from "@/locales/server";
 import { getAuthUserId } from "@/lib/session";
+import { buildMetadata } from "@/lib/seo";
 import { PageTitle } from "@/components/PageTitle";
 import { SupportForm } from "./SupportForm";
 
@@ -9,10 +10,12 @@ export async function generateMetadata({ params }) {
   setStaticParamsLocale(locale);
   const t = await getI18n();
 
-  return {
+  return buildMetadata({
+    locale,
+    path: "/support",
     title: t("support.title"),
-    alternates: { canonical: `/${locale}/support` },
-  };
+    description: t("support.metaDescription"),
+  });
 }
 
 export default async function SupportPage({ params }) {

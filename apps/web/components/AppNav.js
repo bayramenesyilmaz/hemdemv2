@@ -51,6 +51,7 @@ export function AppNav({ locale, isAuthenticated, coinBalance, isAdmin }) {
           <>
             <Link
               href={`/${locale}/coins`}
+              aria-label={t("coins.balanceLabel", { balance: coinBalance })}
               className={cn(
                 "font-medium",
                 pathname === `/${locale}/coins` ? "text-foreground" : "text-muted-foreground hover:text-foreground"

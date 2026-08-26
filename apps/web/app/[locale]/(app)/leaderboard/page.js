@@ -2,6 +2,7 @@ import Link from "next/link";
 import { setStaticParamsLocale } from "next-international/server";
 import { getI18n } from "@/locales/server";
 import { repositories } from "@/lib/repositories";
+import { buildMetadata } from "@/lib/seo";
 import { PageTitle } from "@/components/PageTitle";
 import { SectionCard } from "@/components/SectionCard";
 import { EmptyState } from "@/components/EmptyState";
@@ -11,10 +12,12 @@ export async function generateMetadata({ params }) {
   setStaticParamsLocale(locale);
   const t = await getI18n();
 
-  return {
+  return buildMetadata({
+    locale,
+    path: "/leaderboard",
     title: t("leaderboard.title"),
-    alternates: { canonical: `/${locale}/leaderboard` },
-  };
+    description: t("leaderboard.subtitle"),
+  });
 }
 
 export default async function LeaderboardPage({ params }) {

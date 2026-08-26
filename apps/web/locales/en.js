@@ -149,6 +149,7 @@ const en = {
     createCostNotice: "Creating a test costs {cost} coins.",
     createApprovalNotice: "Your test goes through team review before it appears in the public list.",
     pendingApproval: "Pending approval",
+    metaDescription: "A personality test in the {category} category. Take it and earn {points} points.",
     titleLabel: "Test title",
     questionPlaceholder: "Question {number}",
     removeQuestion: "Remove Question",
@@ -187,6 +188,7 @@ const en = {
   },
   leaderboard: {
     title: "Leaderboard",
+    subtitle: "The users who've earned the most points by taking tests.",
     emptyTitle: "No one has earned points yet",
   },
   likes: {
@@ -274,6 +276,7 @@ const en = {
   },
   support: {
     title: "Request / Complaint",
+    metaDescription: "Fill out the form to send us a request or complaint, we'll get back to you soon.",
     typeLabel: "Type",
     typeRequest: "Request",
     typeComplaint: "Complaint",

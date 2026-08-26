@@ -73,6 +73,7 @@ export function SwipeDeck({ locale, initialCandidates, isGuest }) {
           type="button"
           variant="outline"
           onClick={() => handleSwipe("dislike")}
+          aria-label={t("discover.nope")}
           className="h-14 w-14 rounded-full text-2xl"
         >
           ✕
@@ -81,6 +82,7 @@ export function SwipeDeck({ locale, initialCandidates, isGuest }) {
           type="button"
           variant="confirm"
           onClick={() => handleSwipe("like")}
+          aria-label={t("discover.like")}
           className="h-14 w-14 rounded-full text-2xl"
         >
           ♥

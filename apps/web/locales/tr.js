@@ -151,6 +151,7 @@ const tr = {
     createCostNotice: "Test oluşturmak {cost} coin karşılığındadır.",
     createApprovalNotice: "Testin, herkese açık listede görünmeden önce ekip onayından geçer.",
     pendingApproval: "Onay bekliyor",
+    metaDescription: "{category} kategorisinde bir kişilik testi. Çöz ve {points} puan kazan.",
     titleLabel: "Test başlığı",
     questionPlaceholder: "{number}. soru",
     removeQuestion: "Soruyu Sil",
@@ -189,6 +190,7 @@ const tr = {
   },
   leaderboard: {
     title: "Liderlik Tablosu",
+    subtitle: "Test çözerek en çok puan kazanan kullanıcılar.",
     emptyTitle: "Henüz kimse puan kazanmadı",
   },
   likes: {
@@ -276,6 +278,7 @@ const tr = {
   },
   support: {
     title: "Talep / Şikayet",
+    metaDescription: "Bir talep veya şikayet iletmek için formu doldur, en kısa sürede dönüş yapalım.",
     typeLabel: "Tür",
     typeRequest: "Talep",
     typeComplaint: "Şikayet",

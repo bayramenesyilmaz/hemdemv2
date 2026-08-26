@@ -1,5 +1,6 @@
 import { setStaticParamsLocale } from "next-international/server";
 import { getI18n } from "@/locales/server";
+import { buildMetadata } from "@/lib/seo";
 import { RegisterForm } from "./RegisterForm";
 
 export async function generateMetadata({ params }) {
@@ -7,10 +8,7 @@ export async function generateMetadata({ params }) {
   setStaticParamsLocale(locale);
   const t = await getI18n();
 
-  return {
-    title: t("auth.register.title"),
-    alternates: { canonical: `/${locale}/register` },
-  };
+  return buildMetadata({ locale, path: "/register", title: t("auth.register.title") });
 }
 
 export default async function RegisterPage({ params }) {

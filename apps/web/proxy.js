@@ -50,5 +50,9 @@ export function proxy(request) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
+  // `opengraph-image`/`twitter-image`/`icon` gibi dosya tabanlı metadata
+  // route'ları URL'de nokta içermez (uzantı sadece dahili), bu yüzden
+  // `.*\..*` dışlaması onları yakalamaz — burada ayrıca hariç tutulmazlarsa
+  // i18n middleware'i onları bir locale önekiyle 404'e yönlendirir.
+  matcher: ["/((?!api|_next|_vercel|opengraph-image|twitter-image|icon|apple-icon|.*\\..*).*)"],
 };

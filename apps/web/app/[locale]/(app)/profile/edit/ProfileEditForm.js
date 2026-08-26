@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/locales/client";
 import { Button } from "@/components/ui/Button";
@@ -109,11 +110,8 @@ export function ProfileEditForm({ locale, profile, tests }) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
       <div className="flex items-center gap-4">
-        <div className="h-20 w-20 overflow-hidden rounded-full bg-muted">
-          {avatarUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
-          )}
+        <div className="relative h-20 w-20 overflow-hidden rounded-full bg-muted">
+          {avatarUrl && <Image src={avatarUrl} alt="" fill unoptimized={avatarUrl.startsWith("data:")} className="object-cover" />}
         </div>
         <div className="flex flex-col gap-1">
           <label htmlFor="avatar" className="text-sm text-muted-foreground">

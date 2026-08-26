@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { setStaticParamsLocale } from "next-international/server";
@@ -37,10 +38,15 @@ export default async function MessagesPage({ params }) {
             <Link key={chat.id} href={`/${locale}/messages/${chat.id}`}>
               <SectionCard className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full bg-muted">
+                  <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-muted">
                     {otherUser.avatarUrl && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={otherUser.avatarUrl} alt="" className="h-full w-full object-cover" />
+                      <Image
+                        src={otherUser.avatarUrl}
+                        alt=""
+                        fill
+                        unoptimized={otherUser.avatarUrl.startsWith("data:")}
+                        className="object-cover"
+                      />
                     )}
                   </div>
                   <div className="flex flex-col">

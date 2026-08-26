@@ -1,20 +1,26 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { setStaticParamsLocale } from "next-international/server";
 import { calculateAge } from "@hemdem/core/domain/entities/user";
 import { getI18n } from "@/locales/server";
 import { getAuthUserId } from "@/lib/session";
 import { repositories } from "@/lib/repositories";
+import { buildMetadata } from "@/lib/seo";
 import { SectionCard } from "@/components/SectionCard";
 import { SendMessageDialog } from "./SendMessageDialog";
 
 export async function generateMetadata({ params }) {
-  const { id } = await params;
+  const { locale, id } = await params;
   const profile = await repositories.user.findById(id);
+  if (!profile) return { robots: { index: false } };
 
-  return {
-    title: profile ? profile.name : undefined,
-    robots: { index: false },
-  };
+  return buildMetadata({
+    locale,
+    path: `/u/${id}`,
+    title: profile.name,
+    description: profile.bio ?? undefined,
+    noindex: true,
+  });
 }
 
 export default async function PublicProfilePage({ params }) {
@@ -41,10 +47,15 @@ export default async function PublicProfilePage({ params }) {
 
       <SectionCard className="flex flex-col gap-4">
         <div className="flex items-center gap-4">
-          <div className="h-20 w-20 overflow-hidden rounded-full bg-muted">
+          <div className="relative h-20 w-20 overflow-hidden rounded-full bg-muted">
             {profile.avatarUrl && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={profile.avatarUrl} alt="" className="h-full w-full object-cover" />
+              <Image
+                src={profile.avatarUrl}
+                alt=""
+                fill
+                unoptimized={profile.avatarUrl.startsWith("data:")}
+                className="object-cover"
+              />
             )}
           </div>
           <div>

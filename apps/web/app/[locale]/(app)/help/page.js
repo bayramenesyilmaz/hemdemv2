@@ -1,18 +1,23 @@
 import { setStaticParamsLocale } from "next-international/server";
 import { getI18n } from "@/locales/server";
+import { buildMetadata } from "@/lib/seo";
 import { PageTitle } from "@/components/PageTitle";
 import { SectionCard } from "@/components/SectionCard";
 import { Button } from "@/components/ui/Button";
+
+const FAQ_KEYS = ["howMatch", "gateTest", "coins", "guestLikes", "deleteAccount"];
 
 export async function generateMetadata({ params }) {
   const { locale } = await params;
   setStaticParamsLocale(locale);
   const t = await getI18n();
 
-  return {
+  return buildMetadata({
+    locale,
+    path: "/help",
     title: t("help.title"),
-    alternates: { canonical: `/${locale}/help` },
-  };
+    description: t("help.contactBody"),
+  });
 }
 
 export default async function HelpPage({ params }) {
@@ -20,14 +25,26 @@ export default async function HelpPage({ params }) {
   setStaticParamsLocale(locale);
   const t = await getI18n();
 
-  const faqKeys = ["howMatch", "gateTest", "coins", "guestLikes", "deleteAccount"];
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: FAQ_KEYS.map((key) => ({
+      "@type": "Question",
+      name: t(`help.faq.${key}.question`),
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: t(`help.faq.${key}.answer`),
+      },
+    })),
+  };
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-6 py-10">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <PageTitle>{t("help.title")}</PageTitle>
 
       <div className="flex flex-col gap-3">
-        {faqKeys.map((key) => (
+        {FAQ_KEYS.map((key) => (
           <SectionCard key={key} className="flex flex-col gap-1">
             <p className="font-medium text-foreground">{t(`help.faq.${key}.question`)}</p>
             <p className="text-sm text-muted-foreground">{t(`help.faq.${key}.answer`)}</p>

@@ -1,5 +1,6 @@
 import { setStaticParamsLocale } from "next-international/server";
 import { getI18n } from "@/locales/server";
+import { buildMetadata } from "@/lib/seo";
 import { LoginForm } from "./LoginForm";
 
 export async function generateMetadata({ params }) {
@@ -7,10 +8,7 @@ export async function generateMetadata({ params }) {
   setStaticParamsLocale(locale);
   const t = await getI18n();
 
-  return {
-    title: t("auth.login.title"),
-    alternates: { canonical: `/${locale}/login` },
-  };
+  return buildMetadata({ locale, path: "/login", title: t("auth.login.title") });
 }
 
 export default async function LoginPage({ params }) {

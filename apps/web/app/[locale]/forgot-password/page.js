@@ -1,5 +1,6 @@
 import { setStaticParamsLocale } from "next-international/server";
 import { getI18n } from "@/locales/server";
+import { buildMetadata } from "@/lib/seo";
 import { ForgotPasswordForm } from "./ForgotPasswordForm";
 
 export async function generateMetadata({ params }) {
@@ -7,10 +8,7 @@ export async function generateMetadata({ params }) {
   setStaticParamsLocale(locale);
   const t = await getI18n();
 
-  return {
-    title: t("auth.forgotPassword.title"),
-    alternates: { canonical: `/${locale}/forgot-password` },
-  };
+  return buildMetadata({ locale, path: "/forgot-password", title: t("auth.forgotPassword.title") });
 }
 
 export default async function ForgotPasswordPage({ params }) {

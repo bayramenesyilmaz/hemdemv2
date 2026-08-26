@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { calculateAge } from "@hemdem/core/domain/entities/user";
@@ -36,10 +37,16 @@ export function SwipeCard({ candidate, locale, isTop, onSwipe }) {
       className="absolute inset-0 flex touch-none flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-lg"
     >
       <Link href={`/${locale}/u/${candidate.id}`} className="flex flex-1 flex-col">
-        <div className="flex h-2/3 items-center justify-center bg-muted">
+        <div className="relative flex h-2/3 items-center justify-center bg-muted">
           {candidate.avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={candidate.avatarUrl} alt="" className="h-full w-full object-cover" draggable={false} />
+            <Image
+              src={candidate.avatarUrl}
+              alt=""
+              fill
+              draggable={false}
+              unoptimized={candidate.avatarUrl.startsWith("data:")}
+              className="object-cover"
+            />
           ) : (
             <span className="text-6xl">🙂</span>
           )}

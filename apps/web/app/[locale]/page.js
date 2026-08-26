@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import { setStaticParamsLocale } from "next-international/server";
 import { getI18n } from "@/locales/server";
-import { LOCALES, DEFAULT_LOCALE } from "@/locales/index.js";
 import { getAuthUserId } from "@/lib/session";
+import { buildMetadata } from "@/lib/seo";
 import { Button } from "@/components/ui/Button";
 
 export async function generateMetadata({ params }) {
@@ -10,17 +10,12 @@ export async function generateMetadata({ params }) {
   setStaticParamsLocale(locale);
   const t = await getI18n();
 
-  return {
+  return buildMetadata({
+    locale,
+    path: "",
     title: t("home.title"),
     description: t("home.subtitle"),
-    alternates: {
-      canonical: `/${locale}`,
-      languages: {
-        ...Object.fromEntries(LOCALES.map((l) => [l, `/${l}`])),
-        "x-default": `/${DEFAULT_LOCALE}`,
-      },
-    },
-  };
+  });
 }
 
 export default async function HomePage({ params }) {
@@ -35,13 +30,21 @@ export default async function HomePage({ params }) {
   const t = await getI18n();
 
   const domain = process.env.NEXT_PUBLIC_DOMAIN ?? "https://example.com";
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: "Hemdem",
-    url: domain,
-    inLanguage: locale,
-  };
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "Hemdem",
+      url: domain,
+      inLanguage: locale,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "Hemdem",
+      url: domain,
+    },
+  ];
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-6 px-6 text-center">

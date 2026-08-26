@@ -3,6 +3,7 @@ import { fetchFeed } from "@hemdem/core/usecases/posts/fetchFeed";
 import { getI18n } from "@/locales/server";
 import { getAuthUserId } from "@/lib/session";
 import { repositories } from "@/lib/repositories";
+import { buildMetadata } from "@/lib/seo";
 import { PageTitle } from "@/components/PageTitle";
 import { EmptyState } from "@/components/EmptyState";
 import { InfoBanner } from "@/components/InfoBanner";
@@ -15,11 +16,12 @@ export async function generateMetadata({ params }) {
   setStaticParamsLocale(locale);
   const t = await getI18n();
 
-  return {
+  return buildMetadata({
+    locale,
+    path: "/posts",
     title: t("posts.title"),
     description: t("posts.subtitle"),
-    alternates: { canonical: `/${locale}/posts` },
-  };
+  });
 }
 
 export default async function PostsPage({ params }) {
