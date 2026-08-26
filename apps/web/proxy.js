@@ -10,7 +10,7 @@ const I18nMiddleware = createI18nMiddleware({
   defaultLocale: DEFAULT_LOCALE,
 });
 
-const PROTECTED_SEGMENTS = ["discover", "onboarding"];
+const PROTECTED_SEGMENTS = ["discover", "onboarding", "profile"];
 
 /**
  * Optimistic kontrol: `@supabase/ssr` oturum cookie'sini `sb-<project-ref>-auth-token`

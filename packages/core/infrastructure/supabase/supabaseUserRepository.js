@@ -16,6 +16,7 @@ function toProfile(row) {
     gateTestId: row.gate_test_id,
     gateTestThreshold: row.gate_test_threshold,
     allowGuestLikes: row.allow_guest_likes,
+    socialLinks: row.social_links ?? {},
   };
 }
 
@@ -35,6 +36,7 @@ function toRow(profile) {
   if (profile.gateTestId !== undefined) row.gate_test_id = profile.gateTestId;
   if (profile.gateTestThreshold !== undefined) row.gate_test_threshold = profile.gateTestThreshold;
   if (profile.allowGuestLikes !== undefined) row.allow_guest_likes = profile.allowGuestLikes;
+  if (profile.socialLinks !== undefined) row.social_links = profile.socialLinks;
   return row;
 }
 

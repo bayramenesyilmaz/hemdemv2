@@ -19,12 +19,14 @@
  * @property {string|null} gateTestId
  * @property {number|null} gateTestThreshold     - 0-100
  * @property {boolean} allowGuestLikes
+ * @property {Record<string, string>} socialLinks - { instagram: "https://..." } gibi
  */
 
 const ALLOWED_GENDERS = ["male", "female"];
 const ALLOWED_INTERESTS = ["male", "female", "both"];
 const ALLOWED_LANGUAGES = ["tr", "en"];
 const ALLOWED_ROLES = ["user", "admin"];
+const MAX_SOCIAL_LINKS = 10;
 
 /**
  * @param {Partial<Profile>} input
@@ -56,6 +58,16 @@ export function validateProfile(input) {
   }
   if (input.bio != null && input.bio.length > 1000) {
     errors.push("bio_too_long");
+  }
+  if (input.socialLinks != null) {
+    const entries = Object.entries(input.socialLinks);
+    const isValidShape =
+      typeof input.socialLinks === "object" &&
+      !Array.isArray(input.socialLinks) &&
+      entries.every(([platform, url]) => typeof platform === "string" && typeof url === "string");
+    if (!isValidShape || entries.length > MAX_SOCIAL_LINKS) {
+      errors.push("invalid_social_links");
+    }
   }
 
   return { valid: errors.length === 0, errors };

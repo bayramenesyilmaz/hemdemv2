@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useI18n } from "@/locales/client";
 import { getSupabaseBrowserClient } from "@/lib/supabaseBrowserClient";
 import { mockSignOutAction } from "@/lib/actions/mockAuthActions";
+import { Button } from "@/components/ui/Button";
 
 const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === "true";
 
@@ -28,13 +29,8 @@ export function LogoutButton({ locale }) {
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      disabled={loading}
-      className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground disabled:opacity-60"
-    >
+    <Button type="button" variant="outline" onClick={handleClick} disabled={loading}>
       {t("nav.logout")}
-    </button>
+    </Button>
   );
 }

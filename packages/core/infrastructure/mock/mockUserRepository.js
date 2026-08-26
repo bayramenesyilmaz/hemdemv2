@@ -24,6 +24,7 @@ export function createMockUserRepository(store) {
         gateTestId: null,
         gateTestThreshold: null,
         allowGuestLikes: false,
+        socialLinks: {},
         ...profile,
       };
       store.profiles.set(profile.id, full);

@@ -31,6 +31,7 @@ function createSeededStore() {
         gateTestId: "test-1",
         gateTestThreshold: 50,
         allowGuestLikes: true,
+        socialLinks: { instagram: "https://instagram.com/asliyildiz" },
       },
     ],
     [
@@ -51,6 +52,7 @@ function createSeededStore() {
         gateTestId: null,
         gateTestThreshold: null,
         allowGuestLikes: false,
+        socialLinks: {},
       },
     ],
     [
@@ -71,6 +73,7 @@ function createSeededStore() {
         gateTestId: null,
         gateTestThreshold: null,
         allowGuestLikes: true,
+        socialLinks: {},
       },
     ],
     [
@@ -91,6 +94,7 @@ function createSeededStore() {
         gateTestId: null,
         gateTestThreshold: null,
         allowGuestLikes: false,
+        socialLinks: {},
       },
     ],
     [
@@ -111,6 +115,7 @@ function createSeededStore() {
         gateTestId: null,
         gateTestThreshold: null,
         allowGuestLikes: false,
+        socialLinks: {},
       },
     ],
   ]);

@@ -4,6 +4,7 @@ const tr = {
     tests: "Testler",
     posts: "Gönderiler",
     messages: "Mesajlar",
+    profile: "Profilim",
     logout: "Çıkış Yap",
   },
   home: {
@@ -63,6 +64,34 @@ const tr = {
   discover: {
     placeholderTitle: "Merhaba, {name}!",
     placeholderBody: "Keşfet ekranı yakında burada olacak.",
+  },
+  profile: {
+    title: "Profilim",
+    editTitle: "Profili Düzenle",
+    edit: "Düzenle",
+    save: "Kaydet",
+    backToDiscover: "← Keşfet'e dön",
+    backToProfile: "← Profile dön",
+    bioLabel: "Hakkında",
+    countryLabel: "Ülke",
+    avatarLabel: "Profil fotoğrafı",
+    avatarUploading: "Yükleniyor…",
+    genderLabel: "Cinsiyet",
+    interestedInLabel: "İlgilendiği cinsiyet",
+    gateTestLabel: "Kapı testi",
+    gateTestNone: "Yok",
+    gateTestActive: "Aktif",
+    gateTestThresholdLabel: "Minimum benzerlik yüzdesi",
+    allowGuestLikesLabel: "Misafirlerin bana beğeni göndermesine izin ver",
+    socialLinksLabel: "Sosyal medya hesapları",
+    yes: "Evet",
+    no: "Hayır",
+    cancel: "Vazgeç",
+    deleteAccount: "Hesabımı Sil",
+    deleteAccountConfirmTitle: "Hesabını silmek istediğine emin misin?",
+    deleteAccountConfirmBody:
+      "Bu işlem geri alınamaz. Profilin, testlerin, eşleşmelerin ve tüm verilerin kalıcı olarak silinir.",
+    deleteAccountConfirmAction: "Evet, hesabımı sil",
   },
 };
 

@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { setStaticParamsLocale } from "next-international/server";
 import { getI18n } from "@/locales/server";
 import { LOCALES, DEFAULT_LOCALE } from "@/locales/index.js";
 import { getAuthUserId } from "@/lib/session";
+import { Button } from "@/components/ui/Button";
 
 export async function generateMetadata({ params }) {
   const { locale } = await params;
@@ -52,18 +52,12 @@ export default async function HomePage({ params }) {
       <h1 className="text-3xl font-bold text-foreground sm:text-4xl">{t("home.title")}</h1>
       <p className="max-w-xl text-muted-foreground">{t("home.subtitle")}</p>
       <div className="flex gap-3">
-        <Link
-          href={`/${locale}/register`}
-          className="rounded-lg bg-primary px-5 py-2.5 font-medium text-primary-foreground"
-        >
+        <Button href={`/${locale}/register`} variant="confirm">
           {t("home.ctaRegister")}
-        </Link>
-        <Link
-          href={`/${locale}/login`}
-          className="rounded-lg border border-border px-5 py-2.5 font-medium text-foreground"
-        >
+        </Button>
+        <Button href={`/${locale}/login`} variant="outline">
           {t("home.ctaLogin")}
-        </Link>
+        </Button>
       </div>
     </main>
   );

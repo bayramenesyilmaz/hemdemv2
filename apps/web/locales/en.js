@@ -4,6 +4,7 @@ const en = {
     tests: "Tests",
     posts: "Posts",
     messages: "Messages",
+    profile: "My Profile",
     logout: "Log Out",
   },
   home: {
@@ -61,6 +62,34 @@ const en = {
   discover: {
     placeholderTitle: "Hi, {name}!",
     placeholderBody: "The discover screen is coming soon.",
+  },
+  profile: {
+    title: "My Profile",
+    editTitle: "Edit Profile",
+    edit: "Edit",
+    save: "Save",
+    backToDiscover: "← Back to Discover",
+    backToProfile: "← Back to profile",
+    bioLabel: "About",
+    countryLabel: "Country",
+    avatarLabel: "Profile photo",
+    avatarUploading: "Uploading…",
+    genderLabel: "Gender",
+    interestedInLabel: "Interested in",
+    gateTestLabel: "Gate test",
+    gateTestNone: "None",
+    gateTestActive: "Active",
+    gateTestThresholdLabel: "Minimum similarity percentage",
+    allowGuestLikesLabel: "Allow guests to send me likes",
+    socialLinksLabel: "Social media accounts",
+    yes: "Yes",
+    no: "No",
+    cancel: "Cancel",
+    deleteAccount: "Delete My Account",
+    deleteAccountConfirmTitle: "Are you sure you want to delete your account?",
+    deleteAccountConfirmBody:
+      "This action cannot be undone. Your profile, tests, matches, and all your data will be permanently deleted.",
+    deleteAccountConfirmAction: "Yes, delete my account",
   },
 };
 

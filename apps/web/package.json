@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@hemdem/core": "workspace:*",
+    "@radix-ui/react-dialog": "^1.1.23",
+    "@radix-ui/react-select": "^2.3.7",
     "@supabase/ssr": "^0.12.5",
     "@supabase/supabase-js": "^2.112.4",
     "clsx": "^2.1.1",

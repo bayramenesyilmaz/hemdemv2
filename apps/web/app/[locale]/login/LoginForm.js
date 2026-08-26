@@ -7,6 +7,8 @@ import { useI18n } from "@/locales/client";
 import { getSupabaseBrowserClient } from "@/lib/supabaseBrowserClient";
 import { getPostLoginDestinationAction } from "@/lib/actions/authActions";
 import { mockSignInAction } from "@/lib/actions/mockAuthActions";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === "true";
 
@@ -57,38 +59,26 @@ export function LoginForm({ locale }) {
         <label htmlFor="email" className="text-sm text-muted-foreground">
           {t("auth.emailLabel")}
         </label>
-        <input
-          id="email"
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="rounded-lg border border-border bg-background px-3 py-2 text-foreground"
-        />
+        <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
       </div>
       <div className="flex flex-col gap-1">
         <label htmlFor="password" className="text-sm text-muted-foreground">
           {t("auth.passwordLabel")}
         </label>
-        <input
+        <Input
           id="password"
           type="password"
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="rounded-lg border border-border bg-background px-3 py-2 text-foreground"
         />
       </div>
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="rounded-lg bg-primary px-5 py-2.5 font-medium text-primary-foreground disabled:opacity-60"
-      >
+      <Button type="submit" variant="confirm" disabled={loading}>
         {t("auth.login.submit")}
-      </button>
+      </Button>
 
       <div className="flex flex-col items-center gap-2 text-sm text-muted-foreground">
         <Link href={`/${locale}/forgot-password`} className="underline">

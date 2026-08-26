@@ -1,17 +1,17 @@
 import { redirect } from "next/navigation";
 import { setStaticParamsLocale } from "next-international/server";
-import { isProfileComplete } from "@hemdem/core/domain/entities/user";
 import { getI18n } from "@/locales/server";
 import { getAuthUserId } from "@/lib/session";
 import { repositories } from "@/lib/repositories";
-import { LogoutButton } from "@/components/LogoutButton";
+import { PageTitle } from "@/components/PageTitle";
 import { Button } from "@/components/ui/Button";
+import { ProfileEditForm } from "./ProfileEditForm";
 
 export async function generateMetadata() {
   return { robots: { index: false } };
 }
 
-export default async function DiscoverPage({ params }) {
+export default async function ProfileEditPage({ params }) {
   const { locale } = await params;
   setStaticParamsLocale(locale);
 
@@ -21,24 +21,22 @@ export default async function DiscoverPage({ params }) {
   }
 
   const profile = await repositories.user.findById(userId);
-  if (!isProfileComplete(profile)) {
+  if (!profile) {
     redirect(`/${locale}/onboarding`);
   }
 
+  const tests = await repositories.test.findMany({});
   const t = await getI18n();
 
   return (
-    <main className="flex min-h-[80vh] flex-col items-center justify-center gap-4 px-6 text-center">
-      <h1 className="text-2xl font-bold text-foreground">
-        {t("discover.placeholderTitle", { name: profile.name })}
-      </h1>
-      <p className="max-w-sm text-muted-foreground">{t("discover.placeholderBody")}</p>
-      <div className="flex gap-3">
-        <Button href={`/${locale}/profile`} variant="outline">
-          {t("nav.profile")}
+    <main className="mx-auto flex max-w-2xl flex-col gap-6 px-6 py-10">
+      <div>
+        <Button href={`/${locale}/profile`} variant="ghost">
+          {t("profile.backToProfile")}
         </Button>
-        <LogoutButton locale={locale} />
       </div>
+      <PageTitle>{t("profile.editTitle")}</PageTitle>
+      <ProfileEditForm locale={locale} profile={profile} tests={tests} />
     </main>
   );
 }

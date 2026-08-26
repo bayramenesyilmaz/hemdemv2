@@ -4,6 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/locales/client";
 import { getSupabaseBrowserClient } from "@/lib/supabaseBrowserClient";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { InfoBanner } from "@/components/InfoBanner";
 
 const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === "true";
 
@@ -16,7 +19,7 @@ export function ResetPasswordForm({ locale }) {
   const [success, setSuccess] = useState(false);
 
   if (USE_MOCK_DATA) {
-    return <p className="max-w-sm text-center text-muted-foreground">{t("auth.mockModeNotice")}</p>;
+    return <InfoBanner>{t("auth.mockModeNotice")}</InfoBanner>;
   }
 
   async function handleSubmit(event) {
@@ -39,7 +42,7 @@ export function ResetPasswordForm({ locale }) {
   }
 
   if (success) {
-    return <p className="max-w-sm text-center text-muted-foreground">{t("auth.resetPassword.success")}</p>;
+    return <InfoBanner>{t("auth.resetPassword.success")}</InfoBanner>;
   }
 
   return (
@@ -48,26 +51,21 @@ export function ResetPasswordForm({ locale }) {
         <label htmlFor="password" className="text-sm text-muted-foreground">
           {t("auth.resetPassword.newPasswordLabel")}
         </label>
-        <input
+        <Input
           id="password"
           type="password"
           required
           minLength={6}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="rounded-lg border border-border bg-background px-3 py-2 text-foreground"
         />
       </div>
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="rounded-lg bg-primary px-5 py-2.5 font-medium text-primary-foreground disabled:opacity-60"
-      >
+      <Button type="submit" variant="confirm" disabled={loading}>
         {t("auth.resetPassword.submit")}
-      </button>
+      </Button>
     </form>
   );
 }

@@ -4,6 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/locales/client";
 import { completeOnboardingAction } from "@/lib/actions/authActions";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
 
 export function OnboardingForm({ locale }) {
   const t = useI18n();
@@ -32,67 +35,50 @@ export function OnboardingForm({ locale }) {
   return (
     <form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4">
       <div className="flex flex-col gap-1">
-        <label htmlFor="gender" className="text-sm text-muted-foreground">
-          {t("auth.onboarding.genderLabel")}
-        </label>
-        <select
-          id="gender"
-          required
-          value={gender}
-          onChange={(e) => setGender(e.target.value)}
-          className="rounded-lg border border-border bg-background px-3 py-2 text-foreground"
-        >
-          <option value="" disabled>
-            —
-          </option>
-          <option value="male">{t("auth.onboarding.genderMale")}</option>
-          <option value="female">{t("auth.onboarding.genderFemale")}</option>
-        </select>
+        <label className="text-sm text-muted-foreground">{t("auth.onboarding.genderLabel")}</label>
+        <Select value={gender} onValueChange={setGender} required>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="male">{t("auth.onboarding.genderMale")}</SelectItem>
+            <SelectItem value="female">{t("auth.onboarding.genderFemale")}</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="flex flex-col gap-1">
         <label htmlFor="birthdate" className="text-sm text-muted-foreground">
           {t("auth.onboarding.birthdateLabel")}
         </label>
-        <input
+        <Input
           id="birthdate"
           type="date"
           required
           value={birthdate}
           onChange={(e) => setBirthdate(e.target.value)}
-          className="rounded-lg border border-border bg-background px-3 py-2 text-foreground"
         />
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="interestedIn" className="text-sm text-muted-foreground">
-          {t("auth.onboarding.interestedInLabel")}
-        </label>
-        <select
-          id="interestedIn"
-          required
-          value={interestedIn}
-          onChange={(e) => setInterestedIn(e.target.value)}
-          className="rounded-lg border border-border bg-background px-3 py-2 text-foreground"
-        >
-          <option value="" disabled>
-            —
-          </option>
-          <option value="male">{t("auth.onboarding.interestedMale")}</option>
-          <option value="female">{t("auth.onboarding.interestedFemale")}</option>
-          <option value="both">{t("auth.onboarding.interestedBoth")}</option>
-        </select>
+        <label className="text-sm text-muted-foreground">{t("auth.onboarding.interestedInLabel")}</label>
+        <Select value={interestedIn} onValueChange={setInterestedIn} required>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="male">{t("auth.onboarding.interestedMale")}</SelectItem>
+            <SelectItem value="female">{t("auth.onboarding.interestedFemale")}</SelectItem>
+            <SelectItem value="both">{t("auth.onboarding.interestedBoth")}</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="rounded-lg bg-primary px-5 py-2.5 font-medium text-primary-foreground disabled:opacity-60"
-      >
+      <Button type="submit" variant="confirm" disabled={loading || !gender || !interestedIn}>
         {t("auth.onboarding.submit")}
-      </button>
+      </Button>
     </form>
   );
 }
