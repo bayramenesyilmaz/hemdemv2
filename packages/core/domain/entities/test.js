@@ -47,6 +47,30 @@ export const TEST_CATEGORIES = [
 const VALID_CATEGORY_IDS = TEST_CATEGORIES.map((c) => c.id);
 
 /**
+ * Testler bir bilgi sınavı değil, uyum ölçme aracıdır: doğru cevap
+ * yoktur, amaç aynı diziyi izleyen / aynı kitabı okuyan / aynı şekilde
+ * düşünen insanları eşleştirmektir. Bu yüzden testler kısa tutulur —
+ * uzun test doldurulmaz, doldurulmayan test eşleşme üretmez.
+ */
+export const TEST_LIMITS = {
+  maxQuestions: 10,
+  minOptions: 2,
+  maxOptions: 4,
+};
+
+/**
+ * Bu eşiğin üstünde cevap veren kullanıcılara karşılıklı bildirim
+ * gönderilir ("senin gibi cevaplayan biri çıktı").
+ */
+export const SIMILARITY_NOTIFY_THRESHOLD = 70;
+
+/**
+ * Tam uyum: eşleşme beklemeden doğrudan mesaj gönderme hakkı verir
+ * (bkz. usecases/chat/sendMessage).
+ */
+export const SIMILARITY_DIRECT_MESSAGE = 100;
+
+/**
  * @param {Partial<Test>} input
  * @returns {{ valid: boolean, errors: string[] }}
  */
@@ -61,12 +85,28 @@ export function validateTest(input) {
   } else if (!VALID_CATEGORY_IDS.includes(input.categoryId)) {
     errors.push("invalid_category");
   }
+
   if (!Array.isArray(input.questions) || input.questions.length === 0) {
     errors.push("questions_required");
+  } else if (input.questions.length > TEST_LIMITS.maxQuestions) {
+    errors.push("too_many_questions");
   } else {
     for (const question of input.questions) {
-      if (!question.text || !Array.isArray(question.options) || question.options.length < 2) {
+      const options = question.options;
+      if (!question.text || !question.text.trim()) {
         errors.push("invalid_question");
+        break;
+      }
+      if (!Array.isArray(options) || options.length < TEST_LIMITS.minOptions) {
+        errors.push("invalid_question");
+        break;
+      }
+      if (options.length > TEST_LIMITS.maxOptions) {
+        errors.push("too_many_options");
+        break;
+      }
+      if (options.some((option) => !option?.text || !option.text.trim())) {
+        errors.push("invalid_option");
         break;
       }
     }

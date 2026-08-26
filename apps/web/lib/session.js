@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 import { USE_MOCK_DATA } from "@/lib/repositories";
@@ -14,9 +15,16 @@ import { MOCK_SESSION_COOKIE } from "@/lib/constants";
  * yerine `lib/actions/mockAuthActions.js`'in yazdığı basit bir cookie
  * okunur.
  *
+ * **`cache()` neden şart:** gerçek modda `auth.getUser()` her çağrıda
+ * Supabase auth sunucusuna bir ağ isteği atar. Bu fonksiyon tek bir
+ * sayfa render'ında en az iki kez çağrılıyor (uygulama kabuğu layout'u +
+ * sayfanın kendisi), bazı sayfalarda daha fazla. `cache()` aynı request
+ * içindeki tüm çağrıları tek bir isteğe indirir — sayfalar arası geçişin
+ * gözle görülür şekilde yavaş olmasının başlıca sebebi buydu.
+ *
  * @returns {Promise<string|null>}
  */
-export async function getAuthUserId() {
+export const getAuthUserId = cache(async function getAuthUserId() {
   const cookieStore = await cookies();
 
   if (USE_MOCK_DATA) {
@@ -39,4 +47,4 @@ export async function getAuthUserId() {
   } = await supabase.auth.getUser();
 
   return user?.id ?? null;
-}
+});

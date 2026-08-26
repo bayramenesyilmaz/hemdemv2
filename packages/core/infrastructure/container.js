@@ -11,6 +11,7 @@ import { createSupabaseCoinRepository } from "./supabase/supabaseCoinRepository.
 import { createSupabasePointRepository } from "./supabase/supabasePointRepository.js";
 import { createSupabaseRequestRepository } from "./supabase/supabaseRequestRepository.js";
 import { createSupabaseAuthAdminRepository } from "./supabase/supabaseAuthAdminRepository.js";
+import { createSupabaseNotificationRepository } from "./supabase/supabaseNotificationRepository.js";
 
 /**
  * Composition root. `usecases/*` bu nesneyi parametre olarak alır ve
@@ -34,6 +35,7 @@ export function createRepositories(supabaseConfig) {
     coin: createSupabaseCoinRepository(client),
     point: createSupabasePointRepository(client),
     request: createSupabaseRequestRepository(client),
+    notification: createSupabaseNotificationRepository(client),
     authAdmin: createSupabaseAuthAdminRepository(client),
   };
 }

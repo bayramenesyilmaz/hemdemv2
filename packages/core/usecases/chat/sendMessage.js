@@ -1,9 +1,14 @@
 import { validateMessageContent } from "../../domain/entities/chat.js";
 import { COIN_COSTS } from "../../domain/entities/coin.js";
+import { hasPerfectTestMatch } from "../tests/hasPerfectTestMatch.js";
 
 /**
- * Mesaj gönderir. Eşleşme yoksa ve eşleşmemiş sohbet de yoksa, coin
- * karşılığı "süper mesaj" ile yeni bir sohbet açılır.
+ * Mesaj gönderir. Sohbet açılma sırası:
+ * 1. Zaten bir sohbet varsa oraya yazılır.
+ * 2. Karşılıklı beğeni (eşleşme) varsa sohbet ücretsiz açılır.
+ * 3. Ortak çözülmüş bir testte tam uyum (%100) varsa sohbet yine
+ *    ücretsiz açılır — uygulamanın temel vaadi bu.
+ * 4. Hiçbiri yoksa coin karşılığı "süper mesaj" ile açılır.
  *
  * @param {object} repositories
  * @param {string} senderId
@@ -29,8 +34,11 @@ export async function sendMessage(repositories, senderId, recipientId, content) 
 
   if (!chat) {
     const match = await repositories.match.findByPair(senderId, recipientId);
+    const perfectTestMatch = match
+      ? false
+      : await hasPerfectTestMatch(repositories, senderId, recipientId);
 
-    if (match) {
+    if (match || perfectTestMatch) {
       chat = await repositories.chat.create({ userA: senderId, userB: recipientId, source: "match" });
     } else {
       const { ok } = await repositories.coin.decrementIfSufficient(senderId, COIN_COSTS.superMessage);

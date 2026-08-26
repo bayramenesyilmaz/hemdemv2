@@ -4,27 +4,30 @@ import { cn } from "@/lib/cn";
 
 /**
  * `min-h-11` (44px) dokunmatik hedef alt sınırıdır (WCAG 2.5.8 / iOS
- * HIG) — mobilde butonların ıskalanmaması için varyanttan bağımsız
- * olarak taban stilde tutulur.
+ * HIG). `active:scale-[0.97]` mobilde dokunma geri bildirimi verir —
+ * hover'ı olmayan cihazlarda butonun "bastım" hissini karşılar.
  */
 const BASE =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium transition-colors disabled:opacity-60 disabled:pointer-events-none";
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold " +
+  "transition-all duration-150 active:scale-[0.97] " +
+  "disabled:opacity-50 disabled:pointer-events-none disabled:active:scale-100 " +
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
 const VARIANTS = {
-  add: "bg-primary text-primary-foreground hover:opacity-90",
-  confirm: "bg-primary text-primary-foreground hover:opacity-90",
-  edit: "bg-secondary text-secondary-foreground hover:opacity-90",
-  send: "bg-primary text-primary-foreground hover:opacity-90",
-  delete: "bg-destructive text-destructive-foreground hover:opacity-90",
-  outline: "border border-border text-foreground hover:bg-muted",
-  ghost: "text-foreground hover:bg-muted",
-  link: "min-h-0 text-foreground underline underline-offset-4 px-0 py-0",
+  add: "bg-gradient-primary text-primary-foreground shadow-card hover:shadow-float hover:brightness-105",
+  confirm:
+    "bg-gradient-primary text-primary-foreground shadow-card hover:shadow-float hover:brightness-105",
+  send: "bg-gradient-primary text-primary-foreground shadow-card hover:shadow-float hover:brightness-105",
+  edit: "bg-secondary text-secondary-foreground shadow-soft hover:opacity-90",
+  delete: "bg-destructive text-destructive-foreground shadow-soft hover:brightness-110",
+  outline: "border border-border bg-card text-foreground shadow-soft hover:bg-muted",
+  ghost: "text-muted-foreground hover:bg-muted hover:text-foreground",
+  link: "min-h-0 px-0 py-0 font-medium text-primary underline underline-offset-4 hover:opacity-80 active:scale-100",
 };
 
 /**
- * Plan'da (bölüm 7) tanımlı buton varyantları: add/confirm/delete/edit/
- * send/outline/ghost/link. `href` verilirse `next/link` ile navigasyon
- * butonu, verilmezse normal `<button>` render eder.
+ * Plan'da (bölüm 7) tanımlı buton varyantları. `href` verilirse
+ * `next/link` ile navigasyon butonu, verilmezse normal `<button>`.
  *
  * `forwardRef` kullanıyor çünkü Radix `asChild` (Dialog tetikleyicileri
  * vb.) ref'i doğrudan alttaki DOM elementine iletebilmek için buna

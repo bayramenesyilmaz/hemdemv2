@@ -2,11 +2,17 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { setStaticParamsLocale } from "next-international/server";
 import { fetchTestResults } from "@hemdem/core/usecases/tests/fetchTestResults";
+import { calculateAge } from "@hemdem/core/domain/entities/user";
 import { getI18n } from "@/locales/server";
 import { getAuthUserId } from "@/lib/session";
 import { repositories } from "@/lib/repositories";
 import { SectionCard } from "@/components/SectionCard";
 import { EmptyState } from "@/components/EmptyState";
+import { Avatar } from "@/components/Avatar";
+import { AdSlot } from "@/components/AdSlot";
+import { SimilarityBadge, SimilarityBar } from "@/components/SimilarityBadge";
+import { Button } from "@/components/ui/Button";
+import { HeartIcon, MessagesIcon } from "@/components/icons";
 
 export async function generateMetadata() {
   return { robots: { index: false } };
@@ -29,47 +35,99 @@ export default async function TestResultPage({ params }) {
     redirect(`/${locale}/tests`);
   }
 
-  const { test, comparisons } = result.data;
+  const { test, matches } = result.data;
   const t = await getI18n();
 
-  const profiles = await Promise.all(
-    comparisons.map((c) => repositories.user.findById(c.userId))
-  );
+  const perfectMatches = matches.filter((m) => m.canDirectMessage);
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-6 lg:px-6 lg:py-8">
-      <h1 className="text-2xl font-bold text-foreground">{t("tests.resultTitle", { title: test.title })}</h1>
+      <header className="flex flex-col gap-2">
+        <p className="text-sm font-medium text-primary">{t("tests.resultCompleted")}</p>
+        <h1 className="text-2xl font-bold text-foreground">{test.title}</h1>
+        <p className="text-sm text-muted-foreground">
+          {t("tests.resultSubtitle", { count: matches.length })}
+        </p>
+      </header>
 
-      <SectionCard>
-        <p className="text-foreground">{t("tests.resultCompleted")}</p>
-        {test.point > 0 && (
-          <p className="mt-1 text-sm text-muted-foreground">
-            {t("tests.resultPointsEarned", { points: test.point })}
-          </p>
-        )}
-      </SectionCard>
+      {perfectMatches.length > 0 && (
+        <SectionCard className="flex items-start gap-3 border-primary/30 bg-gradient-surface">
+          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-primary text-primary-foreground">
+            <HeartIcon className="h-5 w-5" />
+          </span>
+          <div>
+            <p className="font-semibold text-foreground">{t("tests.perfectMatchTitle")}</p>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              {t("tests.perfectMatchBody", { count: perfectMatches.length })}
+            </p>
+          </div>
+        </SectionCard>
+      )}
 
-      <div className="flex flex-col gap-3">
+      <AdSlot label={t("ads.label")} />
+
+      <section className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold text-foreground">{t("tests.compareTitle")}</h2>
 
-        {comparisons.length === 0 ? (
-          <EmptyState title={t("tests.compareEmptyTitle")} description={t("tests.compareEmptyBody")} />
+        {matches.length === 0 ? (
+          <EmptyState
+            icon={<HeartIcon className="h-6 w-6" />}
+            title={t("tests.compareEmptyTitle")}
+            description={t("tests.compareEmptyBody")}
+          />
         ) : (
-          comparisons.map((c, index) => {
-            const profile = profiles[index];
-            if (!profile) return null;
+          <ul className="flex flex-col gap-3">
+            {matches.map(({ profile, similarity, canDirectMessage }, index) => (
+              <li
+                key={profile.id}
+                className="animate-list-in"
+                style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}
+              >
+                <SectionCard className="flex flex-col gap-3">
+                  <div className="flex items-center gap-3">
+                    <Avatar src={profile.avatarUrl} name={profile.name} />
+                    <div className="min-w-0 flex-1">
+                      <Link
+                        href={`/${locale}/u/${profile.id}`}
+                        className="block truncate font-semibold text-foreground hover:underline"
+                      >
+                        {profile.name}
+                        {profile.birthdate ? `, ${calculateAge(profile.birthdate)}` : ""}
+                      </Link>
+                      {profile.country && (
+                        <p className="truncate text-sm text-muted-foreground">{profile.country}</p>
+                      )}
+                    </div>
+                    <SimilarityBadge value={similarity} />
+                  </div>
 
-            return (
-              <SectionCard key={c.userId} className="flex items-center justify-between">
-                <Link href={`/${locale}/u/${c.userId}`} className="font-medium text-foreground underline">
-                  {profile.name}
-                </Link>
-                <span className="text-sm text-muted-foreground">%{c.similarity}</span>
-              </SectionCard>
-            );
-          })
+                  <SimilarityBar value={similarity} />
+
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      href={`/${locale}/tests/${test.id}/compare/${profile.id}`}
+                      variant="outline"
+                      className="flex-1"
+                    >
+                      {t("tests.viewAnswers")}
+                    </Button>
+                    {canDirectMessage && (
+                      <Button href={`/${locale}/u/${profile.id}`} variant="confirm" className="flex-1">
+                        <MessagesIcon className="h-4 w-4" />
+                        {t("tests.messageDirectly")}
+                      </Button>
+                    )}
+                  </div>
+                </SectionCard>
+              </li>
+            ))}
+          </ul>
         )}
-      </div>
+      </section>
+
+      <Button href={`/${locale}/tests`} variant="ghost">
+        {t("tests.backToTests")}
+      </Button>
     </main>
   );
 }

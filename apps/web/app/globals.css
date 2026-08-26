@@ -23,6 +23,15 @@
 
   --border: hsl(240 6% 90%);
   --radius: 0.75rem;
+
+  /* Marka gradyanı — birincil butonlar, rozetler ve vurgu yüzeyleri. */
+  --gradient-primary: linear-gradient(135deg, hsl(350 82% 55%), hsl(330 80% 45%));
+  --gradient-surface: linear-gradient(135deg, hsl(350 82% 52% / 0.08), hsl(280 70% 55% / 0.08));
+
+  /* Yumuşak, katmanlı gölgeler — tek bir sert gölge yerine iki katman. */
+  --shadow-sm: 0 1px 2px hsl(240 10% 10% / 0.05);
+  --shadow-md: 0 2px 4px hsl(240 10% 10% / 0.04), 0 6px 16px hsl(240 10% 10% / 0.07);
+  --shadow-lg: 0 4px 8px hsl(240 10% 10% / 0.05), 0 16px 32px hsl(240 10% 10% / 0.1);
 }
 
 .dark {
@@ -45,6 +54,13 @@
   --destructive-foreground: hsl(0 0% 100%);
 
   --border: hsl(240 6% 20%);
+
+  --gradient-primary: linear-gradient(135deg, hsl(350 82% 58%), hsl(330 78% 48%));
+  --gradient-surface: linear-gradient(135deg, hsl(350 82% 58% / 0.14), hsl(280 70% 60% / 0.14));
+
+  --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.3);
+  --shadow-md: 0 2px 4px hsl(0 0% 0% / 0.3), 0 6px 16px hsl(0 0% 0% / 0.35);
+  --shadow-lg: 0 4px 8px hsl(0 0% 0% / 0.35), 0 16px 32px hsl(0 0% 0% / 0.45);
 }
 
 @theme inline {
@@ -61,6 +77,10 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
+
+  --shadow-soft: var(--shadow-sm);
+  --shadow-card: var(--shadow-md);
+  --shadow-float: var(--shadow-lg);
 
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
@@ -141,11 +161,35 @@
     animation: dialog-in 160ms ease-out;
   }
 
+  .bg-gradient-primary {
+    background-image: var(--gradient-primary);
+  }
+
+  .bg-gradient-surface {
+    background-image: var(--gradient-surface);
+  }
+
+  /* Liste öğelerinin sırayla belirmesi — plan bölüm 7 gereği sadece
+     opacity, kayma hissi veren y-offset yok. */
+  @keyframes list-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .animate-list-in {
+    animation: list-in 260ms ease-out both;
+  }
+
   /* Plan bölüm 7: liste öğelerinde sadece opacity fade, y-offset yok. */
   @media (prefers-reduced-motion: reduce) {
     .animate-fade-in,
     .animate-sheet-in,
-    .animate-dialog-in {
+    .animate-dialog-in,
+    .animate-list-in {
       animation: fade-in 1ms linear;
     }
   }

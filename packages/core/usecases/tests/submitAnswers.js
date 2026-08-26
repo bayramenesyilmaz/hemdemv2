@@ -1,7 +1,19 @@
+import {
+  calculateAnswerSimilarity,
+  SIMILARITY_NOTIFY_THRESHOLD,
+} from "../../domain/entities/test.js";
+
 /**
- * Bir teste cevap gönderir. Her kullanıcı bir testi yalnızca bir kez
- * çözebilir (answers tablosunda unique(user_id,test_id)). Testin puanı
- * varsa çözen kullanıcının liderlik tablosu puanına eklenir.
+ * Bir teste cevap gönderir. Testler bir bilgi sınavı değildir: doğru
+ * cevap yoktur, gönderilen cevaplar aynı testi çözmüş diğer kullanıcılarla
+ * karşılaştırılarak uyum yüzdesi üretir.
+ *
+ * Cevap kaydedildikten sonra, eşiği aşan benzerlikteki her kullanıcıya
+ * **ve** çözen kişiye karşılıklı bildirim düşer — kullanıcı testi çözüp
+ * beklerken "senin gibi cevaplayan biri çıktı" bildirimini bu üretir.
+ *
+ * Testin `point` değeri varsa katılım puanı olarak eklenir (doğruluk
+ * değil, aktiflik göstergesi — liderlik tablosu bunu kullanır).
  *
  * @param {object} repositories
  * @param {string} userId
@@ -25,5 +37,32 @@ export async function submitAnswers(repositories, userId, testId, userAnswers) {
     await repositories.point.increment(userId, test.point);
   }
 
-  return { status: "success", data: answer };
+  const others = (await repositories.test.findAnswersByTest(testId)).filter(
+    (other) => other.userId !== userId
+  );
+
+  let newHighMatches = 0;
+  for (const other of others) {
+    const similarity = calculateAnswerSimilarity(userAnswers, other.userAnswers);
+    if (similarity < SIMILARITY_NOTIFY_THRESHOLD) continue;
+
+    newHighMatches += 1;
+    // Karşılıklı: iki taraf da birbirini görebilmeli.
+    await repositories.notification.create({
+      userId: other.userId,
+      type: "test_similarity",
+      actorId: userId,
+      testId,
+      similarity,
+    });
+    await repositories.notification.create({
+      userId,
+      type: "test_similarity",
+      actorId: other.userId,
+      testId,
+      similarity,
+    });
+  }
+
+  return { status: "success", data: { answer, newHighMatches } };
 }

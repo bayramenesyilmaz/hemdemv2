@@ -22,7 +22,7 @@ export function BottomNav({ items, onOpenMenu }) {
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
     >
       <ul className="mx-auto flex max-w-lg items-stretch">
-        {items.map(({ href, label, Icon }) => {
+        {items.map(({ href, label, shortLabel, Icon }) => {
           const active = isActivePath(pathname, href);
           return (
             <li key={href} className="flex-1">
@@ -34,8 +34,10 @@ export function BottomNav({ items, onOpenMenu }) {
                   active ? "text-primary" : "text-muted-foreground active:text-foreground"
                 )}
               >
-                <Icon className={cn("h-6 w-6", active && "scale-110 transition-transform")} />
-                <span className="leading-none">{label}</span>
+                <Icon className={cn("h-6 w-6 shrink-0", active && "scale-110 transition-transform")} />
+                <span className="w-full truncate px-1 text-center leading-none">
+                  {shortLabel ?? label}
+                </span>
               </Link>
             </li>
           );

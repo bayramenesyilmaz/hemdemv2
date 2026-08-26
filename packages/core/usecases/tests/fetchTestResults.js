@@ -1,9 +1,15 @@
-import { calculateAnswerSimilarity } from "../../domain/entities/test.js";
+import {
+  calculateAnswerSimilarity,
+  SIMILARITY_DIRECT_MESSAGE,
+} from "../../domain/entities/test.js";
 
 /**
- * Sonuç sayfası için: kullanıcının kendi cevabını ve testi daha önce
- * çözmüş diğer herkesle benzerlik yüzdesini (büyükten küçüğe sıralı)
- * döndürür.
+ * Sonuç sayfası için: kullanıcının kendi cevabını ve testi çözmüş diğer
+ * herkesi uyum yüzdesiyle (büyükten küçüğe) döndürür. Testin amacı budur
+ * — puan değil, "benim gibi cevaplayan kim?" sorusunun cevabı.
+ *
+ * `canDirectMessage`: tam uyumda (%100) eşleşme beklemeden doğrudan
+ * mesaj gönderilebilir (bkz. usecases/chat/sendMessage).
  *
  * @param {object} repositories
  * @param {string} userId
@@ -20,14 +26,25 @@ export async function fetchTestResults(repositories, userId, testId) {
     return { status: "error", message: "not_answered_yet" };
   }
 
-  const allAnswers = await repositories.test.findAnswersByTest(testId);
-  const comparisons = allAnswers
-    .filter((answer) => answer.userId !== userId)
-    .map((answer) => ({
-      userId: answer.userId,
-      similarity: calculateAnswerSimilarity(ownAnswer.userAnswers, answer.userAnswers),
-    }))
+  const others = (await repositories.test.findAnswersByTest(testId)).filter(
+    (answer) => answer.userId !== userId
+  );
+
+  const profiles = await Promise.all(
+    others.map((answer) => repositories.user.findById(answer.userId))
+  );
+
+  const matches = others
+    .map((answer, index) => {
+      const similarity = calculateAnswerSimilarity(ownAnswer.userAnswers, answer.userAnswers);
+      return {
+        profile: profiles[index],
+        similarity,
+        canDirectMessage: similarity >= SIMILARITY_DIRECT_MESSAGE,
+      };
+    })
+    .filter((entry) => entry.profile && !entry.profile.isBanned)
     .sort((a, b) => b.similarity - a.similarity);
 
-  return { status: "success", data: { test, ownAnswer, comparisons } };
+  return { status: "success", data: { test, ownAnswer, matches } };
 }

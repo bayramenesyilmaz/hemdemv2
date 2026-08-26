@@ -12,6 +12,7 @@ import { createMockPointRepository } from "./mock/mockPointRepository.js";
 import { createMockRequestRepository } from "./mock/mockRequestRepository.js";
 import { createMockAuthAdminRepository } from "./mock/mockAuthAdminRepository.js";
 import { createMockAuthRepository } from "./mock/mockAuthRepository.js";
+import { createMockNotificationRepository } from "./mock/mockNotificationRepository.js";
 
 /**
  * `createRepositories` (container.js) ile birebir aynı şekli döndürür,
@@ -38,6 +39,7 @@ export function createMockRepositories() {
     coin: createMockCoinRepository(store),
     point: createMockPointRepository(store),
     request: createMockRequestRepository(store),
+    notification: createMockNotificationRepository(store),
     authAdmin: createMockAuthAdminRepository(store),
     mockAuth: createMockAuthRepository(store),
   };

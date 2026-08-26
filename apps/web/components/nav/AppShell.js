@@ -15,7 +15,15 @@ import { useNavItems } from "./navItems";
  * İçerik alanının alt boşluğu alt barın yüksekliği (4rem) + cihazın
  * safe-area değeri kadardır; aksi halde son satır alt barın altında kalır.
  */
-export function AppShell({ locale, isAuthenticated, isAdmin, coinBalance, avatarUrl, children }) {
+export function AppShell({
+  locale,
+  isAuthenticated,
+  isAdmin,
+  coinBalance,
+  avatarUrl,
+  unreadCount = 0,
+  children,
+}) {
   const [menuOpen, setMenuOpen] = useState(false);
   const { primary, secondary } = useNavItems({ locale, isAuthenticated, isAdmin });
 
@@ -34,6 +42,7 @@ export function AppShell({ locale, isAuthenticated, isAdmin, coinBalance, avatar
         isAuthenticated={isAuthenticated}
         coinBalance={coinBalance}
         avatarUrl={avatarUrl}
+        unreadCount={unreadCount}
       />
 
       <div className="pb-[calc(4rem+env(safe-area-inset-bottom))] lg:pb-0">{children}</div>

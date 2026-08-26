@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useI18n } from "@/locales/client";
-import { CoinIcon, UserIcon } from "@/components/icons";
+import { BellIcon, CoinIcon, UserIcon } from "@/components/icons";
 import { Brand } from "./Brand";
 
 /**
@@ -11,7 +11,7 @@ import { Brand } from "./Brand";
  * taşıdığı için `lg:hidden`. `sticky` + `backdrop-blur` ile içerik
  * kayarken marka ve hızlı aksiyonlar erişilebilir kalır.
  */
-export function AppHeader({ locale, isAuthenticated, coinBalance, avatarUrl }) {
+export function AppHeader({ locale, isAuthenticated, coinBalance, avatarUrl, unreadCount = 0 }) {
   const t = useI18n();
 
   return (
@@ -29,6 +29,19 @@ export function AppHeader({ locale, isAuthenticated, coinBalance, avatarUrl }) {
               >
                 <CoinIcon className="h-4 w-4 text-primary" />
                 {coinBalance}
+              </Link>
+
+              <Link
+                href={`/${locale}/notifications`}
+                aria-label={t("nav.notifications")}
+                className="relative flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground active:bg-muted"
+              >
+                <BellIcon className="h-5 w-5" />
+                {unreadCount > 0 && (
+                  <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
               </Link>
 
               <Link

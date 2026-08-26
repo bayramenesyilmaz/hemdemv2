@@ -161,3 +161,12 @@ export function SupportIcon(props) {
     </Icon>
   );
 }
+
+export function BellIcon(props) {
+  return (
+    <Icon {...props}>
+      <path d="M18 9a6 6 0 1 0-12 0c0 4-1.5 5.5-1.5 5.5h15S18 13 18 9z" />
+      <path d="M10.5 18.5a2 2 0 0 0 3 0" />
+    </Icon>
+  );
+}

@@ -72,20 +72,25 @@ export default async function TestsPage({ params, searchParams }) {
         <EmptyState title={t("tests.emptyTitle")} description={t("tests.emptyBody")} />
       ) : (
         <div className="flex flex-col gap-3">
-          {tests.map((test) => (
-            <SectionCard key={test.id}>
-              <Link href={`/${locale}/tests/${test.id}`} className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="font-medium text-foreground">{test.title}</p>
-                  <p className="text-sm text-muted-foreground">
+          {tests.map((test, index) => (
+            <Link
+              key={test.id}
+              href={`/${locale}/tests/${test.id}`}
+              className="animate-list-in"
+              style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}
+            >
+              <SectionCard interactive className="flex items-center justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="truncate font-semibold text-foreground">{test.title}</p>
+                  <p className="mt-0.5 text-sm text-muted-foreground">
                     {t(`testCategories.${categoryKeyOf(test.categoryId)}`)} · {test.language.toUpperCase()}
                   </p>
                 </div>
-                <span className="whitespace-nowrap text-sm text-muted-foreground">
-                  {test.point} {t("tests.points")}
+                <span className="shrink-0 rounded-full bg-gradient-surface px-3 py-1 text-xs font-semibold text-primary">
+                  {t("tests.questionCount", { count: test.questions.length })}
                 </span>
-              </Link>
-            </SectionCard>
+              </SectionCard>
+            </Link>
           ))}
         </div>
       )}

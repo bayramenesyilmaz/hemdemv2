@@ -12,6 +12,7 @@ import {
   CoinIcon,
   NoteIcon,
   ShieldIcon,
+  BellIcon,
   HelpIcon,
   SupportIcon,
 } from "@/components/icons";
@@ -33,13 +34,21 @@ export function useNavItems({ locale, isAuthenticated, isAdmin }) {
     { href: `/${locale}/posts`, label: t("nav.posts"), Icon: PostsIcon },
     isAuthenticated
       ? { href: `/${locale}/messages`, label: t("nav.messages"), Icon: MessagesIcon }
-      : { href: `/${locale}/leaderboard`, label: t("nav.leaderboard"), Icon: TrophyIcon },
+      : {
+          href: `/${locale}/leaderboard`,
+          label: t("nav.leaderboard"),
+          // Alt bar sekmeleri tek satıra sığmalı: "Liderlik Tablosu" iki
+          // satıra sarıp ikonu yukarı itiyor ve sekme kayık görünüyordu.
+          shortLabel: t("nav.leaderboardShort"),
+          Icon: TrophyIcon,
+        },
   ];
 
   const secondary = [
     ...(isAuthenticated
       ? [
           { href: `/${locale}/profile`, label: t("nav.profile"), Icon: UserIcon },
+          { href: `/${locale}/notifications`, label: t("nav.notifications"), Icon: BellIcon },
           { href: `/${locale}/likes`, label: t("nav.likes"), Icon: HeartIcon },
           { href: `/${locale}/notes`, label: t("nav.notes"), Icon: NoteIcon },
           { href: `/${locale}/coins`, label: t("profile.earnCoinsLink"), Icon: CoinIcon },
