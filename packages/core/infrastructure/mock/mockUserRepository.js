@@ -58,5 +58,16 @@ export function createMockUserRepository(store) {
       }
       return candidates.slice(0, filters?.limit ?? 50);
     },
+
+    async findMany(filters = {}) {
+      let profiles = [...store.profiles.values()];
+      if (filters.search) {
+        const needle = filters.search.toLowerCase();
+        profiles = profiles.filter(
+          (p) => p.name?.toLowerCase().includes(needle) || p.id.toLowerCase().includes(needle)
+        );
+      }
+      return profiles.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+    },
   };
 }

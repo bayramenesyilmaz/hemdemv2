@@ -163,5 +163,16 @@ export function createSupabaseTestRepository(client) {
       if (error) throw error;
       return (data ?? []).map((row) => ({ userId: row.user_id, point: row.point }));
     },
+
+    async findPendingApproval() {
+      const { data, error } = await client
+        .from("tests")
+        .select("*")
+        .eq("is_deleted", false)
+        .eq("approved", false)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []).map(toTest);
+    },
   };
 }

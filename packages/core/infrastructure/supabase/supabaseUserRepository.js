@@ -96,5 +96,13 @@ export function createSupabaseUserRepository(client) {
       if (error) throw error;
       return (data ?? []).map(toProfile);
     },
+
+    async findMany(filters = {}) {
+      let query = client.from("profiles").select("*").order("created_at", { ascending: false });
+      if (filters.search) query = query.ilike("name", `%${filters.search}%`);
+      const { data, error } = await query;
+      if (error) throw error;
+      return (data ?? []).map(toProfile);
+    },
   };
 }

@@ -84,5 +84,11 @@ export function createMockTestRepository(store) {
         .sort((a, b) => b.point - a.point)
         .slice(0, limit);
     },
+
+    async findPendingApproval() {
+      return [...store.tests.values()]
+        .filter((t) => !t.isDeleted && !t.approved)
+        .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+    },
   };
 }

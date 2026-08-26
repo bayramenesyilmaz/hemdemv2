@@ -11,6 +11,7 @@
  * @property {(userId: string) => Promise<import("../entities/test.js").Answer[]>} findAnswersByUser
  * @property {(testId: string) => Promise<import("../entities/test.js").Answer[]>} findAnswersByTest
  * @property {(limit: number) => Promise<{ userId: string, point: number }[]>} findLeaderboard
+ * @property {() => Promise<import("../entities/test.js").Test[]>} findPendingApproval
  */
 
 export {};

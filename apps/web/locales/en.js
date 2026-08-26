@@ -7,6 +7,8 @@ const en = {
     leaderboard: "Leaderboard",
     likes: "Likes",
     notes: "Notes",
+    help: "Help",
+    admin: "Admin",
     profile: "My Profile",
     logout: "Log Out",
   },
@@ -37,6 +39,9 @@ const en = {
       registerLink: "Sign up",
       forgotPasswordLink: "Forgot password?",
       errorGeneric: "Something went wrong during login, please try again.",
+      errors: {
+        account_banned: "Your account has been suspended, so you can't log in.",
+      },
     },
     forgotPassword: {
       title: "Forgot Password",
@@ -142,6 +147,8 @@ const en = {
     points: "points",
     createTitle: "Create Test",
     createCostNotice: "Creating a test costs {cost} coins.",
+    createApprovalNotice: "Your test goes through team review before it appears in the public list.",
+    pendingApproval: "Pending approval",
     titleLabel: "Test title",
     questionPlaceholder: "Question {number}",
     removeQuestion: "Remove Question",
@@ -264,6 +271,67 @@ const en = {
     watchButton: "Watch Ad",
     watching: "Watching… {remaining}s",
     rewardGranted: "You earned {reward} coins!",
+  },
+  support: {
+    title: "Request / Complaint",
+    typeLabel: "Type",
+    typeRequest: "Request",
+    typeComplaint: "Complaint",
+    subjectLabel: "Subject",
+    descriptionLabel: "Description",
+    submit: "Submit",
+    success: "Your request has been received, we'll get back to you soon.",
+    errors: {
+      invalid_type: "Invalid type.",
+      subject_required: "Subject is required.",
+      description_required: "Description is required.",
+      email_required: "Email is required.",
+    },
+  },
+  help: {
+    title: "Help Center",
+    contactBody: "If your question isn't answered here, you can reach out to us directly.",
+    contactLink: "Send a Request",
+    faq: {
+      howMatch: {
+        question: "How do I match with someone?",
+        answer:
+          "Swipe right on profiles you like on the Discover page. If they like you back, you'll match automatically and a chat opens.",
+      },
+      gateTest: {
+        question: "What is a gate test?",
+        answer:
+          "If a profile has selected a gate test, you need to take that test and meet its similarity threshold before you can like them.",
+      },
+      coins: {
+        question: "What are coins for?",
+        answer:
+          "Coins let you create your own test, send a message without matching (super message), and unlock who viewed your profile. You can earn coins by watching ads.",
+      },
+      guestLikes: {
+        question: "Can I like someone without signing up?",
+        answer: "Only profiles with 'allow guests to like me' enabled — you'll sign up quickly to send the like.",
+      },
+      deleteAccount: {
+        question: "How do I delete my account?",
+        answer: "Use the 'Delete My Account' button at the bottom of your profile page. This cannot be undone.",
+      },
+    },
+  },
+  admin: {
+    title: "Admin Panel",
+    usersLink: "Users",
+    testsLink: "Test Approvals",
+    requestsLink: "Requests",
+    adminBadge: "Admin",
+    bannedBadge: "Banned",
+    ban: "Ban",
+    unban: "Unban",
+    approve: "Approve",
+    reject: "Reject",
+    pendingTestsEmptyTitle: "No tests pending approval",
+    pendingTestsEmptyBody: "New tests created by users will show up here.",
+    requestsEmptyTitle: "No requests yet",
   },
 };
 

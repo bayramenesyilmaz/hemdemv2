@@ -9,7 +9,7 @@ import { cn } from "@/lib/cn";
 /**
  * Uygulama sayfaları arasında paylaşılan üst navigasyon.
  */
-export function AppNav({ locale, isAuthenticated, coinBalance }) {
+export function AppNav({ locale, isAuthenticated, coinBalance, isAdmin }) {
   const t = useI18n();
   const pathname = usePathname();
 
@@ -25,6 +25,8 @@ export function AppNav({ locale, isAuthenticated, coinBalance }) {
           { href: `/${locale}/notes`, label: t("nav.notes") },
         ]
       : []),
+    { href: `/${locale}/help`, label: t("nav.help") },
+    ...(isAdmin ? [{ href: `/${locale}/admin`, label: t("nav.admin") }] : []),
   ];
 
   return (

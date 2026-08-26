@@ -7,6 +7,8 @@ const tr = {
     leaderboard: "Liderlik Tablosu",
     likes: "Beğenenler",
     notes: "Notlar",
+    help: "Yardım",
+    admin: "Admin",
     profile: "Profilim",
     logout: "Çıkış Yap",
   },
@@ -39,6 +41,9 @@ const tr = {
       registerLink: "Kayıt ol",
       forgotPasswordLink: "Şifremi unuttum",
       errorGeneric: "Giriş sırasında bir sorun oluştu, tekrar dene.",
+      errors: {
+        account_banned: "Hesabın askıya alındı, bu yüzden giriş yapamazsın.",
+      },
     },
     forgotPassword: {
       title: "Şifremi Unuttum",
@@ -144,6 +149,8 @@ const tr = {
     points: "puan",
     createTitle: "Test Oluştur",
     createCostNotice: "Test oluşturmak {cost} coin karşılığındadır.",
+    createApprovalNotice: "Testin, herkese açık listede görünmeden önce ekip onayından geçer.",
+    pendingApproval: "Onay bekliyor",
     titleLabel: "Test başlığı",
     questionPlaceholder: "{number}. soru",
     removeQuestion: "Soruyu Sil",
@@ -266,6 +273,68 @@ const tr = {
     watchButton: "Reklamı İzle",
     watching: "İzleniyor… {remaining} sn",
     rewardGranted: "{reward} coin kazandın!",
+  },
+  support: {
+    title: "Talep / Şikayet",
+    typeLabel: "Tür",
+    typeRequest: "Talep",
+    typeComplaint: "Şikayet",
+    subjectLabel: "Konu",
+    descriptionLabel: "Açıklama",
+    submit: "Gönder",
+    success: "Talebin alındı, en kısa sürede dönüş yapacağız.",
+    errors: {
+      invalid_type: "Geçersiz tür.",
+      subject_required: "Konu gerekli.",
+      description_required: "Açıklama gerekli.",
+      email_required: "E-posta gerekli.",
+    },
+  },
+  help: {
+    title: "Yardım Merkezi",
+    contactBody: "Sorunun burada yanıtlanmadıysa bize doğrudan yazabilirsin.",
+    contactLink: "Talep Gönder",
+    faq: {
+      howMatch: {
+        question: "Nasıl eşleşirim?",
+        answer:
+          "Keşfet sayfasında beğendiğin profilleri sağa kaydır. Karşı taraf da seni beğenirse otomatik olarak eşleşir ve sohbet açılır.",
+      },
+      gateTest: {
+        question: "Kapı testi nedir?",
+        answer:
+          "Bir kullanıcı profilinde kapı testi seçtiyse, onu beğenebilmen için önce o testi çözmen ve belirlenen benzerlik yüzdesini geçmen gerekir.",
+      },
+      coins: {
+        question: "Coin ne işe yarar?",
+        answer:
+          "Coin ile kendi testini oluşturabilir, eşleşmeden mesaj gönderebilir (süper mesaj) ve profilini kimlerin görüntülediğini açabilirsin. Reklam izleyerek coin kazanabilirsin.",
+      },
+      guestLikes: {
+        question: "Üye olmadan biri beğenebilir miyim?",
+        answer:
+          "Sadece 'misafirlerin beğeni göndermesine izin ver' ayarı açık olan profilleri, hızlı kayıt olarak beğenebilirsin.",
+      },
+      deleteAccount: {
+        question: "Hesabımı nasıl silerim?",
+        answer: "Profilim sayfasının altındaki 'Hesabımı Sil' butonunu kullanabilirsin. Bu işlem geri alınamaz.",
+      },
+    },
+  },
+  admin: {
+    title: "Yönetim Paneli",
+    usersLink: "Kullanıcılar",
+    testsLink: "Test Onayları",
+    requestsLink: "Talepler",
+    adminBadge: "Yönetici",
+    bannedBadge: "Yasaklı",
+    ban: "Yasakla",
+    unban: "Yasağı Kaldır",
+    approve: "Onayla",
+    reject: "Reddet",
+    pendingTestsEmptyTitle: "Onay bekleyen test yok",
+    pendingTestsEmptyBody: "Yeni bir kullanıcı test oluşturduğunda burada görünecek.",
+    requestsEmptyTitle: "Henüz talep yok",
   },
 };
 

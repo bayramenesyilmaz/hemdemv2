@@ -44,6 +44,9 @@ export default async function ProfilePage({ params }) {
         <Link href={`/${locale}/coins`} className="text-muted-foreground underline">
           {t("profile.earnCoinsLink")}
         </Link>
+        <Link href={`/${locale}/support`} className="text-muted-foreground underline">
+          {t("help.contactLink")}
+        </Link>
       </div>
 
       <SectionCard className="flex flex-col gap-4">

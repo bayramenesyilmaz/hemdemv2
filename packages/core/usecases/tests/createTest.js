@@ -24,7 +24,7 @@ export async function createTest(repositories, userId, testInput) {
   }
 
   try {
-    const test = await repositories.test.create({ ...testInput, createdBy: userId });
+    const test = await repositories.test.create({ ...testInput, createdBy: userId, approved: false });
     return { status: "success", data: { test, remainingCoins: newBalance } };
   } catch (error) {
     await repositories.coin.increment(userId, COIN_COSTS.createTest);

@@ -45,7 +45,11 @@ export function LoginForm({ locale }) {
 
     const destination = await getPostLoginDestinationAction();
     if (destination.status === "error") {
-      setError(t("auth.login.errorGeneric"));
+      setError(
+        destination.message === "account_banned"
+          ? t("auth.login.errors.account_banned")
+          : t("auth.login.errorGeneric")
+      );
       setLoading(false);
       return;
     }

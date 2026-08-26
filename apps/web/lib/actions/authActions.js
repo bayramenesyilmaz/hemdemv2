@@ -1,11 +1,44 @@
 "use server";
 
+import { cookies } from "next/headers";
+import { createServerClient } from "@supabase/ssr";
 import { registerUser } from "@hemdem/core/usecases/auth/registerUser";
 import { completeOnboarding } from "@hemdem/core/usecases/auth/completeOnboarding";
 import { deleteAccount } from "@hemdem/core/usecases/auth/deleteAccount";
+import { loginUser } from "@hemdem/core/usecases/auth/loginUser";
 import { isProfileComplete } from "@hemdem/core/domain/entities/user";
-import { repositories } from "@/lib/repositories";
+import { repositories, USE_MOCK_DATA } from "@/lib/repositories";
 import { getAuthUserId } from "@/lib/session";
+import { MOCK_SESSION_COOKIE } from "@/lib/constants";
+
+/**
+ * Yasaklı bir hesap girişten sonra fark edilirse (bkz.
+ * getPostLoginDestinationAction), Supabase Auth/mock oturumu zaten
+ * kurulmuş olur — burada o oturumu geri alıp gerçekten çıkış yapılmasını
+ * sağlıyoruz, sadece hata mesajı döndürmek yetmiyor.
+ */
+async function signOutCurrentSession() {
+  const cookieStore = await cookies();
+
+  if (USE_MOCK_DATA) {
+    cookieStore.delete(MOCK_SESSION_COOKIE);
+    return;
+  }
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    {
+      cookies: {
+        getAll: () => cookieStore.getAll(),
+        setAll: (cookiesToSet) => {
+          cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
+        },
+      },
+    }
+  );
+  await supabase.auth.signOut();
+}
 
 /**
  * Supabase Auth (client tarafında, anon key ile) auth.users satırını
@@ -48,7 +81,16 @@ export async function getPostLoginDestinationAction() {
     return { status: "error", message: "not_authenticated" };
   }
 
-  const profile = await repositories.user.findById(userId);
-  const next = isProfileComplete(profile) ? "discover" : "onboarding";
+  const loginResult = await loginUser(repositories, userId);
+  if (loginResult.status === "error") {
+    await signOutCurrentSession();
+    return loginResult;
+  }
+
+  if (loginResult.data.role === "admin") {
+    return { status: "success", data: { next: "admin" } };
+  }
+
+  const next = isProfileComplete(loginResult.data) ? "discover" : "onboarding";
   return { status: "success", data: { next } };
 }

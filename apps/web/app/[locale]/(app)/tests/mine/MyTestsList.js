@@ -29,9 +29,16 @@ export function MyTestsList({ locale, tests }) {
     <div className="flex flex-col gap-3">
       {tests.map((test) => (
         <SectionCard key={test.id} className="flex items-center justify-between gap-4">
-          <Link href={`/${locale}/tests/${test.id}`} className="font-medium text-foreground underline">
-            {test.title}
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link href={`/${locale}/tests/${test.id}`} className="font-medium text-foreground underline">
+              {test.title}
+            </Link>
+            {!test.approved && (
+              <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                {t("tests.pendingApproval")}
+              </span>
+            )}
+          </div>
 
           <Dialog>
             <DialogTrigger asChild>

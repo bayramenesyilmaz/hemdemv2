@@ -118,6 +118,27 @@ function createSeededStore() {
         socialLinks: {},
       },
     ],
+    [
+      "admin-user-1",
+      {
+        id: "admin-user-1",
+        createdAt: now,
+        name: "Hemdem Admin",
+        avatarUrl: null,
+        bio: null,
+        gender: null,
+        country: null,
+        interestedIn: null,
+        birthdate: null,
+        language: "tr",
+        role: "admin",
+        isBanned: false,
+        gateTestId: null,
+        gateTestThreshold: null,
+        allowGuestLikes: false,
+        socialLinks: {},
+      },
+    ],
   ]);
 
   const tests = new Map([
@@ -332,7 +353,10 @@ function createSeededStore() {
   const requests = [];
 
   // email -> { id, password } — Supabase Auth'un yerini tutan minimal eşleme.
-  const authUsers = new Map([["demo@hemdem.test", { id: "demo-user-1", password: "demo1234" }]]);
+  const authUsers = new Map([
+    ["demo@hemdem.test", { id: "demo-user-1", password: "demo1234" }],
+    ["admin@hemdem.test", { id: "admin-user-1", password: "admin1234" }],
+  ]);
 
   return {
     profiles,
