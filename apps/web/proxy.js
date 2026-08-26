@@ -6,7 +6,7 @@ const I18nMiddleware = createI18nMiddleware({
   defaultLocale: DEFAULT_LOCALE,
 });
 
-export function middleware(request) {
+export function proxy(request) {
   return I18nMiddleware(request);
 }
 

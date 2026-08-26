@@ -1,4 +1,4 @@
-export default {
+const en = {
   nav: {
     discover: "Discover",
     tests: "Tests",
@@ -13,3 +13,5 @@ export default {
     ctaLogin: "Log In",
   },
 };
+
+export default en;

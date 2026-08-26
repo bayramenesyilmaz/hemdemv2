@@ -1,53 +1,73 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(240 10% 10%);
+
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(240 10% 10%);
+
+  --primary: hsl(350 82% 52%);
+  --primary-foreground: hsl(0 0% 100%);
+
+  --secondary: hsl(240 5% 10%);
+  --secondary-foreground: hsl(0 0% 100%);
+
+  --muted: hsl(240 5% 96%);
+  --muted-foreground: hsl(240 4% 46%);
+
+  --destructive: hsl(0 72% 51%);
+  --destructive-foreground: hsl(0 0% 100%);
+
+  --border: hsl(240 6% 90%);
+  --radius: 0.75rem;
+}
+
+.dark {
+  --background: hsl(240 10% 6%);
+  --foreground: hsl(0 0% 96%);
+
+  --card: hsl(240 8% 10%);
+  --card-foreground: hsl(0 0% 96%);
+
+  --primary: hsl(350 82% 58%);
+  --primary-foreground: hsl(0 0% 100%);
+
+  --secondary: hsl(240 5% 90%);
+  --secondary-foreground: hsl(240 10% 10%);
+
+  --muted: hsl(240 6% 16%);
+  --muted-foreground: hsl(240 5% 65%);
+
+  --destructive: hsl(0 72% 51%);
+  --destructive-foreground: hsl(0 0% 100%);
+
+  --border: hsl(240 6% 20%);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 10%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 10%;
-
-    --primary: 350 82% 52%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 240 5% 10%;
-    --secondary-foreground: 0 0% 100%;
-
-    --muted: 240 5% 96%;
-    --muted-foreground: 240 4% 46%;
-
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 240 6% 90%;
-    --radius: 0.75rem;
-  }
-
-  .dark {
-    --background: 240 10% 6%;
-    --foreground: 0 0% 96%;
-
-    --card: 240 8% 10%;
-    --card-foreground: 0 0% 96%;
-
-    --primary: 350 82% 58%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 240 5% 90%;
-    --secondary-foreground: 240 10% 10%;
-
-    --muted: 240 6% 16%;
-    --muted-foreground: 240 5% 65%;
-
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 240 6% 20%;
-  }
-
   * {
     @apply border-border;
   }

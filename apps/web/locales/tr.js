@@ -1,4 +1,4 @@
-export default {
+const tr = {
   nav: {
     discover: "Keşfet",
     tests: "Testler",
@@ -13,3 +13,5 @@ export default {
     ctaLogin: "Giriş Yap",
   },
 };
+
+export default tr;

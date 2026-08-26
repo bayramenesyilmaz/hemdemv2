@@ -6,7 +6,8 @@ export function generateStaticParams() {
   return getStaticParams();
 }
 
-export default function LocaleLayout({ children, params: { locale } }) {
+export default async function LocaleLayout({ children, params }) {
+  const { locale } = await params;
   setStaticParamsLocale(locale);
 
   return (

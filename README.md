@@ -1,8 +1,14 @@
 # Hemdem v2
 
 Kişilik testi + tanışma platformu — sıfırdan, temiz mimari ile yeniden
-yazım. Detaylı teknik plan için proje sahibine iletilen plan dokümanına
-bakın (fazlar, veri modeli, tasarım sistemi, SEO stratejisi).
+yazım. Detaylı teknik plan için [`PLAN.md`](./PLAN.md) dosyasına bakın
+(fazlar, veri modeli, tasarım sistemi, SEO stratejisi).
+
+## Teknoloji
+
+Next.js 16 (App Router) + React 19 + Tailwind CSS v4 + Supabase (Postgres,
+Auth, Storage) + next-international (tr/en). Detaylar ve sürüm notları için
+`PLAN.md` bölüm 2'ye bakın.
 
 ## Monorepo yapısı
 
@@ -11,7 +17,7 @@ hemdem-v2/
 ├── packages/
 │   └── core/            # Framework'ten bağımsız domain + usecase + Supabase implementasyonları
 ├── apps/
-│   └── web/              # Next.js 14 (App Router) uygulaması
+│   └── web/              # Next.js (App Router) uygulaması
 ├── supabase/
 │   └── migrations/       # SQL şema + RLS
 ```
