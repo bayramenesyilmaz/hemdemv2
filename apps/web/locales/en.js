@@ -106,6 +106,8 @@ const en = {
     gateTestThresholdLabel: "Minimum similarity percentage",
     allowGuestLikesLabel: "Allow guests to send me likes",
     socialLinksLabel: "Social media accounts",
+    viewersLink: "Who Viewed My Profile",
+    earnCoinsLink: "Earn Coins",
     yes: "Yes",
     no: "No",
     cancel: "Cancel",
@@ -241,6 +243,27 @@ const en = {
       not_authenticated: "You must be logged in to do this.",
       note_not_found: "Note not found.",
     },
+  },
+  viewers: {
+    title: "Who Viewed My Profile",
+    viewCount: "{count} people viewed your profile",
+    unlockButton: "Unlock Viewers ({cost} coins)",
+    emptyTitle: "No one has viewed your profile yet",
+    emptyBody: "Once someone views your profile, it'll show up here.",
+    errors: {
+      insufficient_coins: "You don't have enough coins.",
+      not_authenticated: "You must be logged in to do this.",
+    },
+  },
+  coins: {
+    title: "Earn Coins",
+    balanceLabel: "Balance: {balance} coins",
+    tierSeconds: "{seconds}-second ad",
+    tierReward: "Earn {reward} coins",
+    mostAdvantageous: "Best value",
+    watchButton: "Watch Ad",
+    watching: "Watching… {remaining}s",
+    rewardGranted: "You earned {reward} coins!",
   },
 };
 

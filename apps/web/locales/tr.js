@@ -108,6 +108,8 @@ const tr = {
     gateTestThresholdLabel: "Minimum benzerlik yüzdesi",
     allowGuestLikesLabel: "Misafirlerin bana beğeni göndermesine izin ver",
     socialLinksLabel: "Sosyal medya hesapları",
+    viewersLink: "Profilimi Kim Görüntüledi",
+    earnCoinsLink: "Coin Kazan",
     yes: "Evet",
     no: "Hayır",
     cancel: "Vazgeç",
@@ -243,6 +245,27 @@ const tr = {
       not_authenticated: "Bu işlem için giriş yapmalısın.",
       note_not_found: "Not bulunamadı.",
     },
+  },
+  viewers: {
+    title: "Profilimi Kim Görüntüledi",
+    viewCount: "{count} kişi profilini görüntüledi",
+    unlockButton: "Görüntüleyenleri Aç ({cost} coin)",
+    emptyTitle: "Henüz kimse profilini görüntülemedi",
+    emptyBody: "Profilin görüntülendikçe burada görünecek.",
+    errors: {
+      insufficient_coins: "Yeterli coin'in yok.",
+      not_authenticated: "Bu işlem için giriş yapmalısın.",
+    },
+  },
+  coins: {
+    title: "Coin Kazan",
+    balanceLabel: "Bakiyen: {balance} coin",
+    tierSeconds: "{seconds} saniyelik reklam",
+    tierReward: "{reward} coin kazan",
+    mostAdvantageous: "En avantajlı",
+    watchButton: "Reklamı İzle",
+    watching: "İzleniyor… {remaining} sn",
+    rewardGranted: "{reward} coin kazandın!",
   },
 };
 

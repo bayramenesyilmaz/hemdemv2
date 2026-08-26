@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { setStaticParamsLocale } from "next-international/server";
 import { calculateAge } from "@hemdem/core/domain/entities/user";
@@ -28,6 +29,7 @@ export default async function ProfilePage({ params }) {
 
   const t = await getI18n();
   const socialEntries = Object.entries(profile.socialLinks ?? {});
+  const coinBalance = await repositories.coin.getBalance(userId);
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-6 py-10">
@@ -35,7 +37,18 @@ export default async function ProfilePage({ params }) {
         {t("profile.title")}
       </PageTitle>
 
+      <div className="flex gap-4 text-sm">
+        <Link href={`/${locale}/profile/viewers`} className="text-muted-foreground underline">
+          {t("profile.viewersLink")}
+        </Link>
+        <Link href={`/${locale}/coins`} className="text-muted-foreground underline">
+          {t("profile.earnCoinsLink")}
+        </Link>
+      </div>
+
       <SectionCard className="flex flex-col gap-4">
+        <p className="text-sm text-muted-foreground">{t("coins.balanceLabel", { balance: coinBalance })}</p>
+
         <div className="flex items-center gap-4">
           <div className="h-20 w-20 overflow-hidden rounded-full bg-muted">
             {profile.avatarUrl && (

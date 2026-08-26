@@ -30,6 +30,7 @@ export default async function PublicProfilePage({ params }) {
   if (viewerId && viewerId !== profile.id) {
     await repositories.profileView.recordView(viewerId, profile.id);
   }
+  const viewCount = await repositories.profileView.countViews(profile.id);
 
   const t = await getI18n();
   const socialEntries = Object.entries(profile.socialLinks ?? {});
@@ -56,6 +57,8 @@ export default async function PublicProfilePage({ params }) {
         </div>
 
         {profile.bio && <p className="text-foreground">{profile.bio}</p>}
+
+        <p className="text-sm text-muted-foreground">{t("viewers.viewCount", { count: viewCount })}</p>
 
         {profile.gateTestId && (
           <p className="text-sm text-muted-foreground">

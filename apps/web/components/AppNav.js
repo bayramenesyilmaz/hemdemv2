@@ -7,11 +7,9 @@ import { LogoutButton } from "@/components/LogoutButton";
 import { cn } from "@/lib/cn";
 
 /**
- * Discover/Tests/Leaderboard/Profile arasında paylaşılan üst navigasyon.
- * Gönderiler ve Mesajlar sekmeleri, o özellikler yazılana kadar (Faz
- * 7-8) eklenmiyor — henüz var olmayan rotalara link vermemek için.
+ * Uygulama sayfaları arasında paylaşılan üst navigasyon.
  */
-export function AppNav({ locale, isAuthenticated }) {
+export function AppNav({ locale, isAuthenticated, coinBalance }) {
   const t = useI18n();
   const pathname = usePathname();
 
@@ -49,6 +47,15 @@ export function AppNav({ locale, isAuthenticated }) {
       <div className="flex items-center gap-3 text-sm">
         {isAuthenticated ? (
           <>
+            <Link
+              href={`/${locale}/coins`}
+              className={cn(
+                "font-medium",
+                pathname === `/${locale}/coins` ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              🪙 {coinBalance}
+            </Link>
             <Link
               href={`/${locale}/profile`}
               className={cn(

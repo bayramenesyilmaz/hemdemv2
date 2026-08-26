@@ -1,6 +1,7 @@
 "use server";
 
 import { updateProfile } from "@hemdem/core/usecases/profile/updateProfile";
+import { unlockProfileViewers } from "@hemdem/core/usecases/profile/unlockProfileViewers";
 import { repositories } from "@/lib/repositories";
 import { getAuthUserId } from "@/lib/session";
 
@@ -13,4 +14,12 @@ export async function updateProfileAction(input) {
     return { status: "error", message: "not_authenticated" };
   }
   return updateProfile(repositories, userId, input);
+}
+
+export async function unlockProfileViewersAction() {
+  const userId = await getAuthUserId();
+  if (!userId) {
+    return { status: "error", message: "not_authenticated" };
+  }
+  return unlockProfileViewers(repositories, userId);
 }
