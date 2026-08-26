@@ -43,6 +43,12 @@ export function createSupabasePostRepository(client) {
       return (data ?? []).map(toPost);
     },
 
+    async findById(id) {
+      const { data, error } = await client.from("posts").select("*").eq("id", id).maybeSingle();
+      if (error) throw error;
+      return toPost(data);
+    },
+
     async deleteOwn(id, userId) {
       const { error } = await client
         .from("posts")

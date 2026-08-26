@@ -18,11 +18,13 @@ export function AppNav({ locale, isAuthenticated }) {
   const links = [
     { href: `/${locale}/discover`, label: t("nav.discover") },
     { href: `/${locale}/tests`, label: t("nav.tests") },
+    { href: `/${locale}/posts`, label: t("nav.posts") },
     { href: `/${locale}/leaderboard`, label: t("nav.leaderboard") },
     ...(isAuthenticated
       ? [
           { href: `/${locale}/likes`, label: t("nav.likes") },
           { href: `/${locale}/messages`, label: t("nav.messages") },
+          { href: `/${locale}/notes`, label: t("nav.notes") },
         ]
       : []),
   ];

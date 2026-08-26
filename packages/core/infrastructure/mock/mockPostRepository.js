@@ -21,6 +21,10 @@ export function createMockPostRepository(store) {
       return posts.slice(0, limit);
     },
 
+    async findById(id) {
+      return store.posts.find((p) => p.id === id) ?? null;
+    },
+
     async deleteOwn(id, userId) {
       const index = store.posts.findIndex((p) => p.id === id && p.userId === userId);
       if (index !== -1) store.posts.splice(index, 1);
