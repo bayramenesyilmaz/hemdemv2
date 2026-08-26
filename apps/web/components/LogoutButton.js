@@ -4,6 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/locales/client";
 import { getSupabaseBrowserClient } from "@/lib/supabaseBrowserClient";
+import { mockSignOutAction } from "@/lib/actions/mockAuthActions";
+
+const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === "true";
 
 export function LogoutButton({ locale }) {
   const t = useI18n();
@@ -12,8 +15,14 @@ export function LogoutButton({ locale }) {
 
   async function handleClick() {
     setLoading(true);
-    const supabase = getSupabaseBrowserClient();
-    await supabase.auth.signOut();
+
+    if (USE_MOCK_DATA) {
+      await mockSignOutAction();
+    } else {
+      const supabase = getSupabaseBrowserClient();
+      await supabase.auth.signOut();
+    }
+
     router.push(`/${locale}`);
     router.refresh();
   }

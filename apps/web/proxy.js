@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { createI18nMiddleware } from "next-international/middleware";
 import { LOCALES, DEFAULT_LOCALE } from "./locales/index.js";
+import { MOCK_SESSION_COOKIE } from "./lib/constants.js";
+
+const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === "true";
 
 const I18nMiddleware = createI18nMiddleware({
   locales: LOCALES,
@@ -20,6 +23,9 @@ const PROTECTED_SEGMENTS = ["discover", "onboarding"];
  * düşmesini (yaygın durum için) önler.
  */
 function hasSupabaseSession(request) {
+  if (USE_MOCK_DATA) {
+    return Boolean(request.cookies.get(MOCK_SESSION_COOKIE)?.value);
+  }
   return request.cookies
     .getAll()
     .some((cookie) => cookie.name.startsWith("sb-") && cookie.name.includes("-auth-token"));

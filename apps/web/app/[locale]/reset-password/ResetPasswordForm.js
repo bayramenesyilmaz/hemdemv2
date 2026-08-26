@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useI18n } from "@/locales/client";
 import { getSupabaseBrowserClient } from "@/lib/supabaseBrowserClient";
 
+const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === "true";
+
 export function ResetPasswordForm({ locale }) {
   const t = useI18n();
   const router = useRouter();
@@ -12,6 +14,10 @@ export function ResetPasswordForm({ locale }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+
+  if (USE_MOCK_DATA) {
+    return <p className="max-w-sm text-center text-muted-foreground">{t("auth.mockModeNotice")}</p>;
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();

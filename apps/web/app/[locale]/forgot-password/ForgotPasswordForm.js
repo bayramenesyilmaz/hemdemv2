@@ -4,12 +4,18 @@ import { useState } from "react";
 import { useI18n } from "@/locales/client";
 import { getSupabaseBrowserClient } from "@/lib/supabaseBrowserClient";
 
+const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === "true";
+
 export function ForgotPasswordForm({ locale }) {
   const t = useI18n();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sent, setSent] = useState(false);
+
+  if (USE_MOCK_DATA) {
+    return <p className="max-w-sm text-center text-muted-foreground">{t("auth.mockModeNotice")}</p>;
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();

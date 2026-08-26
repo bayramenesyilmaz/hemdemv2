@@ -6,6 +6,9 @@ import Link from "next/link";
 import { useI18n } from "@/locales/client";
 import { getSupabaseBrowserClient } from "@/lib/supabaseBrowserClient";
 import { getPostLoginDestinationAction } from "@/lib/actions/authActions";
+import { mockSignInAction } from "@/lib/actions/mockAuthActions";
+
+const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === "true";
 
 export function LoginForm({ locale }) {
   const t = useI18n();
@@ -20,13 +23,22 @@ export function LoginForm({ locale }) {
     setError(null);
     setLoading(true);
 
-    const supabase = getSupabaseBrowserClient();
-    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+    if (USE_MOCK_DATA) {
+      const signInResult = await mockSignInAction({ email, password });
+      if (signInResult.status === "error") {
+        setError(signInResult.message);
+        setLoading(false);
+        return;
+      }
+    } else {
+      const supabase = getSupabaseBrowserClient();
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (signInError) {
-      setError(signInError.message);
-      setLoading(false);
-      return;
+      if (signInError) {
+        setError(signInError.message);
+        setLoading(false);
+        return;
+      }
     }
 
     const destination = await getPostLoginDestinationAction();

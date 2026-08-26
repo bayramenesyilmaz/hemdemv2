@@ -17,6 +17,8 @@ const tr = {
     nameLabel: "Ad",
     emailLabel: "E-posta",
     passwordLabel: "Şifre",
+    mockModeNotice:
+      "Bu özellik gerçek e-posta gönderimi gerektirdiği için sahte veri modunda kullanılamıyor.",
     register: {
       title: "Kayıt Ol",
       submit: "Kayıt Ol",

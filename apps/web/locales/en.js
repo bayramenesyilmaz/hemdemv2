@@ -17,6 +17,7 @@ const en = {
     nameLabel: "Name",
     emailLabel: "Email",
     passwordLabel: "Password",
+    mockModeNotice: "This feature requires sending a real email, so it's unavailable in mock data mode.",
     register: {
       title: "Sign Up",
       submit: "Sign Up",

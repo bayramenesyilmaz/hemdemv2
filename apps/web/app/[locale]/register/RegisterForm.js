@@ -6,6 +6,9 @@ import Link from "next/link";
 import { useI18n } from "@/locales/client";
 import { getSupabaseBrowserClient } from "@/lib/supabaseBrowserClient";
 import { registerProfileAction } from "@/lib/actions/authActions";
+import { mockSignUpAction } from "@/lib/actions/mockAuthActions";
+
+const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === "true";
 
 export function RegisterForm({ locale }) {
   const t = useI18n();
@@ -21,6 +24,17 @@ export function RegisterForm({ locale }) {
     event.preventDefault();
     setError(null);
     setLoading(true);
+
+    if (USE_MOCK_DATA) {
+      const result = await mockSignUpAction({ email, password, name, language: locale });
+      if (result.status === "error") {
+        setError(result.message);
+        setLoading(false);
+        return;
+      }
+      router.push(`/${locale}/onboarding`);
+      return;
+    }
 
     const supabase = getSupabaseBrowserClient();
     const { data, error: signUpError } = await supabase.auth.signUp({ email, password });
