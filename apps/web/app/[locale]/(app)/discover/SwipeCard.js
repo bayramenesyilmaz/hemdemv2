@@ -56,7 +56,7 @@ export function SwipeCard({ candidate, locale, isTop, onSwipe }) {
           />
         </div>
         <div className="flex flex-1 flex-col gap-1 p-4">
-          <p className="text-xl font-bold text-foreground">
+          <p className="text-lg font-semibold text-foreground">
             {candidate.name}
             {age ? `, ${age}` : ""}
           </p>

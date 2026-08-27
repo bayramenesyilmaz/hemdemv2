@@ -16,7 +16,7 @@ import { cn } from "@/lib/cn";
  * garanti eder.
  */
 const BASE =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold " +
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold " +
   "transition-all duration-150 active:scale-[0.97] " +
   "disabled:pointer-events-none disabled:active:scale-100 " +
   "disabled:!bg-none disabled:!bg-muted disabled:!text-muted-foreground disabled:!shadow-none disabled:!border-transparent " +

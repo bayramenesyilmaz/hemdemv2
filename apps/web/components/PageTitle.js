@@ -6,7 +6,7 @@
 export function PageTitle({ children, action }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
-      <h1 className="text-xl font-bold text-foreground lg:text-2xl">{children}</h1>
+      <h1 className="text-lg font-semibold text-foreground lg:text-xl">{children}</h1>
       {action}
     </div>
   );

@@ -51,7 +51,7 @@ export default async function ProfilePage({ params }) {
         <div className="flex items-center gap-4">
           <Avatar src={profile.avatarUrl} name={profile.name} size="lg" className="shadow-card" />
           <div className="min-w-0">
-            <p className="truncate text-lg font-bold text-foreground">
+            <p className="truncate text-base font-semibold text-foreground">
               {profile.name}
               {profile.birthdate ? `, ${calculateAge(profile.birthdate)}` : ""}
             </p>

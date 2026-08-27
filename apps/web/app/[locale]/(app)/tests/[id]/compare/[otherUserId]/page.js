@@ -41,7 +41,7 @@ export default async function CompareAnswersPage({ params }) {
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-6 lg:px-6 lg:py-8">
       <header className="flex flex-col gap-1">
-        <h1 className="text-xl font-bold text-foreground lg:text-2xl">{test.title}</h1>
+        <h1 className="text-lg font-semibold text-foreground lg:text-xl">{test.title}</h1>
         <p className="text-sm text-muted-foreground">
           {t("tests.compareSubtitle", { matched: matchCount, total: rows.length })}
         </p>

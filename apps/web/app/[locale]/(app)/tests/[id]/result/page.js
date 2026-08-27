@@ -44,7 +44,7 @@ export default async function TestResultPage({ params }) {
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-6 lg:px-6 lg:py-8">
       <header className="flex flex-col gap-2">
         <p className="text-sm font-medium text-primary">{t("tests.resultCompleted")}</p>
-        <h1 className="text-2xl font-bold text-foreground">{test.title}</h1>
+        <h1 className="text-xl font-semibold text-foreground">{test.title}</h1>
         <p className="text-sm text-muted-foreground">
           {t("tests.resultSubtitle", { count: matches.length })}
         </p>
