@@ -34,7 +34,7 @@ export function SwipeCard({ candidate, locale, isTop, onSwipe }) {
       onDragEnd={isTop ? handleDragEnd : undefined}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="absolute inset-0 flex touch-none flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-lg"
+      className="absolute inset-0 flex touch-none flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-float"
     >
       <Link href={`/${locale}/u/${candidate.id}`} className="flex flex-1 flex-col">
         <div className="relative flex h-2/3 items-center justify-center bg-muted">
@@ -50,16 +50,20 @@ export function SwipeCard({ candidate, locale, isTop, onSwipe }) {
           ) : (
             <span className="text-6xl">🙂</span>
           )}
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-card to-transparent"
+          />
         </div>
         <div className="flex flex-1 flex-col gap-1 p-4">
-          <p className="text-xl font-semibold text-foreground">
+          <p className="text-xl font-bold text-foreground">
             {candidate.name}
             {age ? `, ${age}` : ""}
           </p>
           {candidate.country && <p className="text-sm text-muted-foreground">{candidate.country}</p>}
           {candidate.bio && <p className="line-clamp-2 text-sm text-foreground">{candidate.bio}</p>}
           {candidate.gateTestId && (
-            <span className="mt-1 inline-block w-fit rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground">
+            <span className="mt-1 inline-block w-fit rounded-full bg-gradient-surface px-3 py-1 text-xs font-semibold text-primary">
               {t("discover.hasGateTest")}
             </span>
           )}
@@ -70,13 +74,13 @@ export function SwipeCard({ candidate, locale, isTop, onSwipe }) {
         <>
           <motion.div
             style={{ opacity: likeOpacity }}
-            className="pointer-events-none absolute left-4 top-4 rounded border-2 border-primary px-3 py-1 text-lg font-bold text-primary"
+            className="pointer-events-none absolute left-4 top-4 rotate-[-12deg] rounded-2xl border-2 border-primary bg-background/80 px-4 py-1.5 text-lg font-bold uppercase tracking-wide text-primary shadow-card backdrop-blur-sm"
           >
             {t("discover.like")}
           </motion.div>
           <motion.div
             style={{ opacity: nopeOpacity }}
-            className="pointer-events-none absolute right-4 top-4 rounded border-2 border-destructive px-3 py-1 text-lg font-bold text-destructive"
+            className="pointer-events-none absolute right-4 top-4 rotate-[12deg] rounded-2xl border-2 border-destructive bg-background/80 px-4 py-1.5 text-lg font-bold uppercase tracking-wide text-destructive shadow-card backdrop-blur-sm"
           >
             {t("discover.nope")}
           </motion.div>

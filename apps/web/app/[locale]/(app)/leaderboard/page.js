@@ -6,6 +6,8 @@ import { buildMetadata } from "@/lib/seo";
 import { PageTitle } from "@/components/PageTitle";
 import { SectionCard } from "@/components/SectionCard";
 import { EmptyState } from "@/components/EmptyState";
+import { Avatar } from "@/components/Avatar";
+import { AdSlot } from "@/components/AdSlot";
 
 export async function generateMetadata({ params }) {
   const { locale } = await params;
@@ -40,20 +42,40 @@ export default async function LeaderboardPage({ params }) {
             const profile = profiles[index];
             if (!profile) return null;
 
+            // İlk üç sıra gradyanlı madalya rozetiyle öne çıkar; geri
+            // kalanı sade numara — liste uzadıkça gürültü olmasın.
+            const isPodium = index < 3;
+
             return (
-              <SectionCard key={entry.userId} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="w-6 text-sm font-semibold text-muted-foreground">{index + 1}</span>
-                  <Link href={`/${locale}/u/${entry.userId}`} className="font-medium text-foreground underline">
-                    {profile.name}
-                  </Link>
-                </div>
-                <span className="text-sm text-muted-foreground">{entry.point}</span>
-              </SectionCard>
+              <Link
+                key={entry.userId}
+                href={`/${locale}/u/${entry.userId}`}
+                className="animate-list-in"
+                style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}
+              >
+                <SectionCard interactive className="flex items-center gap-3">
+                  <span
+                    className={
+                      isPodium
+                        ? "flex size-9 shrink-0 items-center justify-center rounded-full bg-gradient-primary text-sm font-bold text-primary-foreground shadow-soft"
+                        : "w-9 shrink-0 text-center text-sm font-semibold text-muted-foreground"
+                    }
+                  >
+                    {index + 1}
+                  </span>
+                  <Avatar src={profile.avatarUrl} name={profile.name} size="sm" />
+                  <span className="min-w-0 flex-1 truncate font-semibold text-foreground">{profile.name}</span>
+                  <span className="shrink-0 rounded-full bg-gradient-surface px-3 py-1 text-xs font-semibold text-primary">
+                    {entry.point}
+                  </span>
+                </SectionCard>
+              </Link>
             );
           })}
         </div>
       )}
+
+      <AdSlot label={t("ads.label")} />
     </main>
   );
 }

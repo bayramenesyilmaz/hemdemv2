@@ -7,6 +7,8 @@ import { buildMetadata } from "@/lib/seo";
 import { PageTitle } from "@/components/PageTitle";
 import { SectionCard } from "@/components/SectionCard";
 import { EmptyState } from "@/components/EmptyState";
+import { SubNav } from "@/components/SubNav";
+import { AdSlot } from "@/components/AdSlot";
 import { Button } from "@/components/ui/Button";
 import { TestFilters } from "./TestFilters";
 
@@ -59,14 +61,12 @@ export default async function TestsPage({ params, searchParams }) {
         {t("tests.title")}
       </PageTitle>
 
-      <div className="flex gap-4 text-sm">
-        <Link href={`/${locale}/tests/mine`} className="text-muted-foreground underline">
-          {t("tests.mine")}
-        </Link>
-        <Link href={`/${locale}/tests/history`} className="text-muted-foreground underline">
-          {t("tests.history")}
-        </Link>
-      </div>
+      <SubNav
+        items={[
+          { href: `/${locale}/tests/mine`, label: t("tests.mine") },
+          { href: `/${locale}/tests/history`, label: t("tests.history") },
+        ]}
+      />
 
       {tests.length === 0 ? (
         <EmptyState title={t("tests.emptyTitle")} description={t("tests.emptyBody")} />
@@ -94,6 +94,8 @@ export default async function TestsPage({ params, searchParams }) {
           ))}
         </div>
       )}
+
+      <AdSlot label={t("ads.label")} />
     </main>
   );
 }

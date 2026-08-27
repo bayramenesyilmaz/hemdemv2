@@ -2,6 +2,7 @@ import { setStaticParamsLocale } from "next-international/server";
 import { fetchFeed } from "@hemdem/core/usecases/posts/fetchFeed";
 import { getI18n } from "@/locales/server";
 import { getAuthUserId } from "@/lib/session";
+import { getCurrentProfile } from "@/lib/currentUser";
 import { repositories } from "@/lib/repositories";
 import { buildMetadata } from "@/lib/seo";
 import { PageTitle } from "@/components/PageTitle";
@@ -29,9 +30,10 @@ export default async function PostsPage({ params }) {
   setStaticParamsLocale(locale);
 
   const userId = await getAuthUserId();
-  const [feedResult, tests] = await Promise.all([
+  const [feedResult, tests, author] = await Promise.all([
     fetchFeed(repositories, { limit: 30 }),
     userId ? repositories.test.findMany({}) : Promise.resolve([]),
+    getCurrentProfile(),
   ]);
   const t = await getI18n();
 
@@ -40,7 +42,7 @@ export default async function PostsPage({ params }) {
       <PageTitle>{t("posts.title")}</PageTitle>
 
       {userId ? (
-        <PostComposer tests={tests} />
+        <PostComposer locale={locale} tests={tests} author={author} />
       ) : (
         <InfoBanner>
           {t("posts.guestNotice")}{" "}

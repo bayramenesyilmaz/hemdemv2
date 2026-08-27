@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { setStaticParamsLocale } from "next-international/server";
@@ -9,6 +8,8 @@ import { repositories } from "@/lib/repositories";
 import { PageTitle } from "@/components/PageTitle";
 import { SectionCard } from "@/components/SectionCard";
 import { Button } from "@/components/ui/Button";
+import { Avatar } from "@/components/Avatar";
+import { CoinIcon, UserIcon, SupportIcon } from "@/components/icons";
 
 export async function generateMetadata() {
   return { robots: { index: false } };
@@ -32,48 +33,51 @@ export default async function ProfilePage({ params }) {
   const socialEntries = Object.entries(profile.socialLinks ?? {});
   const coinBalance = await repositories.coin.getBalance(userId);
 
+  // Alt sayfalar tek satır altı çizili link yerine dokunması kolay
+  // kutucuklar olarak veriliyor — mobilde asıl kullanım biçimi bu.
+  const quickLinks = [
+    { href: `/${locale}/profile/viewers`, label: t("profile.viewersLink"), Icon: UserIcon },
+    { href: `/${locale}/coins`, label: t("profile.earnCoinsLink"), Icon: CoinIcon },
+    { href: `/${locale}/support`, label: t("help.contactLink"), Icon: SupportIcon },
+  ];
+
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-6 lg:px-6 lg:py-8">
       <PageTitle action={<Button href={`/${locale}/profile/edit`} variant="edit">{t("profile.edit")}</Button>}>
         {t("profile.title")}
       </PageTitle>
 
-      <div className="flex gap-4 text-sm">
-        <Link href={`/${locale}/profile/viewers`} className="text-muted-foreground underline">
-          {t("profile.viewersLink")}
-        </Link>
-        <Link href={`/${locale}/coins`} className="text-muted-foreground underline">
-          {t("profile.earnCoinsLink")}
-        </Link>
-        <Link href={`/${locale}/support`} className="text-muted-foreground underline">
-          {t("help.contactLink")}
-        </Link>
-      </div>
-
-      <SectionCard className="flex flex-col gap-4">
-        <p className="text-sm text-muted-foreground">{t("coins.balanceLabel", { balance: coinBalance })}</p>
-
+      <SectionCard className="flex animate-fade-in flex-col gap-4 bg-gradient-surface">
         <div className="flex items-center gap-4">
-          <div className="relative h-20 w-20 overflow-hidden rounded-full bg-muted">
-            {profile.avatarUrl && (
-              <Image
-                src={profile.avatarUrl}
-                alt=""
-                fill
-                unoptimized={profile.avatarUrl.startsWith("data:")}
-                className="object-cover"
-              />
-            )}
-          </div>
-          <div>
-            <p className="text-lg font-semibold text-foreground">
+          <Avatar src={profile.avatarUrl} name={profile.name} size="lg" className="shadow-card" />
+          <div className="min-w-0">
+            <p className="truncate text-lg font-bold text-foreground">
               {profile.name}
               {profile.birthdate ? `, ${calculateAge(profile.birthdate)}` : ""}
             </p>
             {profile.country && <p className="text-sm text-muted-foreground">{profile.country}</p>}
+            <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-background px-3 py-1 text-xs font-semibold text-primary shadow-soft">
+              <CoinIcon className="size-3.5" />
+              {t("coins.balanceLabel", { balance: coinBalance })}
+            </span>
           </div>
         </div>
+      </SectionCard>
 
+      <div className="grid grid-cols-3 gap-2">
+        {quickLinks.map(({ href, label, Icon }) => (
+          <Link key={href} href={href}>
+            <SectionCard interactive className="flex h-full flex-col items-center gap-2 p-3 text-center">
+              <span className="flex size-10 items-center justify-center rounded-full bg-gradient-primary text-primary-foreground shadow-soft">
+                <Icon className="size-5" />
+              </span>
+              <span className="text-xs font-medium leading-tight text-foreground">{label}</span>
+            </SectionCard>
+          </Link>
+        ))}
+      </div>
+
+      <SectionCard className="flex flex-col gap-4">
         {profile.bio && <p className="text-foreground">{profile.bio}</p>}
 
         <dl className="grid grid-cols-2 gap-3 text-sm">
@@ -102,7 +106,13 @@ export default async function ProfilePage({ params }) {
         {socialEntries.length > 0 && (
           <div className="flex flex-wrap gap-3 text-sm">
             {socialEntries.map(([platform, url]) => (
-              <a key={platform} href={url} target="_blank" rel="noreferrer" className="underline text-foreground">
+              <a
+                key={platform}
+                href={url}
+                target="_blank"
+                rel="noreferrer"
+                className="flex min-h-11 items-center rounded-full bg-gradient-surface px-4 font-medium capitalize text-foreground shadow-soft transition-transform active:scale-95"
+              >
                 {platform}
               </a>
             ))}

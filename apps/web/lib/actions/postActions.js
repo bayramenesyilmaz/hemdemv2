@@ -1,6 +1,7 @@
 "use server";
 
 import { createPost } from "@hemdem/core/usecases/posts/createPost";
+import { createPostWithTest } from "@hemdem/core/usecases/posts/createPostWithTest";
 import { deleteOwnPost } from "@hemdem/core/usecases/posts/deleteOwnPost";
 import { repositories } from "@/lib/repositories";
 import { getAuthUserId } from "@/lib/session";
@@ -25,4 +26,17 @@ export async function deleteOwnPostAction(postId) {
     return { status: "error", message: "not_authenticated" };
   }
   return deleteOwnPost(repositories, userId, postId);
+}
+
+/**
+ * Gönderiyi paylaşırken o an oluşturulan yeni testi de kaydeder.
+ *
+ * @param {{ content: string, test: object }} input
+ */
+export async function createPostWithTestAction(input) {
+  const userId = await getAuthUserId();
+  if (!userId) {
+    return { status: "error", message: "not_authenticated" };
+  }
+  return createPostWithTest(repositories, userId, input);
 }

@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { setStaticParamsLocale } from "next-international/server";
 import { calculateAge } from "@hemdem/core/domain/entities/user";
@@ -7,6 +6,7 @@ import { getAuthUserId } from "@/lib/session";
 import { repositories } from "@/lib/repositories";
 import { buildMetadata } from "@/lib/seo";
 import { SectionCard } from "@/components/SectionCard";
+import { Avatar } from "@/components/Avatar";
 import { SendMessageDialog } from "./SendMessageDialog";
 
 export async function generateMetadata({ params }) {
@@ -45,21 +45,11 @@ export default async function PublicProfilePage({ params }) {
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-6 lg:px-6 lg:py-8">
       <h1 className="text-2xl font-bold text-foreground">{profile.name}</h1>
 
-      <SectionCard className="flex flex-col gap-4">
+      <SectionCard className="flex animate-fade-in flex-col gap-4">
         <div className="flex items-center gap-4">
-          <div className="relative h-20 w-20 overflow-hidden rounded-full bg-muted">
-            {profile.avatarUrl && (
-              <Image
-                src={profile.avatarUrl}
-                alt=""
-                fill
-                unoptimized={profile.avatarUrl.startsWith("data:")}
-                className="object-cover"
-              />
-            )}
-          </div>
-          <div>
-            <p className="text-lg font-semibold text-foreground">
+          <Avatar src={profile.avatarUrl} name={profile.name} size="lg" className="shadow-card" />
+          <div className="min-w-0">
+            <p className="truncate text-lg font-bold text-foreground">
               {profile.name}
               {profile.birthdate ? `, ${calculateAge(profile.birthdate)}` : ""}
             </p>
@@ -80,7 +70,13 @@ export default async function PublicProfilePage({ params }) {
         {socialEntries.length > 0 && (
           <div className="flex flex-wrap gap-3 text-sm">
             {socialEntries.map(([platform, url]) => (
-              <a key={platform} href={url} target="_blank" rel="noreferrer" className="underline text-foreground">
+              <a
+                key={platform}
+                href={url}
+                target="_blank"
+                rel="noreferrer"
+                className="flex min-h-11 items-center rounded-full bg-gradient-surface px-4 font-medium capitalize text-foreground shadow-soft transition-transform active:scale-95"
+              >
                 {platform}
               </a>
             ))}

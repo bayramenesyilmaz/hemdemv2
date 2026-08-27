@@ -62,17 +62,22 @@ export function ChatThread({ chatId, currentUserId, initialMessages, recipientId
 
   return (
     <div className="flex flex-1 flex-col gap-4 overflow-hidden">
-      <div className="flex flex-1 flex-col gap-2 overflow-y-auto rounded-lg border border-border p-4">
+      <div className="flex flex-1 flex-col gap-2 overflow-y-auto rounded-2xl border border-border bg-gradient-surface p-4">
         {messages.length === 0 ? (
           <p className="m-auto text-sm text-muted-foreground">{t("messages.startConversation")}</p>
         ) : (
           messages.map((message) => {
             const isMine = message.senderId === currentUserId;
+            // Balonun kendi tarafına bakan köşesi bilinçli olarak daha az
+            // yuvarlak — konuşmanın yönü rengi ayırt edemeyenler için de
+            // biçimden okunabilsin.
             return (
               <div
                 key={message.id}
-                className={`max-w-[75%] rounded-lg px-3 py-2 text-sm ${
-                  isMine ? "self-end bg-primary text-primary-foreground" : "self-start bg-muted text-foreground"
+                className={`max-w-[78%] animate-list-in px-4 py-2.5 text-[15px] leading-snug shadow-soft ${
+                  isMine
+                    ? "self-end rounded-2xl rounded-br-md bg-gradient-primary text-primary-foreground"
+                    : "self-start rounded-2xl rounded-bl-md bg-card text-foreground"
                 }`}
               >
                 {message.content}
@@ -85,7 +90,7 @@ export function ChatThread({ chatId, currentUserId, initialMessages, recipientId
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
-      <form onSubmit={handleSubmit} className="flex gap-2">
+      <form onSubmit={handleSubmit} className="flex items-end gap-2">
         <Textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
