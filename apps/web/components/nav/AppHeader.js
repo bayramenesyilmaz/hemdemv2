@@ -1,10 +1,14 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useI18n } from "@/locales/client";
 import { BellIcon, CoinIcon, UserIcon } from "@/components/icons";
+import { fetchUnreadNotificationCountAction } from "@/lib/actions/notificationActions";
 import { Brand } from "./Brand";
+
+const UNREAD_POLL_INTERVAL_MS = 8000;
 
 /**
  * Mobil üst header (plan bölüm 6). Masaüstünde sidebar aynı bilgiyi
@@ -13,6 +17,19 @@ import { Brand } from "./Brand";
  */
 export function AppHeader({ locale, isAuthenticated, coinBalance, avatarUrl, unreadCount = 0 }) {
   const t = useI18n();
+  // Sunucudan gelen ilk değerle başlar, sonrasında sondaj (polling) taze
+  // tutar — ChatThread.js'teki aynı gerekçeyle (bu projede RLS politikası
+  // olmadığı için Supabase Realtime'a client'tan abone olunamıyor).
+  const [liveUnreadCount, setLiveUnreadCount] = useState(unreadCount);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const interval = setInterval(async () => {
+      const count = await fetchUnreadNotificationCountAction();
+      setLiveUnreadCount(count);
+    }, UNREAD_POLL_INTERVAL_MS);
+    return () => clearInterval(interval);
+  }, [isAuthenticated]);
 
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur lg:hidden">
@@ -37,9 +54,9 @@ export function AppHeader({ locale, isAuthenticated, coinBalance, avatarUrl, unr
                 className="relative flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground active:bg-muted"
               >
                 <BellIcon className="h-5 w-5" />
-                {unreadCount > 0 && (
+                {liveUnreadCount > 0 && (
                   <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
-                    {unreadCount > 9 ? "9+" : unreadCount}
+                    {liveUnreadCount > 9 ? "9+" : liveUnreadCount}
                   </span>
                 )}
               </Link>

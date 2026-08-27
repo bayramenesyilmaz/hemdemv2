@@ -12,11 +12,15 @@ export async function fetchNotifications(repositories, userId) {
 
   const enriched = await Promise.all(
     notifications.map(async (notification) => {
-      const [actor, test] = await Promise.all([
+      const needsChat = notification.type === "match" || notification.type === "message";
+      const [actor, test, chat] = await Promise.all([
         notification.actorId ? repositories.user.findById(notification.actorId) : null,
         notification.testId ? repositories.test.findById(notification.testId) : null,
+        needsChat && notification.actorId
+          ? repositories.chat.findByPair(userId, notification.actorId)
+          : null,
       ]);
-      return { notification, actor, test };
+      return { notification, actor, test, chat };
     })
   );
 

@@ -51,6 +51,8 @@ export async function likeUser(repositories, fromUserId, toUserId, action = "lik
   const reciprocalLiked = reciprocal && ["like", "superlike"].includes(reciprocal.action);
 
   if (!reciprocalLiked) {
+    // Henüz eşleşme yok: hedef kullanıcı beğenildiğini anında öğrensin.
+    await repositories.notification.create({ userId: toUserId, type: "incoming_like", actorId: fromUserId });
     return { status: "success", data: { matched: false } };
   }
 
@@ -60,6 +62,11 @@ export async function likeUser(repositories, fromUserId, toUserId, action = "lik
   if (!chat) {
     chat = await repositories.chat.create({ userA: fromUserId, userB: toUserId, source: "match" });
   }
+
+  await Promise.all([
+    repositories.notification.create({ userId: fromUserId, type: "match", actorId: toUserId }),
+    repositories.notification.create({ userId: toUserId, type: "match", actorId: fromUserId }),
+  ]);
 
   return { status: "success", data: { matched: true, match, chat } };
 }

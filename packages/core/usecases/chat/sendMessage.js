@@ -55,6 +55,7 @@ export async function sendMessage(repositories, senderId, recipientId, content) 
 
   const message = await repositories.chat.createMessage(chat.id, { senderId, content });
   await repositories.chat.touchLastMessageAt(chat.id, message.createdAt);
+  await repositories.notification.create({ userId: recipientId, type: "message", actorId: senderId });
 
   return { status: "success", data: { chat, message } };
 }

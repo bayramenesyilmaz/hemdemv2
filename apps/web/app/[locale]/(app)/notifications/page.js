@@ -49,11 +49,13 @@ export default async function NotificationsPage({ params }) {
       ) : (
         <>
           <ul className="flex flex-col gap-3">
-            {result.data.map(({ notification, actor, test }, index) => {
+            {result.data.map(({ notification, actor, test, chat }, index) => {
               const href =
                 notification.type === "test_similarity" && test
                   ? `/${locale}/tests/${test.id}/compare/${actor.id}`
-                  : `/${locale}/u/${actor.id}`;
+                  : (notification.type === "match" || notification.type === "message") && chat
+                    ? `/${locale}/messages/${chat.id}`
+                    : `/${locale}/u/${actor.id}`;
 
               return (
                 <li
@@ -77,7 +79,11 @@ export default async function NotificationsPage({ params }) {
                                 name: actor.name,
                                 test: test.title,
                               })
-                            : t("notifications.incomingLike", { name: actor.name })}
+                            : notification.type === "match"
+                              ? t("notifications.matched", { name: actor.name })
+                              : notification.type === "message"
+                                ? t("notifications.newMessage", { name: actor.name })
+                                : t("notifications.incomingLike", { name: actor.name })}
                         </p>
                       </div>
                       {notification.similarity != null && (

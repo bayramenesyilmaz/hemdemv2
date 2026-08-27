@@ -231,6 +231,8 @@ const tr = {
     emptyBody: "Bir test çözdüğünde, sana benzer cevap verenler burada görünecek.",
     testSimilarity: "{name}, {test} testinde seninle uyumlu çıktı.",
     incomingLike: "{name} seni beğendi.",
+    matched: "{name} ile eşleştin! Sohbete başla.",
+    newMessage: "{name} sana mesaj gönderdi.",
     loadErrorTitle: "Bildirimler şu an yüklenemedi",
     loadErrorBody: "Bir şeyler ters gitti, birazdan tekrar dene.",
   },
