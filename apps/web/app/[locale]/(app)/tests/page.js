@@ -17,6 +17,8 @@ function categoryKeyOf(categoryId) {
 }
 
 const PAGE_SIZE = 20;
+/** Kaçıncı testten sonra araya banner reklam girecek (posts akışıyla aynı desen). */
+const AD_EVERY = 5;
 
 export async function generateMetadata({ params }) {
   const { locale } = await params;
@@ -98,24 +100,29 @@ export default async function TestsPage({ params, searchParams }) {
       ) : (
         <div className="flex flex-col gap-3">
           {tests.map((test, index) => (
-            <Link
-              key={test.id}
-              href={`/${locale}/tests/${test.id}`}
-              className="animate-list-in"
-              style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}
-            >
-              <SectionCard interactive className="flex items-center justify-between gap-4">
-                <div className="min-w-0">
-                  <p className="truncate font-semibold text-foreground">{test.title}</p>
-                  <p className="mt-0.5 text-sm text-muted-foreground">
-                    {t(`testCategories.${categoryKeyOf(test.categoryId)}`)} · {test.language.toUpperCase()}
-                  </p>
-                </div>
-                <span className="shrink-0 rounded-full bg-gradient-surface px-3 py-1 text-xs font-semibold text-primary">
-                  {t("tests.questionCount", { count: test.questions.length })}
-                </span>
-              </SectionCard>
-            </Link>
+            <div key={test.id} className="contents">
+              <Link
+                href={`/${locale}/tests/${test.id}`}
+                className="animate-list-in"
+                style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}
+              >
+                <SectionCard interactive className="flex items-center justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold text-foreground">{test.title}</p>
+                    <p className="mt-0.5 text-sm text-muted-foreground">
+                      {t(`testCategories.${categoryKeyOf(test.categoryId)}`)} · {test.language.toUpperCase()}
+                    </p>
+                  </div>
+                  <span className="shrink-0 rounded-full bg-gradient-surface px-3 py-1 text-xs font-semibold text-primary">
+                    {t("tests.questionCount", { count: test.questions.length })}
+                  </span>
+                </SectionCard>
+              </Link>
+
+              {(index + 1) % AD_EVERY === 0 && index + 1 < tests.length && (
+                <AdSlot label={t("ads.label")} />
+              )}
+            </div>
           ))}
         </div>
       )}

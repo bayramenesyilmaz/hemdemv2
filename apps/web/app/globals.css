@@ -35,6 +35,13 @@
   --border: hsl(240 6% 19%);
   --radius: 0.625rem;
 
+  /* Alt navigasyon (mobil) ve kalıcı reklam banner'ının yükseklikleri —
+     hem AppShell'in içerik alanına bıraktığı alt boşlukta hem de
+     keşfetteki sabit aksiyon çubuğunun konumunda aynı değerlere
+     ihtiyaç var; tek yerden tanımlanıp `calc()` ile referans alınır. */
+  --bottom-nav-h: 4rem;
+  --ad-banner-h: 3.5rem;
+
   /* Tek renkli, çok az fark eden gradyan — düz rengin aksine hafif bir
      derinlik verir ama "gökkuşağı" hissi vermez. */
   --gradient-primary: linear-gradient(135deg, hsl(350 68% 61%), hsl(350 62% 52%));

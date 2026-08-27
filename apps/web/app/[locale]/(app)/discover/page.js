@@ -55,7 +55,7 @@ export default async function DiscoverPage({ params, searchParams }) {
     // Fotoğraf ekranı tam kaplasın diye (kart görünümü değil) sayfa
     // artık kenar boşluksuz/tam genişlik; masaüstünde ekran aşırı geniş
     // kalmasın diye orta genişlikte bir çerçeveye dönüyor.
-    <main className="mx-auto flex h-[calc(100dvh-7.5rem-env(safe-area-inset-bottom))] w-full flex-col lg:h-[calc(100dvh-4rem)] lg:max-w-md lg:px-6 lg:py-8">
+    <main className="mx-auto flex h-[calc(100dvh-3.5rem-var(--bottom-nav-h)-var(--ad-banner-h)-env(safe-area-inset-bottom))] w-full flex-col lg:h-[calc(100dvh-4rem-var(--ad-banner-h))] lg:max-w-md lg:px-6 lg:py-8">
       <div className="px-4 pb-4 pt-4 lg:px-0 lg:pt-0">
         <PageTitle
           action={
