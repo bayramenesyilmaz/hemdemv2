@@ -1,10 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { setStaticParamsLocale } from "next-international/server";
-import { fetchNotifications } from "@hemdem/core/usecases/notifications/fetchNotifications";
 import { getI18n } from "@/locales/server";
 import { getAuthUserId } from "@/lib/session";
-import { repositories } from "@/lib/repositories";
+import { safeFetchNotifications } from "@/lib/notifications";
 import { PageTitle } from "@/components/PageTitle";
 import { SectionCard } from "@/components/SectionCard";
 import { EmptyState } from "@/components/EmptyState";
@@ -28,14 +27,20 @@ export default async function NotificationsPage({ params }) {
     redirect(`/${locale}/login`);
   }
 
-  const result = await fetchNotifications(repositories, userId);
+  const result = await safeFetchNotifications(userId);
   const t = await getI18n();
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-6 lg:px-6 lg:py-8">
       <PageTitle>{t("nav.notifications")}</PageTitle>
 
-      {result.data.length === 0 ? (
+      {result.status === "error" ? (
+        <EmptyState
+          icon={<HeartIcon className="h-6 w-6" />}
+          title={t("notifications.loadErrorTitle")}
+          description={t("notifications.loadErrorBody")}
+        />
+      ) : result.data.length === 0 ? (
         <EmptyState
           icon={<HeartIcon className="h-6 w-6" />}
           title={t("notifications.emptyTitle")}

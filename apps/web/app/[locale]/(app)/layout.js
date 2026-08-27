@@ -1,7 +1,6 @@
 import { getAuthUserId } from "@/lib/session";
 import { getCurrentProfile, getCurrentCoinBalance } from "@/lib/currentUser";
-import { countUnreadNotifications } from "@hemdem/core/usecases/notifications/countUnreadNotifications";
-import { repositories } from "@/lib/repositories";
+import { safeCountUnreadNotifications } from "@/lib/notifications";
 import { AppShell } from "@/components/nav/AppShell";
 
 export default async function AppLayout({ children, params }) {
@@ -11,7 +10,7 @@ export default async function AppLayout({ children, params }) {
   const [profile, coinBalance, unreadCount] = await Promise.all([
     getCurrentProfile(),
     getCurrentCoinBalance(),
-    userId ? countUnreadNotifications(repositories, userId) : Promise.resolve(0),
+    userId ? safeCountUnreadNotifications(userId) : Promise.resolve(0),
   ]);
 
   return (

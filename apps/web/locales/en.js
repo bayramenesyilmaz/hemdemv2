@@ -220,6 +220,8 @@ const en = {
     emptyBody: "Once you take a test, people who answered like you will show up here.",
     testSimilarity: "{name} matched with you on {test}.",
     incomingLike: "{name} liked you.",
+    loadErrorTitle: "Notifications couldn't load right now",
+    loadErrorBody: "Something went wrong — try again in a bit.",
   },
   ads: {
     label: "Advertisement",

@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed:demo": "node scripts/seed-supabase-demo.mjs",
+    "seed:demo:reset": "node scripts/seed-supabase-demo.mjs --reset"
   },
   "dependencies": {
     "@hemdem/core": "workspace:*",
