@@ -17,7 +17,13 @@ export function createMockTestRepository(store) {
         const needle = filters.search.toLowerCase();
         tests = tests.filter((t) => t.title.toLowerCase().includes(needle));
       }
-      return tests.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+      tests = tests.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+
+      const offset = filters.offset ?? 0;
+      if (filters.limit != null) {
+        return tests.slice(offset, offset + filters.limit);
+      }
+      return offset > 0 ? tests.slice(offset) : tests;
     },
 
     async create(test) {

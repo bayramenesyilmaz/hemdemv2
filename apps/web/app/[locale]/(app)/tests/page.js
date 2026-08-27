@@ -16,6 +16,8 @@ function categoryKeyOf(categoryId) {
   return TEST_CATEGORIES.find((c) => c.id === categoryId)?.key ?? "personality";
 }
 
+const PAGE_SIZE = 20;
+
 export async function generateMetadata({ params }) {
   const { locale } = await params;
   setStaticParamsLocale(locale);
@@ -37,9 +39,32 @@ export default async function TestsPage({ params, searchParams }) {
   const categoryId = sp.category ? Number(sp.category) : undefined;
   const language = sp.language || undefined;
   const search = sp.search || undefined;
+  const page = sp.page ? Math.max(1, Number(sp.page)) : 1;
+  const offset = (page - 1) * PAGE_SIZE;
 
-  const tests = await repositories.test.findMany({ categoryId, language, search });
+  // Ayrı bir count sorgusu yerine bir fazla satır istenip fazlalık
+  // atılıyor: sonraki sayfa olup olmadığını (hasNextPage) tek sorguyla
+  // öğrenmenin en ucuz yolu.
+  const fetched = await repositories.test.findMany({
+    categoryId,
+    language,
+    search,
+    offset,
+    limit: PAGE_SIZE + 1,
+  });
+  const tests = fetched.slice(0, PAGE_SIZE);
+  const hasNextPage = fetched.length > PAGE_SIZE;
   const t = await getI18n();
+
+  function pageHref(targetPage) {
+    const params = new URLSearchParams();
+    if (sp.category) params.set("category", sp.category);
+    if (sp.language) params.set("language", sp.language);
+    if (sp.search) params.set("search", sp.search);
+    if (targetPage > 1) params.set("page", String(targetPage));
+    const query = params.toString();
+    return `/${locale}/tests${query ? `?${query}` : ""}`;
+  }
 
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-6 lg:px-6 lg:py-8">
@@ -92,6 +117,18 @@ export default async function TestsPage({ params, searchParams }) {
               </SectionCard>
             </Link>
           ))}
+        </div>
+      )}
+
+      {(page > 1 || hasNextPage) && (
+        <div className="flex items-center justify-between gap-3">
+          <Button href={pageHref(page - 1)} variant="outline" disabled={page <= 1}>
+            {t("tests.prevPage")}
+          </Button>
+          <span className="text-sm text-muted-foreground">{t("tests.pageIndicator", { page })}</span>
+          <Button href={pageHref(page + 1)} variant="outline" disabled={!hasNextPage}>
+            {t("tests.nextPage")}
+          </Button>
         </div>
       )}
 

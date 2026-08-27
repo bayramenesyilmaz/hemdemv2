@@ -62,7 +62,13 @@ export function createSupabaseTestRepository(client) {
       if (filters.language) query = query.eq("language", filters.language);
       if (filters.search) query = query.ilike("title", `%${filters.search}%`);
 
-      const { data, error } = await query.order("created_at", { ascending: false });
+      query = query.order("created_at", { ascending: false });
+      if (filters.limit != null) {
+        const offset = filters.offset ?? 0;
+        query = query.range(offset, offset + filters.limit - 1);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       return (data ?? []).map(toTest);
     },

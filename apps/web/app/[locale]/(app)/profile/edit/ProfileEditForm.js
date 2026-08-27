@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
 import { CountrySelect } from "@/components/CountrySelect";
+import { TestPicker } from "@/components/TestPicker";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/Dialog";
 import { updateProfileAction } from "@/lib/actions/profileActions";
 import { deleteAccountAction } from "@/lib/actions/authActions";
@@ -19,7 +20,7 @@ import { uploadAvatar } from "@/lib/supabaseStorage";
 const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === "true";
 const NO_GATE_TEST = "none";
 
-export function ProfileEditForm({ locale, profile, tests }) {
+export function ProfileEditForm({ locale, profile, initialGateTest }) {
   const t = useI18n();
   const router = useRouter();
 
@@ -181,19 +182,13 @@ export function ProfileEditForm({ locale, profile, tests }) {
 
       <div className="flex flex-col gap-1">
         <label className="text-sm text-muted-foreground">{t("profile.gateTestLabel")}</label>
-        <Select value={gateTestId} onValueChange={setGateTestId}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={NO_GATE_TEST}>{t("profile.gateTestNone")}</SelectItem>
-            {tests.map((test) => (
-              <SelectItem key={test.id} value={test.id}>
-                {test.title}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <TestPicker
+          value={gateTestId}
+          onValueChange={setGateTestId}
+          initialSelectedTest={initialGateTest}
+          noneLabel={t("profile.gateTestNone")}
+          placeholder={t("profile.gateTestLabel")}
+        />
       </div>
 
       {gateTestId !== NO_GATE_TEST && (

@@ -25,7 +25,7 @@ export default async function ProfileEditPage({ params }) {
     redirect(`/${locale}/onboarding`);
   }
 
-  const tests = await repositories.test.findMany({});
+  const gateTest = profile.gateTestId ? await repositories.test.findById(profile.gateTestId) : null;
   const t = await getI18n();
 
   return (
@@ -36,7 +36,7 @@ export default async function ProfileEditPage({ params }) {
         </Button>
       </div>
       <PageTitle>{t("profile.editTitle")}</PageTitle>
-      <ProfileEditForm locale={locale} profile={profile} tests={tests} />
+      <ProfileEditForm locale={locale} profile={profile} initialGateTest={gateTest} />
     </main>
   );
 }

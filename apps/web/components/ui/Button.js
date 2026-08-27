@@ -72,6 +72,25 @@ export const Button = forwardRef(function Button(
   );
 
   if (href) {
+    // `disabled` bir `<a>`/`Link`de HTML seviyesinde hiçbir şey ifade
+    // etmez (tarayıcı yine de tıklamayı işler) — devre dışı bir link
+    // butonu gerçek bir link olarak DEĞİL, aynı görünümlü ama
+    // tıklanamaz bir `<span>` olarak render edilir.
+    if (isDisabled) {
+      // `disabled:` Tailwind varyantı yalnızca form elemanlarında
+      // (`:disabled` pseudo-class) çalışır — `<span>` hiçbir zaman
+      // eşleşmez, o yüzden aynı "devre dışı" görünümü burada elle
+      // veriliyor.
+      return (
+        <span
+          className={cn(classes, "pointer-events-none !bg-none !bg-muted !text-muted-foreground !shadow-none !border-transparent")}
+          aria-disabled="true"
+          ref={ref}
+        >
+          {content}
+        </span>
+      );
+    }
     return (
       <Link href={href} className={classes} ref={ref} {...props}>
         {content}

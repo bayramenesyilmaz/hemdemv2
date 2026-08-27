@@ -32,9 +32,8 @@ export default async function PostsPage({ params }) {
   setStaticParamsLocale(locale);
 
   const userId = await getAuthUserId();
-  const [feedResult, tests, author] = await Promise.all([
+  const [feedResult, author] = await Promise.all([
     fetchFeed(repositories, { limit: 30 }),
-    userId ? repositories.test.findMany({}) : Promise.resolve([]),
     getCurrentProfile(),
   ]);
 
@@ -57,7 +56,7 @@ export default async function PostsPage({ params }) {
       />
 
       {userId ? (
-        <PostComposer locale={locale} tests={tests} author={author} />
+        <PostComposer locale={locale} author={author} />
       ) : (
         <InfoBanner>
           {t("posts.guestNotice")}{" "}

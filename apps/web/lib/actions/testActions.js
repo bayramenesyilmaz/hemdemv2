@@ -39,3 +39,19 @@ export async function deleteOwnTestAction(testId) {
   }
   return deleteOwnTest(repositories, userId, testId);
 }
+
+const TEST_PICKER_LIMIT = 20;
+
+/**
+ * Kapı testi / gönderi etiketleme seçicileri, test sayısı büyüdükçe
+ * bütün testleri tarayıcıya göndermek yerine bu arama ucunu kullanır.
+ *
+ * @param {string} query
+ */
+export async function searchTestsAction(query) {
+  const tests = await repositories.test.findMany({
+    search: query || undefined,
+    limit: TEST_PICKER_LIMIT,
+  });
+  return { status: "success", data: tests };
+}

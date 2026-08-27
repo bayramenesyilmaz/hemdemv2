@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
+import { TestPicker } from "@/components/TestPicker";
 import { TestQuestionsBuilder, newQuestion } from "@/components/TestQuestionsBuilder";
 import { SparkIcon, CloseIcon } from "@/components/icons";
 import { createPostAction, createPostWithTestAction } from "@/lib/actions/postActions";
@@ -20,7 +21,7 @@ const NO_TAG = "none";
 /** Test bölümünün üç hâli: kapalı, var olan bir testi etiketle, yeni test yaz. */
 const MODE = { none: "none", existing: "existing", create: "create" };
 
-export function PostComposer({ locale, tests, author }) {
+export function PostComposer({ locale, author }) {
   const t = useI18n();
   const router = useRouter();
   const [content, setContent] = useState("");
@@ -93,11 +94,9 @@ export function PostComposer({ locale, tests, author }) {
 
         {mode === MODE.none ? (
           <div className="flex flex-wrap gap-2">
-            {tests.length > 0 && (
-              <Button type="button" variant="outline" onClick={() => setMode(MODE.existing)}>
-                {t("posts.tagExisting")}
-              </Button>
-            )}
+            <Button type="button" variant="outline" onClick={() => setMode(MODE.existing)}>
+              {t("posts.tagExisting")}
+            </Button>
             <Button type="button" variant="outline" onClick={() => setMode(MODE.create)}>
               <SparkIcon className="size-4" />
               {t("posts.createNew")}
@@ -120,19 +119,12 @@ export function PostComposer({ locale, tests, author }) {
             </div>
 
             {mode === MODE.existing ? (
-              <Select value={taggedTestId} onValueChange={setTaggedTestId}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={NO_TAG}>{t("posts.noTag")}</SelectItem>
-                  {tests.map((test) => (
-                    <SelectItem key={test.id} value={test.id}>
-                      {test.title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <TestPicker
+                value={taggedTestId}
+                onValueChange={setTaggedTestId}
+                noneLabel={t("posts.noTag")}
+                placeholder={t("posts.taggedTestLabel")}
+              />
             ) : (
               <>
                 <p className="text-xs text-muted-foreground">
