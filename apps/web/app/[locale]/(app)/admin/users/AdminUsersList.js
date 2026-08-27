@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/locales/client";
 import { SectionCard } from "@/components/SectionCard";
+import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/ui/Button";
 import { setUserBanStatusAction } from "@/lib/actions/adminActions";
 
@@ -25,6 +26,9 @@ export function AdminUsersList({ locale, users }) {
       {users.map((user) => (
         <SectionCard key={user.id} className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
+            <Link href={`/${locale}/u/${user.id}`} className="shrink-0">
+              <Avatar src={user.avatarUrl} name={user.name} size="sm" />
+            </Link>
             <Link href={`/${locale}/u/${user.id}`} className="font-medium text-foreground underline">
               {user.name ?? user.id}
             </Link>

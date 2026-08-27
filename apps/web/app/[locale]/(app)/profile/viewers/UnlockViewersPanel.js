@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useI18n } from "@/locales/client";
 import { EmptyState } from "@/components/EmptyState";
+import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/ui/Button";
 import { unlockProfileViewersAction } from "@/lib/actions/profileActions";
 
@@ -38,9 +39,10 @@ export function UnlockViewersPanel({ locale, cost }) {
           <Link
             key={viewer.id}
             href={`/${locale}/u/${viewer.id}`}
-            className="font-medium text-foreground underline"
+            className="flex items-center gap-2 font-medium text-foreground"
           >
-            {viewer.name}
+            <Avatar src={viewer.avatarUrl} name={viewer.name} size="sm" />
+            <span className="underline">{viewer.name}</span>
           </Link>
         ))}
       </div>

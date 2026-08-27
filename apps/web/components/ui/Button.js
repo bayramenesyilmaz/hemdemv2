@@ -3,9 +3,10 @@ import Link from "next/link";
 import { cn } from "@/lib/cn";
 
 /**
- * `min-h-11` (44px) dokunmatik hedef alt sınırıdır (WCAG 2.5.8 / iOS
- * HIG). `active:scale-[0.97]` mobilde dokunma geri bildirimi verir —
- * hover'ı olmayan cihazlarda butonun "bastım" hissini karşılar.
+ * `min-h-10` (40px) WCAG 2.5.8'in 24px alt sınırını rahatça karşılayan,
+ * ama önceki 44px'e göre daha az hacimli/"klas" bir dokunmatik hedef.
+ * `active:scale-[0.97]` mobilde dokunma geri bildirimi verir — hover'ı
+ * olmayan cihazlarda butonun "bastım" hissini karşılar.
  */
 /**
  * Disabled durumu opacity ile değil sabit renklerle işaretlenir: koyu
@@ -16,7 +17,7 @@ import { cn } from "@/lib/cn";
  * garanti eder.
  */
 const BASE =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold " +
+  "inline-flex min-h-10 items-center justify-center gap-2 rounded-lg px-3.5 py-1.5 text-[13px] font-medium " +
   "transition-all duration-150 active:scale-[0.97] " +
   "disabled:pointer-events-none disabled:active:scale-100 " +
   "disabled:!bg-none disabled:!bg-muted disabled:!text-muted-foreground disabled:!shadow-none disabled:!border-transparent " +
