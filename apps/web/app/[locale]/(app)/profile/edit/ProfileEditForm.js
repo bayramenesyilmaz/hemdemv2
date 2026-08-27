@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
+import { CountrySelect } from "@/components/CountrySelect";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/Dialog";
 import { updateProfileAction } from "@/lib/actions/profileActions";
 import { deleteAccountAction } from "@/lib/actions/authActions";
@@ -173,10 +174,8 @@ export function ProfileEditForm({ locale, profile, tests }) {
           <Input id="birthdate" type="date" required value={birthdate} onChange={(e) => setBirthdate(e.target.value)} />
         </div>
         <div className="flex flex-col gap-1">
-          <label htmlFor="country" className="text-sm text-muted-foreground">
-            {t("profile.countryLabel")}
-          </label>
-          <Input id="country" value={country} onChange={(e) => setCountry(e.target.value)} placeholder="TR" />
+          <label className="text-sm text-muted-foreground">{t("profile.countryLabel")}</label>
+          <CountrySelect value={country} onValueChange={setCountry} placeholder={t("profile.countryPlaceholder")} />
         </div>
       </div>
 

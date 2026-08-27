@@ -8,6 +8,7 @@ import { buildMetadata } from "@/lib/seo";
 import { SectionCard } from "@/components/SectionCard";
 import { Avatar } from "@/components/Avatar";
 import { SendMessageDialog } from "./SendMessageDialog";
+import { ProfileActions } from "./ProfileActions";
 
 export async function generateMetadata({ params }) {
   const { locale, id } = await params;
@@ -84,7 +85,8 @@ export default async function PublicProfilePage({ params }) {
         )}
 
         {viewerId && viewerId !== profile.id && (
-          <div>
+          <div className="flex flex-col gap-4">
+            <ProfileActions locale={locale} profileId={profile.id} profileName={profile.name} />
             <SendMessageDialog locale={locale} recipientId={profile.id} recipientName={profile.name} />
           </div>
         )}

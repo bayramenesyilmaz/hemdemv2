@@ -150,6 +150,48 @@
     background-image: var(--gradient-primary);
   }
 
+  /* Yaş aralığı gibi çift-uçlu slider'lar iki üst üste binen <input
+     type="range"> ile yapılıyor (native tek bir "range" elementi çift
+     tutamaç desteklemiyor); tutamaçlar burada, tarayıcıya özgü
+     pseudo-elementlerle stillendiriliyor. */
+  .range-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .range-thumb::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    pointer-events: auto;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 9999px;
+    background: var(--primary);
+    border: 3px solid var(--background);
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+  }
+
+  .range-thumb::-moz-range-thumb {
+    pointer-events: auto;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 9999px;
+    background: var(--primary);
+    border: 3px solid var(--background);
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+  }
+
+  .range-thumb::-webkit-slider-runnable-track {
+    -webkit-appearance: none;
+    background: transparent;
+  }
+
+  .range-thumb::-moz-range-track {
+    background: transparent;
+  }
+
   .bg-gradient-surface {
     background-image: var(--gradient-surface);
   }

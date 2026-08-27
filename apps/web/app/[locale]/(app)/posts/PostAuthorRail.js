@@ -6,7 +6,7 @@ import { useI18n, useCurrentLocale } from "@/locales/client";
 import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/Dialog";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/Dialog";
 import { PlusIcon } from "@/components/icons";
 import { createNoteAction, updateNoteAction, deleteNoteAction } from "@/lib/actions/noteActions";
 
@@ -38,6 +38,9 @@ export function PostAuthorRail({ locale, entries, currentUserId, currentAuthor, 
   const [detailError, setDetailError] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
 
+  // Şerit artık sadece not paylaşanlar için var (Instagram Not gibi) —
+  // kendi balonumuz her zaman görünür (henüz not bırakmasak bile, "+" ile
+  // bırakabilelim diye), başkaları ise ancak bir notu varsa listelenir.
   const seen = new Set();
   const authors = [];
   if (currentUserId && currentAuthor) {
@@ -45,7 +48,7 @@ export function PostAuthorRail({ locale, entries, currentUserId, currentAuthor, 
     authors.push(currentAuthor);
   }
   for (const { author } of entries) {
-    if (seen.has(author.id)) continue;
+    if (seen.has(author.id) || !notes[author.id]) continue;
     seen.add(author.id);
     authors.push(author);
   }
@@ -195,9 +198,16 @@ export function PostAuthorRail({ locale, entries, currentUserId, currentAuthor, 
               </span>
               {composeError && <p className="text-sm text-destructive">{composeError}</p>}
             </div>
-            <Button type="submit" variant="add" disabled={composeLoading || !composeText.trim()} className="self-end">
-              {t("notes.share")}
-            </Button>
+            <div className="flex justify-end gap-3">
+              <DialogClose asChild>
+                <Button type="button" variant="outline">
+                  {t("profile.cancel")}
+                </Button>
+              </DialogClose>
+              <Button type="submit" variant="add" disabled={composeLoading || !composeText.trim()}>
+                {t("notes.share")}
+              </Button>
+            </div>
           </form>
         </DialogContent>
       </Dialog>

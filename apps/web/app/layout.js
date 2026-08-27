@@ -21,6 +21,10 @@ export const viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  // Mobil klavye açıldığında layout viewport'u (ve dolayısıyla dvh
+  // birimlerini) küçültür; bu olmadan `fixed bottom-0` sheet'ler klavyenin
+  // arkasında, görünmez halde kalıyordu.
+  interactiveWidget: "resizes-content",
   // Uygulamanın tek teması koyu (bkz. globals.css) — sistem tercihine göre
   // değişen iki ayrı renk yerine tarayıcı kromu her zaman bu tonla eşleşir.
   themeColor: "#0e0e11",

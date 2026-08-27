@@ -1,3 +1,5 @@
+import { isNoteExpired } from "../../domain/entities/note.js";
+
 /**
  * @param {ReturnType<import("./mockStore.js").getMockStore>} store
  * @returns {import("../../domain/repositories/noteRepository.js").NoteRepository}
@@ -5,13 +7,15 @@
 export function createMockNoteRepository(store) {
   return {
     async findByUser(userId) {
-      return (store.notes.get(userId) ?? []).sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+      return (store.notes.get(userId) ?? [])
+        .filter((note) => !isNoteExpired(note.createdAt))
+        .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
     },
 
     async findLatestByUsers(userIds) {
       const result = {};
       for (const userId of userIds) {
-        const list = store.notes.get(userId) ?? [];
+        const list = (store.notes.get(userId) ?? []).filter((note) => !isNoteExpired(note.createdAt));
         if (list.length === 0) continue;
         result[userId] = list.reduce((latest, note) => (note.createdAt > latest.createdAt ? note : latest));
       }

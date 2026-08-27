@@ -1,3 +1,9 @@
+import { NOTE_LIFETIME_MS } from "../../domain/entities/note.js";
+
+function noteCutoffIso() {
+  return new Date(Date.now() - NOTE_LIFETIME_MS).toISOString();
+}
+
 function toNote(row) {
   if (!row) return null;
   return {
@@ -19,6 +25,7 @@ export function createSupabaseNoteRepository(client) {
         .from("notes")
         .select("*")
         .eq("user_id", userId)
+        .gte("created_at", noteCutoffIso())
         .order("created_at", { ascending: false });
       if (error) throw error;
       return (data ?? []).map(toNote);
@@ -30,6 +37,7 @@ export function createSupabaseNoteRepository(client) {
         .from("notes")
         .select("*")
         .in("user_id", userIds)
+        .gte("created_at", noteCutoffIso())
         .order("created_at", { ascending: false });
       if (error) throw error;
 

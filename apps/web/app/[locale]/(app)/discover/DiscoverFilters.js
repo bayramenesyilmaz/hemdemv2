@@ -4,27 +4,33 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/locales/client";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
+import { RangeSlider } from "@/components/ui/RangeSlider";
 import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/Dialog";
+import { CountrySelect } from "@/components/CountrySelect";
 
 const ALL = "all";
+const ANY_COUNTRY = "__any__";
+const AGE_MIN = 18;
+const AGE_MAX = 80;
 
 export function DiscoverFilters({ locale, initialGender, initialCountry, initialMinAge, initialMaxAge }) {
   const t = useI18n();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [gender, setGender] = useState(initialGender ?? ALL);
-  const [country, setCountry] = useState(initialCountry ?? "");
-  const [minAge, setMinAge] = useState(initialMinAge ?? "");
-  const [maxAge, setMaxAge] = useState(initialMaxAge ?? "");
+  const [country, setCountry] = useState(initialCountry ?? ANY_COUNTRY);
+  const [ageRange, setAgeRange] = useState([
+    initialMinAge ? Number(initialMinAge) : AGE_MIN,
+    initialMaxAge ? Number(initialMaxAge) : AGE_MAX,
+  ]);
 
   function applyFilters() {
     const params = new URLSearchParams();
     if (gender !== ALL) params.set("gender", gender);
-    if (country) params.set("country", country);
-    if (minAge) params.set("minAge", minAge);
-    if (maxAge) params.set("maxAge", maxAge);
+    if (country !== ANY_COUNTRY) params.set("country", country);
+    if (ageRange[0] > AGE_MIN) params.set("minAge", String(ageRange[0]));
+    if (ageRange[1] < AGE_MAX) params.set("maxAge", String(ageRange[1]));
 
     const query = params.toString();
     router.push(`/${locale}/discover${query ? `?${query}` : ""}`);
@@ -57,25 +63,29 @@ export function DiscoverFilters({ locale, initialGender, initialCountry, initial
           </div>
 
           <div className="flex flex-col gap-1">
-            <label htmlFor="country" className="text-sm text-muted-foreground">
-              {t("profile.countryLabel")}
-            </label>
-            <Input id="country" value={country} onChange={(e) => setCountry(e.target.value)} placeholder="TR" />
+            <label className="text-sm text-muted-foreground">{t("profile.countryLabel")}</label>
+            <CountrySelect
+              value={country}
+              onValueChange={setCountry}
+              allowClear
+              clearLabel={t("discover.anyCountry")}
+            />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1">
-              <label htmlFor="minAge" className="text-sm text-muted-foreground">
-                {t("discover.minAgeLabel")}
-              </label>
-              <Input id="minAge" type="number" min={18} value={minAge} onChange={(e) => setMinAge(e.target.value)} />
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">{t("discover.ageRangeLabel")}</span>
+              <span className="font-medium text-foreground">
+                {ageRange[0]}–{ageRange[1]}
+              </span>
             </div>
-            <div className="flex flex-col gap-1">
-              <label htmlFor="maxAge" className="text-sm text-muted-foreground">
-                {t("discover.maxAgeLabel")}
-              </label>
-              <Input id="maxAge" type="number" min={18} value={maxAge} onChange={(e) => setMaxAge(e.target.value)} />
-            </div>
+            <RangeSlider
+              min={AGE_MIN}
+              max={AGE_MAX}
+              value={ageRange}
+              onChange={setAgeRange}
+              className="px-1"
+            />
           </div>
         </div>
 

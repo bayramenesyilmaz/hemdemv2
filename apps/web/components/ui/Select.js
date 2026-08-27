@@ -10,13 +10,17 @@ export function SelectTrigger({ className, children, ...props }) {
   return (
     <SelectPrimitive.Trigger
       className={cn(
-        "flex min-h-11 w-full items-center justify-between rounded-lg border border-border bg-background px-3 py-2 text-base text-foreground data-[placeholder]:text-muted-foreground lg:text-sm",
+        "flex min-h-11 w-full items-center justify-between gap-2 rounded-lg border border-border bg-background px-3 py-2 text-base text-foreground outline-none transition-colors",
+        "hover:border-foreground/20 data-[placeholder]:text-muted-foreground",
+        "focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30",
+        "data-[state=open]:border-primary data-[state=open]:ring-2 data-[state=open]:ring-primary/30",
+        "lg:text-sm",
         className
       )}
       {...props}
     >
       {children}
-      <SelectPrimitive.Icon>
+      <SelectPrimitive.Icon className="text-muted-foreground transition-transform data-[state=open]:rotate-180">
         <svg width="14" height="14" viewBox="0 0 15 15" fill="none" aria-hidden="true">
           <path
             d="M4 6l3.5 3.5L11 6"
@@ -36,7 +40,7 @@ export function SelectContent({ className, children, ...props }) {
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
         className={cn(
-          "z-50 max-h-[60dvh] overflow-y-auto overscroll-contain rounded-lg border border-border bg-card text-card-foreground shadow-lg",
+          "z-50 max-h-[60dvh] w-[var(--radix-select-trigger-width)] overflow-y-auto overscroll-contain rounded-lg border border-border bg-card text-card-foreground shadow-lg animate-fade-in",
           className
         )}
         position="popper"
@@ -53,12 +57,25 @@ export function SelectItem({ className, children, ...props }) {
   return (
     <SelectPrimitive.Item
       className={cn(
-        "relative flex min-h-11 cursor-pointer select-none items-center rounded-md px-3 py-2 text-base outline-none data-[highlighted]:bg-muted lg:min-h-0 lg:text-sm",
+        "relative flex min-h-11 cursor-pointer select-none items-center justify-between gap-2 rounded-md px-3 py-2 text-base outline-none",
+        "data-[highlighted]:bg-muted data-[state=checked]:font-semibold data-[state=checked]:text-primary",
+        "lg:min-h-9 lg:text-sm",
         className
       )}
       {...props}
     >
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+      <SelectPrimitive.ItemIndicator aria-hidden="true" className="text-primary">
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none">
+          <path
+            d="M3 8l3 3 6-7"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </SelectPrimitive.ItemIndicator>
     </SelectPrimitive.Item>
   );
 }
