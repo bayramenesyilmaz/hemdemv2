@@ -4,6 +4,7 @@ import { getI18n } from "@/locales/server";
 import { getAuthUserId } from "@/lib/session";
 import { repositories } from "@/lib/repositories";
 import { PageTitle } from "@/components/PageTitle";
+import { Button } from "@/components/ui/Button";
 import { MyTestsList } from "./MyTestsList";
 
 export async function generateMetadata() {
@@ -24,7 +25,15 @@ export default async function MyTestsPage({ params }) {
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-6 lg:px-6 lg:py-8">
-      <PageTitle>{t("tests.mine")}</PageTitle>
+      <PageTitle
+        action={
+          <Button href={`/${locale}/tests/create`} variant="add">
+            {t("tests.create")}
+          </Button>
+        }
+      >
+        {t("tests.mine")}
+      </PageTitle>
       <MyTestsList locale={locale} tests={tests} />
     </main>
   );
