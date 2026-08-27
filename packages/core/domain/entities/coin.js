@@ -25,9 +25,9 @@ export const AD_WATCH_TIERS = [
 ];
 
 export const COIN_COSTS = {
-  createTest: 300,
-  superMessage: 50,
-  unlockProfileViewers: 100,
+  createTest: 40,
+  superMessage: 10,
+  unlockProfileViewers: 15,
 };
 
 /** Yeni kayıt olan her kullanıcıya bir kerelik hoş geldin hediyesi. */
