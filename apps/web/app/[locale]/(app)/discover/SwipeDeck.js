@@ -91,7 +91,7 @@ export function SwipeDeck({ locale, initialCandidates, isGuest }) {
           içeri kayıyor ki `justify-center` gerçekten içerik sütununun
           (`main`'in `mx-auto max-w-md`'i) ortasına denk gelsin, tüm
           viewport'un değil. */}
-      <div className="fixed inset-x-0 bottom-[calc(var(--bottom-nav-h)+var(--ad-banner-h)+env(safe-area-inset-bottom))] z-30 flex justify-center gap-5 pb-4 lg:left-64 lg:bottom-[calc(var(--ad-banner-h)+1.5rem)]">
+      <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 flex justify-center gap-5 pb-4 lg:left-64 lg:bottom-6">
         <button
           type="button"
           onClick={() => handleSwipe("dislike")}

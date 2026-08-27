@@ -7,7 +7,6 @@ import { BottomNav } from "./BottomNav";
 import { Sidebar } from "./Sidebar";
 import { AppMenu } from "./AppMenu";
 import { useNavItems } from "./navItems";
-import { PersistentAdBanner } from "@/components/PersistentAdBanner";
 
 /**
  * Mobil öncelikli uygulama kabuğu (plan bölüm 6 + 7):
@@ -60,11 +59,8 @@ export function AppShell({
         unreadCount={unreadCount}
       />
 
-      <div className="pb-[calc(var(--bottom-nav-h)+var(--ad-banner-h)+env(safe-area-inset-bottom))] lg:pb-[var(--ad-banner-h)]">
-        {children}
-      </div>
+      <div className="pb-[calc(4rem+env(safe-area-inset-bottom))] lg:pb-0">{children}</div>
 
-      <PersistentAdBanner />
       <BottomNav items={primary} onOpenMenu={() => setMenuOpen(true)} />
 
       <AppMenu
