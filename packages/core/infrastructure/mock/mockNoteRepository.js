@@ -8,6 +8,16 @@ export function createMockNoteRepository(store) {
       return (store.notes.get(userId) ?? []).sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
     },
 
+    async findLatestByUsers(userIds) {
+      const result = {};
+      for (const userId of userIds) {
+        const list = store.notes.get(userId) ?? [];
+        if (list.length === 0) continue;
+        result[userId] = list.reduce((latest, note) => (note.createdAt > latest.createdAt ? note : latest));
+      }
+      return result;
+    },
+
     async create(note) {
       const full = {
         id: `note-${Date.now()}`,

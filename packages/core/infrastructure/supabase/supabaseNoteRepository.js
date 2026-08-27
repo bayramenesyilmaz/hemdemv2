@@ -24,6 +24,25 @@ export function createSupabaseNoteRepository(client) {
       return (data ?? []).map(toNote);
     },
 
+    async findLatestByUsers(userIds) {
+      if (userIds.length === 0) return {};
+      const { data, error } = await client
+        .from("notes")
+        .select("*")
+        .in("user_id", userIds)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+
+      const result = {};
+      for (const row of data ?? []) {
+        const note = toNote(row);
+        // En yeniden en eskiye sıralı geldiği için bir kullanıcı için
+        // ilk rastlanan satır zaten o kullanıcının en güncel notudur.
+        if (!result[note.userId]) result[note.userId] = note;
+      }
+      return result;
+    },
+
     async create(note) {
       const { data, error } = await client
         .from("notes")

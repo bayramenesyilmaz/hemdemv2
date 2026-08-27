@@ -1,5 +1,6 @@
 import { setStaticParamsLocale } from "next-international/server";
 import { fetchFeed } from "@hemdem/core/usecases/posts/fetchFeed";
+import { fetchLatestNotesByUsers } from "@hemdem/core/usecases/notes/fetchLatestNotesByUsers";
 import { getI18n } from "@/locales/server";
 import { getAuthUserId } from "@/lib/session";
 import { getCurrentProfile } from "@/lib/currentUser";
@@ -36,6 +37,11 @@ export default async function PostsPage({ params }) {
     userId ? repositories.test.findMany({}) : Promise.resolve([]),
     getCurrentProfile(),
   ]);
+
+  const authorIds = [...new Set(feedResult.data.map(({ author: postAuthor }) => postAuthor.id))];
+  if (userId && !authorIds.includes(userId)) authorIds.push(userId);
+  const notesResult = await fetchLatestNotesByUsers(repositories, authorIds);
+
   const t = await getI18n();
 
   return (
@@ -47,6 +53,7 @@ export default async function PostsPage({ params }) {
         entries={feedResult.data}
         currentUserId={userId}
         currentAuthor={author}
+        notesByAuthor={notesResult.data}
       />
 
       {userId ? (
