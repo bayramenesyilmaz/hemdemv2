@@ -232,6 +232,7 @@ const en = {
     title: "Leaderboard",
     subtitle: "The users who've earned the most points by taking tests.",
     emptyTitle: "No one has earned points yet",
+    rewardsNotice: "The top 3 of each period automatically get coin rewards — daily, every 3 days, and weekly.",
   },
   likes: {
     emptyTitle: "No likes yet",

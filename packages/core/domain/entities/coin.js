@@ -30,6 +30,9 @@ export const COIN_COSTS = {
   unlockProfileViewers: 100,
 };
 
+/** Yeni kayıt olan her kullanıcıya bir kerelik hoş geldin hediyesi. */
+export const SIGNUP_BONUS_COINS = 100;
+
 /**
  * @param {number} tier
  * @returns {{ tier: number, seconds: number, coinReward: number } | undefined}

@@ -234,6 +234,7 @@ const tr = {
     title: "Liderlik Tablosu",
     subtitle: "Test çözerek en çok puan kazanan kullanıcılar.",
     emptyTitle: "Henüz kimse puan kazanmadı",
+    rewardsNotice: "Her gün, her 3 günde ve her hafta o dönemin ilk 3'üne otomatik coin ödülü verilir.",
   },
   likes: {
     emptyTitle: "Henüz beğenen yok",

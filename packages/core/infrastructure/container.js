@@ -12,6 +12,7 @@ import { createSupabasePointRepository } from "./supabase/supabasePointRepositor
 import { createSupabaseRequestRepository } from "./supabase/supabaseRequestRepository.js";
 import { createSupabaseAuthAdminRepository } from "./supabase/supabaseAuthAdminRepository.js";
 import { createSupabaseNotificationRepository } from "./supabase/supabaseNotificationRepository.js";
+import { createSupabaseLeaderboardRewardRepository } from "./supabase/supabaseLeaderboardRewardRepository.js";
 
 /**
  * Composition root. `usecases/*` bu nesneyi parametre olarak alır ve
@@ -34,6 +35,7 @@ export function createRepositories(supabaseConfig) {
     profileView: createSupabaseProfileViewRepository(client),
     coin: createSupabaseCoinRepository(client),
     point: createSupabasePointRepository(client),
+    leaderboardReward: createSupabaseLeaderboardRewardRepository(client),
     request: createSupabaseRequestRepository(client),
     notification: createSupabaseNotificationRepository(client),
     authAdmin: createSupabaseAuthAdminRepository(client),

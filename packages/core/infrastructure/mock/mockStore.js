@@ -617,6 +617,13 @@ function createSeededStore() {
     ["demo-user-5", 40],
   ]);
 
+  // Liderlik ödüllerini periyot bazında hesaplayabilmek için her puan
+  // kazanımı zaman damgasıyla ayrıca loglanır (bkz. pointRepository).
+  const pointEvents = [];
+  // (periodType, periodKey) ikilisi zaten ödüllendirildiyse tekrar
+  // ödül verilmesin diye — bkz. leaderboardRewardRepository.
+  const leaderboardRewardGrants = new Set();
+
   const requests = [];
 
   // email -> { id, password } — Supabase Auth'un yerini tutan minimal eşleme.
@@ -639,6 +646,8 @@ function createSeededStore() {
     notifications,
     coins,
     points,
+    pointEvents,
+    leaderboardRewardGrants,
     requests,
     authUsers,
     nextId: {

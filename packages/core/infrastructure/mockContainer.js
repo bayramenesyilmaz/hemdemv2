@@ -13,6 +13,7 @@ import { createMockRequestRepository } from "./mock/mockRequestRepository.js";
 import { createMockAuthAdminRepository } from "./mock/mockAuthAdminRepository.js";
 import { createMockAuthRepository } from "./mock/mockAuthRepository.js";
 import { createMockNotificationRepository } from "./mock/mockNotificationRepository.js";
+import { createMockLeaderboardRewardRepository } from "./mock/mockLeaderboardRewardRepository.js";
 
 /**
  * `createRepositories` (container.js) ile birebir aynı şekli döndürür,
@@ -38,6 +39,7 @@ export function createMockRepositories() {
     profileView: createMockProfileViewRepository(store),
     coin: createMockCoinRepository(store),
     point: createMockPointRepository(store),
+    leaderboardReward: createMockLeaderboardRewardRepository(store),
     request: createMockRequestRepository(store),
     notification: createMockNotificationRepository(store),
     authAdmin: createMockAuthAdminRepository(store),

@@ -1,4 +1,5 @@
 import { validateProfile } from "../../domain/entities/user.js";
+import { SIGNUP_BONUS_COINS } from "../../domain/entities/coin.js";
 
 /**
  * Supabase Auth (client tarafında, anon key ile) auth.users satırını
@@ -27,6 +28,8 @@ export async function registerUser(repositories, input) {
     name: input.name ?? null,
     language: input.language ?? "tr",
   });
+
+  await repositories.coin.increment(profile.id, SIGNUP_BONUS_COINS);
 
   return { status: "success", data: profile };
 }
