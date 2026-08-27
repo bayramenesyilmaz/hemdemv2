@@ -255,6 +255,7 @@ const en = {
     placeholder: "Type a message…",
     send: "Send",
     sendMessageButton: "Send Message",
+    goToChat: "Go to Chat",
     sendMessageTitle: "Message {name}",
     sendMessageBody: "If you haven't matched yet, sending a message costs {cost} coins.",
     errors: {

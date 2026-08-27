@@ -257,6 +257,7 @@ const tr = {
     placeholder: "Mesaj yaz…",
     send: "Gönder",
     sendMessageButton: "Mesaj Gönder",
+    goToChat: "Sohbete Git",
     sendMessageTitle: "{name} kişisine mesaj gönder",
     sendMessageBody: "Henüz eşleşmediysen mesaj göndermek {cost} coin'e mal olur.",
     errors: {
