@@ -3,8 +3,7 @@
 import { TEST_LIMITS } from "@hemdem/core/domain/entities/test";
 import { useI18n } from "@/locales/client";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { SectionCard } from "@/components/SectionCard";
+import { Textarea } from "@/components/ui/Textarea";
 import { TrashIcon, PlusIcon } from "@/components/icons";
 
 export function newOption() {
@@ -61,10 +60,12 @@ export function TestQuestionsBuilder({ questions, onChange, compact = false }) {
     );
   }
 
-  const Wrapper = compact ? "div" : SectionCard;
+  // "Kart" görünümü yerine (test oluşturma formu artık ekrana yayılıyor)
+  // sorular arasına ince bir ayraç konuyor; gönderi paylaşırken açılan
+  // kompakt sürüm hâlâ kendi kutusunda kalıyor (o form zaten dar/kısa).
   const wrapperClass = compact
     ? "flex animate-list-in flex-col gap-3 rounded-2xl border border-border bg-background p-3"
-    : "flex animate-list-in flex-col gap-3";
+    : "flex animate-list-in flex-col gap-3 border-b border-border pb-5 last:border-b-0 last:pb-0";
 
   return (
     <div className="flex flex-col gap-4">
@@ -80,13 +81,14 @@ export function TestQuestionsBuilder({ questions, onChange, compact = false }) {
         const canRemoveOption = question.options.length > TEST_LIMITS.minOptions;
 
         return (
-          <Wrapper key={question.id} className={wrapperClass}>
-            <div className="flex items-center gap-3">
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-gradient-primary text-sm font-bold text-primary-foreground shadow-soft">
+          <div key={question.id} className={wrapperClass}>
+            <div className="flex items-start gap-3">
+              <span className="mt-1.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-gradient-primary text-sm font-bold text-primary-foreground shadow-soft">
                 {qIndex + 1}
               </span>
-              <Input
+              <Textarea
                 required
+                rows={2}
                 placeholder={t("tests.questionPlaceholder", { number: qIndex + 1 })}
                 value={question.text}
                 onChange={(e) => updateQuestionText(qIndex, e.target.value)}
@@ -97,7 +99,7 @@ export function TestQuestionsBuilder({ questions, onChange, compact = false }) {
                   type="button"
                   onClick={() => removeQuestion(qIndex)}
                   aria-label={t("tests.removeQuestion")}
-                  className="flex size-11 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                  className="mt-1.5 flex size-11 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                 >
                   <TrashIcon className="size-4" />
                 </button>
@@ -106,12 +108,13 @@ export function TestQuestionsBuilder({ questions, onChange, compact = false }) {
 
             <div className="flex flex-col gap-2 pl-11">
               {question.options.map((option, oIndex) => (
-                <div key={option.id} className="flex items-center gap-2">
-                  <span className="w-5 shrink-0 text-center text-xs font-semibold text-muted-foreground">
+                <div key={option.id} className="flex items-start gap-2">
+                  <span className="mt-3 w-5 shrink-0 text-center text-xs font-semibold text-muted-foreground">
                     {String.fromCharCode(65 + oIndex)}
                   </span>
-                  <Input
+                  <Textarea
                     required
+                    rows={1}
                     placeholder={t("tests.optionPlaceholder", { number: oIndex + 1 })}
                     value={option.text}
                     onChange={(e) => updateOptionText(qIndex, oIndex, e.target.value)}
@@ -122,7 +125,7 @@ export function TestQuestionsBuilder({ questions, onChange, compact = false }) {
                       type="button"
                       onClick={() => removeOption(qIndex, oIndex)}
                       aria-label={t("tests.removeOption")}
-                      className="flex size-11 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                      className="mt-0.5 flex size-11 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                     >
                       <TrashIcon className="size-4" />
                     </button>
@@ -140,7 +143,7 @@ export function TestQuestionsBuilder({ questions, onChange, compact = false }) {
                 </p>
               )}
             </div>
-          </Wrapper>
+          </div>
         );
       })}
 

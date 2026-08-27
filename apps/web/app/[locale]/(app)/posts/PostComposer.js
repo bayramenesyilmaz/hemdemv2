@@ -77,13 +77,13 @@ export function PostComposer({ locale, tests, author }) {
   }
 
   return (
-    <SectionCard>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <SectionCard className="!p-3">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div className="flex gap-3">
           {author && <Avatar src={author.avatarUrl} name={author.name} size="sm" />}
           <Textarea
             required
-            rows={3}
+            rows={2}
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder={t("posts.composerPlaceholder")}
