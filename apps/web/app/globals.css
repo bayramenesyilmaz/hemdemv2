@@ -196,6 +196,18 @@
     background-image: var(--gradient-surface);
   }
 
+  /* İçeride kaydırılan paneller (sohbet, açılır listeler, alt gezinme
+     çubukları…) hâlâ kaydırılabilir kalır, sadece kaydırma çubuğunun
+     kendisi görünmez — daha "klas" / uygulama benzeri bir his verir. */
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Liste öğelerinin sırayla belirmesi — plan bölüm 7 gereği sadece
      opacity, kayma hissi veren y-offset yok. */
   @keyframes list-in {

@@ -134,7 +134,7 @@ export function PostAuthorRail({ locale, noteAuthors, currentUserId, currentAuth
 
   return (
     <>
-      <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1 lg:mx-0 lg:px-0" style={{ scrollbarWidth: "none" }}>
+      <div className="scrollbar-none -mx-4 flex gap-3 overflow-x-auto px-4 pb-1 lg:mx-0 lg:px-0">
         {authors.map((author) => {
           const note = notes[author.id];
           const isCurrentUser = author.id === currentUserId;

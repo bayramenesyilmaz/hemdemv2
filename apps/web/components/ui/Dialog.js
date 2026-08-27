@@ -13,7 +13,7 @@ const VARIANTS = {
    * ortalanmış kart. Mobil uygulama hissi için varsayılan budur.
    */
   sheet: cn(
-    "fixed inset-x-0 bottom-0 z-50 max-h-[88dvh] overflow-y-auto overscroll-contain",
+    "scrollbar-none fixed inset-x-0 bottom-0 z-50 max-h-[88dvh] overflow-y-auto overscroll-contain",
     "rounded-t-2xl border border-border bg-card p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] text-card-foreground shadow-2xl",
     "animate-sheet-in",
     "lg:inset-x-auto lg:bottom-auto lg:left-1/2 lg:top-1/2 lg:w-full lg:max-w-md",
@@ -21,7 +21,7 @@ const VARIANTS = {
   ),
   /** Tam ekran (navigasyon menüsü gibi). */
   full: cn(
-    "fixed inset-0 z-50 flex flex-col overflow-y-auto overscroll-contain bg-background",
+    "scrollbar-none fixed inset-0 z-50 flex flex-col overflow-y-auto overscroll-contain bg-background",
     "pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]",
     "animate-sheet-in lg:animate-dialog-in"
   ),

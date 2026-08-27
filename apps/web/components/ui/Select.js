@@ -40,7 +40,7 @@ export function SelectContent({ className, children, ...props }) {
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
         className={cn(
-          "z-50 max-h-[60dvh] w-[var(--radix-select-trigger-width)] overflow-y-auto overscroll-contain rounded-lg border border-border bg-card text-card-foreground shadow-lg animate-fade-in",
+          "scrollbar-none z-50 max-h-[60dvh] w-[var(--radix-select-trigger-width)] overflow-y-auto overscroll-contain rounded-lg border border-border bg-card text-card-foreground shadow-lg animate-fade-in",
           className
         )}
         position="popper"

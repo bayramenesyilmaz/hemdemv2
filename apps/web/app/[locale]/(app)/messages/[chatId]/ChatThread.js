@@ -62,7 +62,7 @@ export function ChatThread({ chatId, currentUserId, initialMessages, recipientId
 
   return (
     <div className="flex flex-1 flex-col gap-4 overflow-hidden">
-      <div className="flex flex-1 flex-col gap-2 overflow-y-auto rounded-2xl border border-border bg-gradient-surface p-4">
+      <div className="scrollbar-none flex flex-1 flex-col gap-2 overflow-y-auto rounded-2xl border border-border bg-gradient-surface p-4">
         {messages.length === 0 ? (
           <p className="m-auto text-sm text-muted-foreground">{t("messages.startConversation")}</p>
         ) : (
@@ -90,13 +90,18 @@ export function ChatThread({ chatId, currentUserId, initialMessages, recipientId
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
-      <form onSubmit={handleSubmit} className="flex items-end gap-2">
+      {/* Mesaj alanının kendi kaydırdığı içerikten ayrı, sabit bir "yüzen"
+          çubuk hissi versin diye kart görünümü + gölge. */}
+      <form
+        onSubmit={handleSubmit}
+        className="flex shrink-0 items-end gap-2 rounded-2xl border border-border bg-card p-2 shadow-float"
+      >
         <Textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder={t("messages.placeholder")}
           rows={1}
-          className="flex-1 resize-none"
+          className="flex-1 resize-none border-none bg-transparent shadow-none focus-visible:ring-0"
         />
         <Button type="submit" variant="send" disabled={sending || !content.trim()}>
           {t("messages.send")}

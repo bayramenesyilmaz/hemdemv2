@@ -10,7 +10,7 @@ import { cn } from "@/lib/cn";
  */
 export function SubNav({ items, className }) {
   return (
-    <nav className={cn("-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 lg:mx-0 lg:px-0", className)}>
+    <nav className={cn("scrollbar-none -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 lg:mx-0 lg:px-0", className)}>
       {items.map((item) => (
         <Link
           key={item.href}

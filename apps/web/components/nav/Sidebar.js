@@ -55,7 +55,7 @@ export function Sidebar({ locale, items, secondaryItems, isAuthenticated, coinBa
         mobilde menüye giden ikincil rotalar burada ikinci bir grup olarak
         listelenir — aksi halde masaüstünde erişilemez kalırlardı.
       */}
-      <nav aria-label={t("nav.primaryNavLabel")} className="mt-8 flex-1 overflow-y-auto">
+      <nav aria-label={t("nav.primaryNavLabel")} className="scrollbar-none mt-8 flex-1 overflow-y-auto">
         <NavList items={items} pathname={pathname} />
 
         {secondaryItems.length > 0 && (

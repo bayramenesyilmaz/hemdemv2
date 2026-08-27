@@ -72,7 +72,7 @@ export function TestPicker({ value, onValueChange, initialSelectedTest, noneLabe
               onChange={(e) => handleQueryChange(e.target.value)}
               placeholder={t("tests.searchLabel")}
             />
-            <div className="flex max-h-[50dvh] flex-col gap-1 overflow-y-auto">
+            <div className="scrollbar-none flex max-h-[50dvh] flex-col gap-1 overflow-y-auto">
               {noneLabel && (
                 <button
                   type="button"
