@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/Dialog";
 import { sendMessageAction } from "@/lib/actions/chatActions";
 
-export function SendMessageDialog({ locale, recipientId, recipientName }) {
+export function SendMessageDialog({ locale, recipientId, recipientName, trigger }) {
   const t = useI18n();
   const router = useRouter();
   const [content, setContent] = useState("");
@@ -35,9 +35,11 @@ export function SendMessageDialog({ locale, recipientId, recipientName }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button type="button" variant="send">
-          {t("messages.sendMessageButton")}
-        </Button>
+        {trigger ?? (
+          <Button type="button" variant="send">
+            {t("messages.sendMessageButton")}
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent>
         <DialogTitle>{t("messages.sendMessageTitle", { name: recipientName })}</DialogTitle>

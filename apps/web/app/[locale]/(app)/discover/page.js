@@ -52,20 +52,25 @@ export default async function DiscoverPage({ params, searchParams }) {
     // Keşfet tek ekranlık bir deneyimdir: sayfa kaymaz, kart destesi
     // kalan alanı doldurur. Yükseklik = 100dvh eksi header (3.5rem) ve
     // alt navigasyon (4rem + safe-area); masaüstünde alt bar yoktur.
-    <main className="mx-auto flex h-[calc(100dvh-7.5rem-env(safe-area-inset-bottom))] w-full max-w-md flex-col gap-4 px-4 py-4 lg:h-[calc(100dvh-4rem)] lg:py-8">
-      <PageTitle
-        action={
-          <DiscoverFilters
-            locale={locale}
-            initialGender={sp.gender}
-            initialCountry={sp.country}
-            initialMinAge={sp.minAge}
-            initialMaxAge={sp.maxAge}
-          />
-        }
-      >
-        {t("discover.title")}
-      </PageTitle>
+    // Fotoğraf ekranı tam kaplasın diye (kart görünümü değil) sayfa
+    // artık kenar boşluksuz/tam genişlik; masaüstünde ekran aşırı geniş
+    // kalmasın diye orta genişlikte bir çerçeveye dönüyor.
+    <main className="mx-auto flex h-[calc(100dvh-7.5rem-env(safe-area-inset-bottom))] w-full flex-col lg:h-[calc(100dvh-4rem)] lg:max-w-md lg:px-6 lg:py-8">
+      <div className="px-4 pb-4 pt-4 lg:px-0 lg:pt-0">
+        <PageTitle
+          action={
+            <DiscoverFilters
+              locale={locale}
+              initialGender={sp.gender}
+              initialCountry={sp.country}
+              initialMinAge={sp.minAge}
+              initialMaxAge={sp.maxAge}
+            />
+          }
+        >
+          {t("discover.title")}
+        </PageTitle>
+      </div>
       <SwipeDeck locale={locale} initialCandidates={candidates} isGuest={isGuest} />
     </main>
   );

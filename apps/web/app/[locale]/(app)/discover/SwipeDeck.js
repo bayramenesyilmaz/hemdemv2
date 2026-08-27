@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import { useI18n } from "@/locales/client";
 import { EmptyState } from "@/components/EmptyState";
 import { Button } from "@/components/ui/Button";
-import { CloseIcon, HeartIcon } from "@/components/icons";
+import { CloseIcon, HeartIcon, MessagesIcon } from "@/components/icons";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/Dialog";
 import { swipeAction } from "@/lib/actions/discoverActions";
+import { SendMessageDialog } from "../u/[id]/SendMessageDialog";
 import { SwipeCard } from "./SwipeCard";
 import { QuickSignUpDialog } from "./QuickSignUpDialog";
 
@@ -66,23 +67,31 @@ export function SwipeDeck({ locale, initialCandidates, isGuest }) {
 
   return (
     // Deste kalan dikey alanı doldurur (sabit bir yükseklik yerine flex):
-    // böylece başlık/aksiyon çubuğu değişse de sayfa asla taşmaz.
-    // `min-h-0` olmadan flex çocuğu içeriğinden küçülemez ve taşar.
-    <div className="flex min-h-0 flex-1 flex-col items-center gap-4">
-      <div className="relative w-full min-h-0 max-w-sm flex-1">
+    // böylece başlık değişse de sayfa asla taşmaz. `min-h-0` olmadan flex
+    // çocuğu içeriğinden küçülemez ve taşar.
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="relative w-full min-h-0 flex-1">
         {upNext && <SwipeCard key={upNext.id} candidate={upNext} locale={locale} isTop={false} />}
         <SwipeCard key={current.id} candidate={current} locale={locale} isTop onSwipe={handleSwipe} />
       </div>
 
-      {error && <p className="shrink-0 text-center text-sm text-destructive">{error}</p>}
+      {error && (
+        <p className="shrink-0 bg-background px-4 py-2 text-center text-sm text-destructive">{error}</p>
+      )}
 
       {/*
-        Bu iki aksiyon Button bileşenini kullanmaz: dairesel, ikon-only
-        birer FAB'lar ve Button'ın taban `rounded-lg`/`px-5` stilleriyle
-        çakışıyorlardı (cn yalnızca sınıfları birleştirir, Tailwind
-        çakışmalarını çözmez).
+        Aksiyonlar artık desteyle birlikte kayan bir satır değil, alt
+        navigasyonun (mobil) hemen üstünde sabit duran bir çubuk — modern
+        keşfet ekranlarında beklenen davranış. Butonlar Button bileşenini
+        kullanmaz: dairesel, ikon-only FAB'lar Button'ın taban
+        `rounded-lg`/`px-5` stilleriyle çakışıyordu (cn sadece sınıfları
+        birleştirir, Tailwind çakışmalarını çözmez).
       */}
-      <div className="flex shrink-0 items-center gap-6">
+      {/* `lg:left-64`: masaüstünde sabit sidebar'ın genişliği kadar
+          içeri kayıyor ki `justify-center` gerçekten içerik sütununun
+          (`main`'in `mx-auto max-w-md`'i) ortasına denk gelsin, tüm
+          viewport'un değil. */}
+      <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 flex justify-center gap-5 pb-4 lg:left-64 lg:bottom-6">
         <button
           type="button"
           onClick={() => handleSwipe("dislike")}
@@ -91,6 +100,24 @@ export function SwipeDeck({ locale, initialCandidates, isGuest }) {
         >
           <CloseIcon className="h-7 w-7" />
         </button>
+
+        {!isGuest && (
+          <SendMessageDialog
+            locale={locale}
+            recipientId={current.id}
+            recipientName={current.name}
+            trigger={
+              <button
+                type="button"
+                aria-label={t("messages.sendMessageButton")}
+                className="flex h-14 w-14 items-center justify-center self-center rounded-full border border-border bg-card text-primary shadow-lg transition-transform active:scale-95"
+              >
+                <MessagesIcon className="h-6 w-6" />
+              </button>
+            }
+          />
+        )}
+
         <button
           type="button"
           onClick={() => handleSwipe("like")}
