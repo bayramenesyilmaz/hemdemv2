@@ -28,8 +28,11 @@
    - `anon public` key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `service_role` key → `SUPABASE_SERVICE_ROLE_KEY` (**asla** tarayıcıya
      gönderilmez, sadece sunucu tarafında/`.env` içinde kullanılır)
-6. Sayfalar boş görünmesin diye demo veri ekle: bkz.
-   [`../apps/web/scripts/README.md`](../apps/web/scripts/README.md).
+6. **(İsteğe bağlı) Demo veri**: sayfalar boş görünmesin diye
+   `migrations/0004_seed_demo_data.sql`'i de SQL Editor'de çalıştır —
+   0001-0003'ün aksine bu zorunlu değil, sadece 13 profil/8 test/
+   gönderi/sohbet/bildirim ekler. Detaylar ve alternatif (Node script)
+   için bkz. [`../apps/web/scripts/README.md`](../apps/web/scripts/README.md).
 
 ## RLS notu
 
