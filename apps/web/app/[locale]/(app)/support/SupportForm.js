@@ -100,7 +100,7 @@ export function SupportForm({ isAuthenticated }) {
 
         {error && <p className="text-sm text-destructive">{error}</p>}
 
-        <Button type="submit" variant="send" disabled={loading} className="self-end">
+        <Button type="submit" variant="send" loading={loading} className="self-end">
           {t("support.submit")}
         </Button>
       </form>

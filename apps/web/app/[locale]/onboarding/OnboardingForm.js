@@ -76,7 +76,7 @@ export function OnboardingForm({ locale }) {
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
-      <Button type="submit" variant="confirm" disabled={loading || !gender || !interestedIn}>
+      <Button type="submit" variant="confirm" loading={loading} disabled={!gender || !interestedIn}>
         {t("auth.onboarding.submit")}
       </Button>
     </form>

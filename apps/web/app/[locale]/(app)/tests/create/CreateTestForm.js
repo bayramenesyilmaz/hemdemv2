@@ -88,7 +88,7 @@ export function CreateTestForm({ locale }) {
 
       {error && <p className="text-sm text-destructive">{t(`tests.errors.${error}`)}</p>}
 
-      <Button type="submit" variant="confirm" disabled={loading}>
+      <Button type="submit" variant="confirm" loading={loading}>
         {t("tests.submitCreate")}
       </Button>
     </form>

@@ -80,7 +80,7 @@ export function LoginForm({ locale }) {
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
-      <Button type="submit" variant="confirm" disabled={loading}>
+      <Button type="submit" variant="confirm" loading={loading}>
         {t("auth.login.submit")}
       </Button>
 

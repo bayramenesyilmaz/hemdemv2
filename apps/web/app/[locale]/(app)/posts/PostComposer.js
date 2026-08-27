@@ -166,7 +166,7 @@ export function PostComposer({ locale, tests, author }) {
 
         {error && <p className="text-sm text-destructive">{error}</p>}
 
-        <Button type="submit" variant="add" disabled={loading || !content.trim()} className="self-end">
+        <Button type="submit" variant="add" loading={loading} disabled={!content.trim()} className="self-end">
           {t("posts.publish")}
         </Button>
       </form>

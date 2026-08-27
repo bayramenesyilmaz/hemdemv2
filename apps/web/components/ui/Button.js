@@ -35,6 +35,22 @@ const VARIANTS = {
 };
 
 /**
+ * `loading` bir işlem sürerken (paylaşım, kayıt, silme…) butonun içine
+ * dönen bir spinner ekler ve butonu devre dışı bırakır — kullanıcı
+ * dokunmanın "işe yaradığını" görsün diye, aksi hâlde yavaş bir ağ
+ * isteğinde buton hiçbir şey olmamış gibi durup tekrar tekrar
+ * tıklanabiliyordu.
+ */
+function Spinner({ className }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn("inline-block animate-spin rounded-full border-2 border-current border-t-transparent", className)}
+    />
+  );
+}
+
+/**
  * Plan'da (bölüm 7) tanımlı buton varyantları. `href` verilirse
  * `next/link` ile navigasyon butonu, verilmezse normal `<button>`.
  *
@@ -43,14 +59,29 @@ const VARIANTS = {
  * ihtiyaç duyar.
  */
 export const Button = forwardRef(function Button(
-  { variant = "confirm", className, href, ...props },
+  { variant = "confirm", className, href, loading = false, disabled, children, ...props },
   ref
 ) {
   const classes = cn(BASE, VARIANTS[variant], className);
+  const isDisabled = Boolean(disabled) || loading;
+  const content = (
+    <>
+      {loading && <Spinner className="size-4 shrink-0" />}
+      {children}
+    </>
+  );
 
   if (href) {
-    return <Link href={href} className={classes} ref={ref} {...props} />;
+    return (
+      <Link href={href} className={classes} ref={ref} {...props}>
+        {content}
+      </Link>
+    );
   }
 
-  return <button type="button" className={classes} ref={ref} {...props} />;
+  return (
+    <button type="button" className={classes} disabled={isDisabled} ref={ref} {...props}>
+      {content}
+    </button>
+  );
 });

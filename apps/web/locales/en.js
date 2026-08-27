@@ -15,6 +15,8 @@ const en = {
     primaryNavLabel: "Main navigation",
     profile: "My Profile",
     logout: "Log Out",
+    logoutConfirmTitle: "Are you sure you want to log out?",
+    logoutConfirmAction: "Yes, log out",
   },
   home: {
     title: "Discover your personality, find real matches",

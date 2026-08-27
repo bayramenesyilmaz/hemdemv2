@@ -44,7 +44,7 @@ export function AdminUsersList({ locale, users }) {
             <Button
               type="button"
               variant={user.isBanned ? "confirm" : "delete"}
-              disabled={pendingId === user.id}
+              loading={pendingId === user.id}
               onClick={() => handleToggleBan(user.id, !user.isBanned)}
             >
               {user.isBanned ? t("admin.unban") : t("admin.ban")}

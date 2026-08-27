@@ -6,6 +6,7 @@ import { useI18n } from "@/locales/client";
 import { EmptyState } from "@/components/EmptyState";
 import { SectionCard } from "@/components/SectionCard";
 import { Button } from "@/components/ui/Button";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/Dialog";
 import { approveTestAction, rejectTestAction } from "@/lib/actions/adminActions";
 
 export function AdminPendingTestsList({ locale, initialTests }) {
@@ -39,18 +40,36 @@ export function AdminPendingTestsList({ locale, initialTests }) {
             {test.title}
           </Link>
           <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="delete"
-              disabled={pendingId === test.id}
-              onClick={() => handleReject(test.id)}
-            >
-              {t("admin.reject")}
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button type="button" variant="delete" disabled={pendingId === test.id}>
+                  {t("admin.reject")}
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogTitle>{t("tests.deleteConfirmTitle")}</DialogTitle>
+                <DialogDescription>{t("tests.deleteConfirmBody")}</DialogDescription>
+                <div className="mt-4 flex justify-end gap-3">
+                  <DialogClose asChild>
+                    <Button type="button" variant="outline">
+                      {t("profile.cancel")}
+                    </Button>
+                  </DialogClose>
+                  <Button
+                    type="button"
+                    variant="delete"
+                    loading={pendingId === test.id}
+                    onClick={() => handleReject(test.id)}
+                  >
+                    {t("tests.deleteConfirmAction")}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
             <Button
               type="button"
               variant="confirm"
-              disabled={pendingId === test.id}
+              loading={pendingId === test.id}
               onClick={() => handleApprove(test.id)}
             >
               {t("admin.approve")}

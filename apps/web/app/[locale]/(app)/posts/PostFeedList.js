@@ -65,7 +65,12 @@ export function PostFeedList({ locale, entries, currentUserId }) {
                           {t("profile.cancel")}
                         </Button>
                       </DialogClose>
-                      <Button type="button" variant="delete" onClick={() => handleDelete(post.id)}>
+                      <Button
+                        type="button"
+                        variant="delete"
+                        loading={deletingId === post.id}
+                        onClick={() => handleDelete(post.id)}
+                      >
                         {t("posts.deleteConfirmAction")}
                       </Button>
                     </div>

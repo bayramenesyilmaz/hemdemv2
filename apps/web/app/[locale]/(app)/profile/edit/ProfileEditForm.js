@@ -230,7 +230,7 @@ export function ProfileEditForm({ locale, profile, tests }) {
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
-      <Button type="submit" variant="confirm" disabled={loading}>
+      <Button type="submit" variant="confirm" loading={loading}>
         {t("profile.save")}
       </Button>
 
@@ -249,7 +249,7 @@ export function ProfileEditForm({ locale, profile, tests }) {
                 {t("profile.cancel")}
               </Button>
             </DialogClose>
-            <Button type="button" variant="delete" disabled={deleting} onClick={handleDeleteAccount}>
+            <Button type="button" variant="delete" loading={deleting} onClick={handleDeleteAccount}>
               {t("profile.deleteAccountConfirmAction")}
             </Button>
           </div>

@@ -50,7 +50,7 @@ export function UnlockViewersPanel({ locale, cost }) {
   return (
     <div className="flex flex-col items-start gap-2">
       {error && <p className="text-sm text-destructive">{error}</p>}
-      <Button type="button" variant="add" onClick={handleUnlock} disabled={loading}>
+      <Button type="button" variant="add" onClick={handleUnlock} loading={loading}>
         {t("viewers.unlockButton", { cost })}
       </Button>
     </div>

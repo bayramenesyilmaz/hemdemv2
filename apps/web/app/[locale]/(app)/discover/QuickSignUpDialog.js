@@ -104,7 +104,7 @@ export function QuickSignUpDialog({ locale, target, onClose, onSuccess }) {
               <Button type="button" variant="outline" onClick={onClose}>
                 {t("profile.cancel")}
               </Button>
-              <Button type="submit" variant="confirm" disabled={loading}>
+              <Button type="submit" variant="confirm" loading={loading}>
                 {t("discover.quickSignUpSubmit")}
               </Button>
             </div>

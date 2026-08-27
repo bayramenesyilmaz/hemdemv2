@@ -15,6 +15,8 @@ const tr = {
     primaryNavLabel: "Ana navigasyon",
     profile: "Profilim",
     logout: "Çıkış Yap",
+    logoutConfirmTitle: "Çıkış yapmak istediğine emin misin?",
+    logoutConfirmAction: "Evet, çıkış yap",
   },
   home: {
     title: "Kişiliğini keşfet, gerçek eşleşmeler bul",

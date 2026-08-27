@@ -55,7 +55,12 @@ export function MyTestsList({ locale, tests }) {
                     {t("profile.cancel")}
                   </Button>
                 </DialogClose>
-                <Button type="button" variant="delete" onClick={() => handleDelete(test.id)}>
+                <Button
+                  type="button"
+                  variant="delete"
+                  loading={deletingId === test.id}
+                  onClick={() => handleDelete(test.id)}
+                >
                   {t("tests.deleteConfirmAction")}
                 </Button>
               </div>

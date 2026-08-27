@@ -35,6 +35,7 @@ export function PostAuthorRail({ locale, entries, currentUserId, currentAuthor, 
   const [activeAuthor, setActiveAuthor] = useState(null);
   const [editText, setEditText] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [detailError, setDetailError] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
 
@@ -82,6 +83,7 @@ export function PostAuthorRail({ locale, entries, currentUserId, currentAuthor, 
     setActiveAuthor(author);
     setEditText(note.text);
     setIsEditing(false);
+    setConfirmDelete(false);
     setDetailError(null);
   }
 
@@ -89,6 +91,7 @@ export function PostAuthorRail({ locale, entries, currentUserId, currentAuthor, 
     if (!open) {
       setActiveAuthor(null);
       setIsEditing(false);
+      setConfirmDelete(false);
       setDetailError(null);
     }
   }
@@ -204,7 +207,7 @@ export function PostAuthorRail({ locale, entries, currentUserId, currentAuthor, 
                   {t("profile.cancel")}
                 </Button>
               </DialogClose>
-              <Button type="submit" variant="add" disabled={composeLoading || !composeText.trim()}>
+              <Button type="submit" variant="add" loading={composeLoading} disabled={!composeText.trim()}>
                 {t("notes.share")}
               </Button>
             </div>
@@ -244,7 +247,7 @@ export function PostAuthorRail({ locale, entries, currentUserId, currentAuthor, 
                     <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
                       {t("profile.cancel")}
                     </Button>
-                    <Button type="button" variant="confirm" disabled={detailLoading} onClick={handleSaveEdit}>
+                    <Button type="button" variant="confirm" loading={detailLoading} onClick={handleSaveEdit}>
                       {t("notes.save")}
                     </Button>
                   </div>
@@ -254,16 +257,29 @@ export function PostAuthorRail({ locale, entries, currentUserId, currentAuthor, 
                   <p className="mt-4 whitespace-pre-wrap text-[15px] leading-relaxed text-foreground">
                     {activeNote.text}
                   </p>
-                  {activeAuthor.id === currentUserId && (
-                    <div className="mt-4 flex justify-end gap-3">
-                      <Button type="button" variant="edit" onClick={() => setIsEditing(true)}>
-                        {t("notes.edit")}
-                      </Button>
-                      <Button type="button" variant="delete" disabled={detailLoading} onClick={handleDelete}>
-                        {t("notes.delete")}
-                      </Button>
-                    </div>
-                  )}
+                  {activeAuthor.id === currentUserId &&
+                    (confirmDelete ? (
+                      <div className="mt-4 flex flex-col gap-3">
+                        <p className="text-sm text-muted-foreground">{t("notes.deleteConfirmBody")}</p>
+                        <div className="flex justify-end gap-3">
+                          <Button type="button" variant="outline" onClick={() => setConfirmDelete(false)}>
+                            {t("profile.cancel")}
+                          </Button>
+                          <Button type="button" variant="delete" loading={detailLoading} onClick={handleDelete}>
+                            {t("notes.deleteConfirmAction")}
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="mt-4 flex justify-end gap-3">
+                        <Button type="button" variant="edit" onClick={() => setIsEditing(true)}>
+                          {t("notes.edit")}
+                        </Button>
+                        <Button type="button" variant="delete" onClick={() => setConfirmDelete(true)}>
+                          {t("notes.delete")}
+                        </Button>
+                      </div>
+                    ))}
                 </>
               )}
             </>

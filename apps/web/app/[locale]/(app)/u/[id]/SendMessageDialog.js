@@ -60,7 +60,7 @@ export function SendMessageDialog({ locale, recipientId, recipientName }) {
                 {t("profile.cancel")}
               </Button>
             </DialogClose>
-            <Button type="submit" variant="send" disabled={loading || !content.trim()}>
+            <Button type="submit" variant="send" loading={loading} disabled={!content.trim()}>
               {t("messages.send")}
             </Button>
           </div>

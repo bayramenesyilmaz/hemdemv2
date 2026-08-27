@@ -63,7 +63,7 @@ export function ResetPasswordForm({ locale }) {
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
-      <Button type="submit" variant="confirm" disabled={loading}>
+      <Button type="submit" variant="confirm" loading={loading}>
         {t("auth.resetPassword.submit")}
       </Button>
     </form>
