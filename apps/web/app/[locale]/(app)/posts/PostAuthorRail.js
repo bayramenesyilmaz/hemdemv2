@@ -22,7 +22,7 @@ const NOTE_MAX_LENGTH = 120;
  * dokununca her zaman o kişinin profiline gidilir — iki dokunma hedefi
  * kasıtlı olarak ayrı tutuldu.
  */
-export function PostAuthorRail({ locale, entries, currentUserId, currentAuthor, notesByAuthor }) {
+export function PostAuthorRail({ locale, noteAuthors, currentUserId, currentAuthor, notesByAuthor }) {
   const t = useI18n();
   const uiLocale = useCurrentLocale();
 
@@ -48,7 +48,7 @@ export function PostAuthorRail({ locale, entries, currentUserId, currentAuthor, 
     seen.add(currentUserId);
     authors.push(currentAuthor);
   }
-  for (const { author } of entries) {
+  for (const author of noteAuthors ?? []) {
     if (seen.has(author.id) || !notes[author.id]) continue;
     seen.add(author.id);
     authors.push(author);

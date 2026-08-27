@@ -31,6 +31,31 @@ export function createSupabaseNoteRepository(client) {
       return (data ?? []).map(toNote);
     },
 
+    async findRecent(limit) {
+      // Bir kullanıcının birden fazla notu olabileceği için (dünkü + bugünkü
+      // gibi) her kullanıcı başına tek satır garantilemek adına gerekenden
+      // fazla satır çekilip JS'te kullanıcı başına ilk (en yeni) satır
+      // tutuluyor — findLatestByUsers'daki aynı teknik.
+      const { data, error } = await client
+        .from("notes")
+        .select("*")
+        .gte("created_at", noteCutoffIso())
+        .order("created_at", { ascending: false })
+        .limit(limit * 5);
+      if (error) throw error;
+
+      const seen = new Set();
+      const result = [];
+      for (const row of data ?? []) {
+        const note = toNote(row);
+        if (seen.has(note.userId)) continue;
+        seen.add(note.userId);
+        result.push(note);
+        if (result.length >= limit) break;
+      }
+      return result;
+    },
+
     async findLatestByUsers(userIds) {
       if (userIds.length === 0) return {};
       const { data, error } = await client

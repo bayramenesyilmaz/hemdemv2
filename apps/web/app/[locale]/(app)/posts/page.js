@@ -1,6 +1,7 @@
 import { setStaticParamsLocale } from "next-international/server";
 import { fetchFeed } from "@hemdem/core/usecases/posts/fetchFeed";
 import { fetchLatestNotesByUsers } from "@hemdem/core/usecases/notes/fetchLatestNotesByUsers";
+import { fetchRecentNotes } from "@hemdem/core/usecases/notes/fetchRecentNotes";
 import { getI18n } from "@/locales/server";
 import { getAuthUserId } from "@/lib/session";
 import { getCurrentProfile } from "@/lib/currentUser";
@@ -37,9 +38,27 @@ export default async function PostsPage({ params }) {
     getCurrentProfile(),
   ]);
 
-  const authorIds = [...new Set(feedResult.data.map(({ author: postAuthor }) => postAuthor.id))];
-  if (userId && !authorIds.includes(userId)) authorIds.push(userId);
-  const notesResult = await fetchLatestNotesByUsers(repositories, authorIds);
+  // Not şeridi Instagram Not gibi gönderi akışından bağımsız: sistem
+  // genelindeki en güncel notlar + (varsa) giriş yapan kullanıcının kendi
+  // notu birleştirilir, sadece gönderi paylaşmış kişilerle sınırlı kalınmaz.
+  const [recentNotesResult, ownNoteResult] = await Promise.all([
+    fetchRecentNotes(repositories, 20),
+    userId ? fetchLatestNotesByUsers(repositories, [userId]) : Promise.resolve({ data: {} }),
+  ]);
+
+  const notesByAuthor = { ...ownNoteResult.data };
+  for (const note of recentNotesResult.data) {
+    if (!notesByAuthor[note.userId]) notesByAuthor[note.userId] = note;
+  }
+
+  const noteAuthorIds = Object.keys(notesByAuthor).filter((id) => id !== userId);
+  const feedAuthorsById = new Map(feedResult.data.map(({ author: postAuthor }) => [postAuthor.id, postAuthor]));
+  const missingIds = noteAuthorIds.filter((id) => !feedAuthorsById.has(id));
+  const missingProfiles = await Promise.all(missingIds.map((id) => repositories.user.findById(id)));
+  for (const profile of missingProfiles) {
+    if (profile) feedAuthorsById.set(profile.id, profile);
+  }
+  const noteAuthors = noteAuthorIds.map((id) => feedAuthorsById.get(id)).filter(Boolean);
 
   const t = await getI18n();
 
@@ -49,10 +68,10 @@ export default async function PostsPage({ params }) {
 
       <PostAuthorRail
         locale={locale}
-        entries={feedResult.data}
+        noteAuthors={noteAuthors}
         currentUserId={userId}
         currentAuthor={author}
-        notesByAuthor={notesResult.data}
+        notesByAuthor={notesByAuthor}
       />
 
       {userId ? (

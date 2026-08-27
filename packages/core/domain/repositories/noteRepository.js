@@ -7,6 +7,7 @@
  *
  * @typedef {object} NoteRepository
  * @property {(userId: string) => Promise<Note[]>} findByUser
+ * @property {(limit: number) => Promise<Note[]>} findRecent
  * @property {(userIds: string[]) => Promise<Record<string, Note>>} findLatestByUsers
  * @property {(note: Partial<Note>) => Promise<Note>} create
  * @property {(id: string, userId: string, text: string) => Promise<Note>} update

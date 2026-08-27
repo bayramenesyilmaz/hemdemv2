@@ -12,6 +12,16 @@ export function createMockNoteRepository(store) {
         .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
     },
 
+    async findRecent(limit) {
+      const latestPerUser = [];
+      for (const list of store.notes.values()) {
+        const unexpired = list.filter((note) => !isNoteExpired(note.createdAt));
+        if (unexpired.length === 0) continue;
+        latestPerUser.push(unexpired.reduce((latest, note) => (note.createdAt > latest.createdAt ? note : latest)));
+      }
+      return latestPerUser.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1)).slice(0, limit);
+    },
+
     async findLatestByUsers(userIds) {
       const result = {};
       for (const userId of userIds) {
