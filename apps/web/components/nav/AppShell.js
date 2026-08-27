@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { AppHeader } from "./AppHeader";
 import { BottomNav } from "./BottomNav";
 import { Sidebar } from "./Sidebar";
@@ -26,6 +27,19 @@ export function AppShell({
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const { primary, secondary } = useNavItems({ locale, isAuthenticated, isAdmin });
+  const pathname = usePathname();
+
+  // AppShell sayfalar arasında hiç unmount olmaz (sadece `children`
+  // değişir), bu yüzden menü açıkken geri tuşuna basılınca URL/sayfa
+  // değişir ama `menuOpen` state'i hayatta kalır ve menü yeni sayfanın
+  // üzerinde açık görünmeye devam ederdi. React'in önerdiği "render
+  // sırasında state ayarlama" deseniyle (useEffect yerine) rota
+  // değiştiğinde kapatılır — bu ekstra bir render turu eklemez.
+  const [renderedPathname, setRenderedPathname] = useState(pathname);
+  if (pathname !== renderedPathname) {
+    setRenderedPathname(pathname);
+    setMenuOpen(false);
+  }
 
   return (
     <div className="min-h-dvh bg-background lg:pl-64">

@@ -1,66 +1,51 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:is(.dark *));
-
+/**
+ * Tasarım yönü: koyu tema, sade ve şık (Linear/Arc benzeri) — kullanıcının
+ * açıkça seçtiği yön. Önceki sürümde `.dark` bir sınıf değişkeniydi ama
+ * hiçbir yerde `<html>`a eklenmiyordu, yani karanlık palet hiç
+ * kullanılmıyordu; bu karışıklığı tekrarlamamak için tek ve varsayılan
+ * tema burada tanımlanır, koşullu bir sınıfa bağlı değildir.
+ *
+ * Önceki paletten fark: iki renkli pembe→mor gradyanlar kaldırıldı, tek
+ * bir vurgu rengi (mercan/gül tonu) kullanılıyor; gölgeler koyu zeminde
+ * neredeyse görünmez olduğu için kaldırılıp yerine ince kenarlıklar ve
+ * yüzey katmanları (background → card → muted, her biri biraz daha açık)
+ * konuldu.
+ */
 :root {
-  --background: hsl(0 0% 100%);
-  --foreground: hsl(240 10% 10%);
+  --background: hsl(240 8% 7%);
+  --foreground: hsl(0 0% 94%);
 
-  --card: hsl(0 0% 100%);
-  --card-foreground: hsl(240 10% 10%);
+  --card: hsl(240 7% 11%);
+  --card-foreground: hsl(0 0% 94%);
 
-  --primary: hsl(350 82% 52%);
+  --primary: hsl(350 68% 58%);
   --primary-foreground: hsl(0 0% 100%);
 
-  --secondary: hsl(240 5% 10%);
-  --secondary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(240 6% 18%);
+  --secondary-foreground: hsl(0 0% 94%);
 
-  --muted: hsl(240 5% 96%);
-  --muted-foreground: hsl(240 4% 46%);
+  --muted: hsl(240 6% 15%);
+  --muted-foreground: hsl(240 5% 62%);
 
-  --destructive: hsl(0 72% 51%);
+  --destructive: hsl(0 62% 56%);
   --destructive-foreground: hsl(0 0% 100%);
 
-  --border: hsl(240 6% 90%);
-  --radius: 0.75rem;
+  --border: hsl(240 6% 19%);
+  --radius: 0.625rem;
 
-  /* Marka gradyanı — birincil butonlar, rozetler ve vurgu yüzeyleri. */
-  --gradient-primary: linear-gradient(135deg, hsl(350 82% 55%), hsl(330 80% 45%));
-  --gradient-surface: linear-gradient(135deg, hsl(350 82% 52% / 0.08), hsl(280 70% 55% / 0.08));
+  /* Tek renkli, çok az fark eden gradyan — düz rengin aksine hafif bir
+     derinlik verir ama "gökkuşağı" hissi vermez. */
+  --gradient-primary: linear-gradient(135deg, hsl(350 68% 61%), hsl(350 62% 52%));
+  --gradient-surface: linear-gradient(135deg, hsl(350 68% 58% / 0.1), hsl(350 68% 58% / 0.06));
 
-  /* Yumuşak, katmanlı gölgeler — tek bir sert gölge yerine iki katman. */
-  --shadow-sm: 0 1px 2px hsl(240 10% 10% / 0.05);
-  --shadow-md: 0 2px 4px hsl(240 10% 10% / 0.04), 0 6px 16px hsl(240 10% 10% / 0.07);
-  --shadow-lg: 0 4px 8px hsl(240 10% 10% / 0.05), 0 16px 32px hsl(240 10% 10% / 0.1);
-}
-
-.dark {
-  --background: hsl(240 10% 6%);
-  --foreground: hsl(0 0% 96%);
-
-  --card: hsl(240 8% 10%);
-  --card-foreground: hsl(0 0% 96%);
-
-  --primary: hsl(350 82% 58%);
-  --primary-foreground: hsl(0 0% 100%);
-
-  --secondary: hsl(240 5% 90%);
-  --secondary-foreground: hsl(240 10% 10%);
-
-  --muted: hsl(240 6% 16%);
-  --muted-foreground: hsl(240 5% 65%);
-
-  --destructive: hsl(0 72% 51%);
-  --destructive-foreground: hsl(0 0% 100%);
-
-  --border: hsl(240 6% 20%);
-
-  --gradient-primary: linear-gradient(135deg, hsl(350 82% 58%), hsl(330 78% 48%));
-  --gradient-surface: linear-gradient(135deg, hsl(350 82% 58% / 0.14), hsl(280 70% 60% / 0.14));
-
-  --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.3);
-  --shadow-md: 0 2px 4px hsl(0 0% 0% / 0.3), 0 6px 16px hsl(0 0% 0% / 0.35);
-  --shadow-lg: 0 4px 8px hsl(0 0% 0% / 0.35), 0 16px 32px hsl(0 0% 0% / 0.45);
+  /* Koyu zeminde gölge yerine kenarlık + yüzey katmanı okunurluğu taşır;
+     gölgeler sadece gerçekten kaldırılmış (dialog, FAB) öğelerde ince bir
+     iz bırakacak kadar var. */
+  --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.25);
+  --shadow-md: 0 2px 6px hsl(0 0% 0% / 0.3);
+  --shadow-lg: 0 8px 24px hsl(0 0% 0% / 0.4);
 }
 
 @theme inline {

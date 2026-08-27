@@ -7,10 +7,19 @@ import { cn } from "@/lib/cn";
  * HIG). `active:scale-[0.97]` mobilde dokunma geri bildirimi verir —
  * hover'ı olmayan cihazlarda butonun "bastım" hissini karşılar.
  */
+/**
+ * Disabled durumu opacity ile değil sabit renklerle işaretlenir: koyu
+ * zeminde opacity azaltmak, kontrastı VEREN şeyin (beyaz metnin
+ * parlaklığının) ta kendisini siliyor ve "Paylaş" gibi butonlar okunaksız
+ * koyu bir leke hâline geliyordu. `!` ile zorlanan sabit renkler, hangi
+ * varyant olursa olsun (gradyan dahil) aynı okunaklı gri disabled hâlini
+ * garanti eder.
+ */
 const BASE =
   "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold " +
   "transition-all duration-150 active:scale-[0.97] " +
-  "disabled:opacity-50 disabled:pointer-events-none disabled:active:scale-100 " +
+  "disabled:pointer-events-none disabled:active:scale-100 " +
+  "disabled:!bg-none disabled:!bg-muted disabled:!text-muted-foreground disabled:!shadow-none disabled:!border-transparent " +
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
 const VARIANTS = {

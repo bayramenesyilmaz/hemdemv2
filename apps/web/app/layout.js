@@ -21,10 +21,9 @@ export const viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0f0f12" },
-  ],
+  // Uygulamanın tek teması koyu (bkz. globals.css) — sistem tercihine göre
+  // değişen iki ayrı renk yerine tarayıcı kromu her zaman bu tonla eşleşir.
+  themeColor: "#0e0e11",
 };
 
 export default function RootLayout({ children }) {
