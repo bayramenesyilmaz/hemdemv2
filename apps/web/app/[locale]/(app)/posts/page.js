@@ -11,6 +11,7 @@ import { InfoBanner } from "@/components/InfoBanner";
 import { Button } from "@/components/ui/Button";
 import { PostComposer } from "./PostComposer";
 import { PostFeedList } from "./PostFeedList";
+import { PostAuthorRail } from "./PostAuthorRail";
 
 export async function generateMetadata({ params }) {
   const { locale } = await params;
@@ -40,6 +41,13 @@ export default async function PostsPage({ params }) {
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-6 lg:px-6 lg:py-8">
       <PageTitle>{t("posts.title")}</PageTitle>
+
+      <PostAuthorRail
+        locale={locale}
+        entries={feedResult.data}
+        currentUserId={userId}
+        currentAuthor={author}
+      />
 
       {userId ? (
         <PostComposer locale={locale} tests={tests} author={author} />

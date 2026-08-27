@@ -59,14 +59,20 @@ export function AdWatchTierList({ tiers }) {
             key={tierConfig.tier}
             className={`flex items-center justify-between gap-4 ${isMostAdvantageous ? "border-primary" : ""}`}
           >
-            <div>
+            <div className="min-w-0">
+              {/* Rozet aynı satırda metnin İÇİNE gömülüydü (inline span);
+                  "120 saniyelik reklam" gibi uzun etiketlerle satır
+                  sardığında rozet metnin üzerine biniyordu (gerçek
+                  ölçümle doğrulandı: ikisi de aynı x koordinatında
+                  başlıyordu). Rozeti ayrı bir satıra alıp kesin bir
+                  boşluk (mb-1) veriyoruz ki hiçbir uzunlukta çakışmasın. */}
+              {isMostAdvantageous && (
+                <span className="mb-1 inline-block w-fit rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
+                  {t("coins.mostAdvantageous")}
+                </span>
+              )}
               <p className="font-medium text-foreground">
                 {t("coins.tierSeconds", { seconds: tierConfig.seconds })}
-                {isMostAdvantageous && (
-                  <span className="ml-2 rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">
-                    {t("coins.mostAdvantageous")}
-                  </span>
-                )}
               </p>
               <p className="text-sm text-muted-foreground">{t("coins.tierReward", { reward: tierConfig.coinReward })}</p>
             </div>
@@ -76,6 +82,7 @@ export function AdWatchTierList({ tiers }) {
               variant="add"
               disabled={watchingTier !== null}
               onClick={() => startWatching(tierConfig)}
+              className="shrink-0 whitespace-nowrap"
             >
               {isWatching ? t("coins.watching", { remaining }) : t("coins.watchButton")}
             </Button>
