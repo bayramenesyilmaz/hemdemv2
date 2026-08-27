@@ -272,6 +272,8 @@ const tr = {
   posts: {
     title: "Gönderiler",
     subtitle: "Düşüncelerini paylaş, istersen bir teste bağla.",
+    notesSectionTitle: "Durumlar",
+    feedSectionTitle: "Gönderiler",
     composerPlaceholder: "Aklından ne geçiyor?",
     taggedTestLabel: "Bir test etiketle (isteğe bağlı)",
     noTag: "Test etiketleme",

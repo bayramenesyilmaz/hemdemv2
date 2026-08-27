@@ -270,6 +270,8 @@ const en = {
   posts: {
     title: "Posts",
     subtitle: "Share what's on your mind, tag a test if you like.",
+    notesSectionTitle: "Status Updates",
+    feedSectionTitle: "Posts",
     composerPlaceholder: "What's on your mind?",
     taggedTestLabel: "Tag a test (optional)",
     noTag: "No test tag",

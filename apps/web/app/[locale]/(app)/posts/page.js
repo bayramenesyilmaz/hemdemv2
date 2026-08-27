@@ -61,35 +61,55 @@ export default async function PostsPage({ params }) {
   const noteAuthors = noteAuthorIds.map((id) => feedAuthorsById.get(id)).filter(Boolean);
 
   const t = await getI18n();
+  const showNotesSection = Boolean(userId && author) || noteAuthors.length > 0;
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-4 px-4 py-6 lg:px-6 lg:py-8">
       <PageTitle>{t("posts.title")}</PageTitle>
 
-      <PostAuthorRail
-        locale={locale}
-        noteAuthors={noteAuthors}
-        currentUserId={userId}
-        currentAuthor={author}
-        notesByAuthor={notesByAuthor}
-      />
+      {showNotesSection && (
+        <>
+          <section className="flex flex-col gap-3">
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              {t("posts.notesSectionTitle")}
+            </h2>
+            <PostAuthorRail
+              locale={locale}
+              noteAuthors={noteAuthors}
+              currentUserId={userId}
+              currentAuthor={author}
+              notesByAuthor={notesByAuthor}
+            />
+          </section>
 
-      {userId ? (
-        <PostComposer locale={locale} author={author} />
-      ) : (
-        <InfoBanner>
-          {t("posts.guestNotice")}{" "}
-          <Button href={`/${locale}/register`} variant="link">
-            {t("home.ctaRegister")}
-          </Button>
-        </InfoBanner>
+          {/* Neredeyse görünmez ince ayraç: iki bölümün üst üste yığılı
+              olduğunu belli eder ama görsel gürültü yaratmaz. */}
+          <div aria-hidden="true" className="h-px bg-border/40" />
+        </>
       )}
 
-      {feedResult.data.length === 0 ? (
-        <EmptyState title={t("posts.emptyTitle")} description={t("posts.emptyBody")} />
-      ) : (
-        <PostFeedList locale={locale} entries={feedResult.data} currentUserId={userId} />
-      )}
+      <section className="flex flex-col gap-4">
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          {t("posts.feedSectionTitle")}
+        </h2>
+
+        {userId ? (
+          <PostComposer locale={locale} author={author} />
+        ) : (
+          <InfoBanner>
+            {t("posts.guestNotice")}{" "}
+            <Button href={`/${locale}/register`} variant="link">
+              {t("home.ctaRegister")}
+            </Button>
+          </InfoBanner>
+        )}
+
+        {feedResult.data.length === 0 ? (
+          <EmptyState title={t("posts.emptyTitle")} description={t("posts.emptyBody")} />
+        ) : (
+          <PostFeedList locale={locale} entries={feedResult.data} currentUserId={userId} />
+        )}
+      </section>
     </main>
   );
 }
