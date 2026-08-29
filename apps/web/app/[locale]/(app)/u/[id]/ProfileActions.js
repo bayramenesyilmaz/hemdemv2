@@ -76,16 +76,11 @@ export function ProfileActions({ locale, profileId, profileName, gateTestId }) {
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <button
-        type="button"
-        onClick={handleLike}
-        disabled={pending}
-        aria-label={t("discover.like")}
-        className="flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-soft transition-transform active:scale-95 disabled:pointer-events-none disabled:opacity-60"
-      >
-        <HeartIcon className="size-5" />
-      </button>
+    <div className="flex min-w-0 flex-1 flex-col gap-2">
+      <Button type="button" onClick={handleLike} loading={pending} variant="confirm" className="w-full">
+        <HeartIcon className="size-4" />
+        {t("discover.like")}
+      </Button>
 
       {error && <p className="text-sm text-destructive">{error}</p>}
       {likeSent && <p className="text-sm text-primary">{t("discover.likeSent")}</p>}

@@ -124,6 +124,7 @@ const tr = {
     gateTestLabel: "Kapı testi",
     gateTestNone: "Yok",
     gateTestActive: "Aktif",
+    solvedTestsTitle: "Çözdüğü Testler",
     gateTestThresholdLabel: "Minimum benzerlik yüzdesi",
     allowGuestLikesLabel: "Misafirlerin bana beğeni göndermesine izin ver",
     socialLinksLabel: "Sosyal medya hesapları",

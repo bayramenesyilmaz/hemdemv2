@@ -122,6 +122,7 @@ const en = {
     gateTestLabel: "Gate test",
     gateTestNone: "None",
     gateTestActive: "Active",
+    solvedTestsTitle: "Tests They've Solved",
     gateTestThresholdLabel: "Minimum similarity percentage",
     allowGuestLikesLabel: "Allow guests to send me likes",
     socialLinksLabel: "Social media accounts",

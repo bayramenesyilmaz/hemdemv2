@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { setStaticParamsLocale } from "next-international/server";
 import { calculateAge } from "@hemdem/core/domain/entities/user";
 import { getI18n } from "@/locales/server";
@@ -43,16 +44,21 @@ export default async function PublicProfilePage({ params }) {
   const existingChat =
     viewerId && viewerId !== profile.id ? await repositories.chat.findByPair(viewerId, profile.id) : null;
 
+  const answers = await repositories.test.findAnswersByUser(profile.id);
+  const solvedTests = (await Promise.all(answers.map((a) => repositories.test.findById(a.testId)))).filter(
+    Boolean
+  );
+
   const t = await getI18n();
   const socialEntries = Object.entries(profile.socialLinks ?? {});
   const age = profile.birthdate ? calculateAge(profile.birthdate) : null;
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 pb-6 lg:px-6 lg:py-8">
-      {/* Keşfet kartındaki gibi tam ekran fotoğraf: mobilde main'in yatay
-          padding'i olmadığı için kenardan kenara, masaüstünde içerik
-          sütununun genişliğinde yuvarlatılmış bir panel. */}
-      <div className="relative aspect-[3/4] w-full overflow-hidden bg-muted lg:aspect-[4/5] lg:rounded-3xl lg:border lg:border-border lg:shadow-float">
+      {/* Keşfet kartındaki gibi büyük bir fotoğraf, ama bu sayfa kaydırılan
+          bir profil sayfası (keşfetin tam ekran kartı değil): yükseklik
+          görüntü alanının çoğunu kaplamasın diye viewport'a göre sınırlı. */}
+      <div className="relative h-[42vh] max-h-[420px] min-h-[280px] w-full overflow-hidden bg-muted lg:h-[420px] lg:rounded-3xl lg:border lg:border-border lg:shadow-float">
         {profile.avatarUrl ? (
           <Image
             src={profile.avatarUrl}
@@ -114,17 +120,53 @@ export default async function PublicProfilePage({ params }) {
               {t("messages.goToChat")}
             </Button>
           ) : (
-            <div className="flex flex-col gap-4">
+            // İki aksiyon da aynı paylaşılan Button bileşeniyle, eşit
+            // genişlikte render edilir — önceden biri dairesel ikon-only
+            // (48px), diğeri Button'ın kendi ölçüsünde (40px) tam genişlik
+            // bir metin butonuydu ve boyutça tutarsız duruyordu.
+            <div className="flex gap-3">
               <ProfileActions
                 locale={locale}
                 profileId={profile.id}
                 profileName={profile.name}
                 gateTestId={profile.gateTestId}
               />
-              <SendMessageDialog locale={locale} recipientId={profile.id} recipientName={profile.name} />
+              <SendMessageDialog
+                locale={locale}
+                recipientId={profile.id}
+                recipientName={profile.name}
+                trigger={
+                  <Button type="button" variant="outline" className="min-w-0 flex-1">
+                    {t("messages.sendMessageButton")}
+                  </Button>
+                }
+              />
             </div>
           ))}
       </SectionCard>
+
+      {solvedTests.length > 0 && (
+        <SectionCard className="mx-4 flex flex-col gap-3 lg:mx-0">
+          <h2 className="text-sm font-semibold text-foreground">{t("profile.solvedTestsTitle")}</h2>
+          <div className="flex flex-col gap-2">
+            {solvedTests.map((test) => (
+              <Link
+                key={test.id}
+                href={
+                  viewerId === profile.id
+                    ? `/${locale}/tests/${test.id}/result`
+                    : viewerId
+                      ? `/${locale}/tests/${test.id}/compare/${profile.id}`
+                      : `/${locale}/tests/${test.id}`
+                }
+                className="rounded-lg px-3 py-2.5 text-sm font-medium text-foreground underline-offset-2 hover:bg-muted hover:underline"
+              >
+                {test.title}
+              </Link>
+            ))}
+          </div>
+        </SectionCard>
+      )}
     </main>
   );
 }
