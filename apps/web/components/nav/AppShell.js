@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { fetchUnreadNotificationCountAction } from "@/lib/actions/notificationActions";
 import { AppHeader } from "./AppHeader";
 import { BottomNav } from "./BottomNav";
 import { Sidebar } from "./Sidebar";
 import { AppMenu } from "./AppMenu";
 import { useNavItems } from "./navItems";
+
+const UNREAD_POLL_INTERVAL_MS = 8000;
 
 /**
  * Mobil öncelikli uygulama kabuğu (plan bölüm 6 + 7):
@@ -29,6 +32,20 @@ export function AppShell({
   const { primary, secondary } = useNavItems({ locale, isAuthenticated, isAdmin });
   const pathname = usePathname();
 
+  // Tek bir sondaj (polling) döngüsü hem mobil header'daki zil rozetini
+  // hem de masaüstü sidebar'daki "Bildirimler" rozetini besliyor —
+  // ikisi ayrı ayrı sondaj yapsaydı her 8 saniyede iki katı istek atardı.
+  const [liveUnreadCount, setLiveUnreadCount] = useState(unreadCount);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const interval = setInterval(async () => {
+      const count = await fetchUnreadNotificationCountAction();
+      setLiveUnreadCount(count);
+    }, UNREAD_POLL_INTERVAL_MS);
+    return () => clearInterval(interval);
+  }, [isAuthenticated]);
+
   // AppShell sayfalar arasında hiç unmount olmaz (sadece `children`
   // değişir), bu yüzden menü açıkken geri tuşuna basılınca URL/sayfa
   // değişir ama `menuOpen` state'i hayatta kalır ve menü yeni sayfanın
@@ -49,6 +66,7 @@ export function AppShell({
         secondaryItems={secondary}
         isAuthenticated={isAuthenticated}
         coinBalance={coinBalance}
+        unreadCount={liveUnreadCount}
       />
 
       <AppHeader
@@ -56,7 +74,7 @@ export function AppShell({
         isAuthenticated={isAuthenticated}
         coinBalance={coinBalance}
         avatarUrl={avatarUrl}
-        unreadCount={unreadCount}
+        unreadCount={liveUnreadCount}
       />
 
       <div className="pb-[calc(4rem+env(safe-area-inset-bottom))] lg:pb-0">{children}</div>

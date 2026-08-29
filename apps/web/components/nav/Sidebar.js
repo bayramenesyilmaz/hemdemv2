@@ -15,11 +15,12 @@ import { isActivePath } from "./navItems";
  * Masaüstü sol sabit sidebar (plan bölüm 6). Mobilde tamamen gizlidir;
  * oradaki karşılığı BottomNav + tam ekran menüdür.
  */
-function NavList({ items, pathname }) {
+function NavList({ items, pathname, unreadCount = 0 }) {
   return (
     <ul className="flex flex-col gap-1">
       {items.map(({ href, label, Icon }) => {
         const active = isActivePath(pathname, href);
+        const isNotifications = href.endsWith("/notifications");
         return (
           <li key={`${href}-${label}`}>
             <Link
@@ -33,7 +34,12 @@ function NavList({ items, pathname }) {
               )}
             >
               <Icon className="h-5 w-5 shrink-0" />
-              <span className="truncate">{label}</span>
+              <span className="min-w-0 flex-1 truncate">{label}</span>
+              {isNotifications && unreadCount > 0 && (
+                <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-primary px-1 text-[11px] font-bold text-primary-foreground">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
             </Link>
           </li>
         );
@@ -42,7 +48,7 @@ function NavList({ items, pathname }) {
   );
 }
 
-export function Sidebar({ locale, items, secondaryItems, isAuthenticated, coinBalance }) {
+export function Sidebar({ locale, items, secondaryItems, isAuthenticated, coinBalance, unreadCount = 0 }) {
   const t = useI18n();
   const pathname = usePathname();
 
@@ -56,12 +62,12 @@ export function Sidebar({ locale, items, secondaryItems, isAuthenticated, coinBa
         listelenir — aksi halde masaüstünde erişilemez kalırlardı.
       */}
       <nav aria-label={t("nav.primaryNavLabel")} className="scrollbar-none mt-8 flex-1 overflow-y-auto">
-        <NavList items={items} pathname={pathname} />
+        <NavList items={items} pathname={pathname} unreadCount={unreadCount} />
 
         {secondaryItems.length > 0 && (
           <>
             <hr className="my-4 border-border" />
-            <NavList items={secondaryItems} pathname={pathname} />
+            <NavList items={secondaryItems} pathname={pathname} unreadCount={unreadCount} />
           </>
         )}
       </nav>
