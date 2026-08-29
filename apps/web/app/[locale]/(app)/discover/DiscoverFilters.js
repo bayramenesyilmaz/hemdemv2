@@ -14,6 +14,8 @@ const ANY_COUNTRY = "__any__";
 const AGE_MIN = 18;
 const AGE_MAX = 80;
 
+export const DISCOVER_FILTERS_STORAGE_KEY = "hemdem:discoverFilters";
+
 export function DiscoverFilters({ locale, initialGender, initialCountry, initialMinAge, initialMaxAge }) {
   const t = useI18n();
   const router = useRouter();
@@ -33,6 +35,13 @@ export function DiscoverFilters({ locale, initialGender, initialCountry, initial
     if (ageRange[1] < AGE_MAX) params.set("maxAge", String(ageRange[1]));
 
     const query = params.toString();
+    // Filtreler bir dahaki girişte tekrar seçilmesin diye kalıcı olarak
+    // hatırlanır — boş sorgu da (kasıtlı "filtresiz" tercihi) saklanır.
+    try {
+      localStorage.setItem(DISCOVER_FILTERS_STORAGE_KEY, query);
+    } catch {
+      // localStorage kapalıysa (gizli sekme vb.) sessizce yok say.
+    }
     router.push(`/${locale}/discover${query ? `?${query}` : ""}`);
     setOpen(false);
   }

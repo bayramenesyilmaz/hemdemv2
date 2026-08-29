@@ -8,6 +8,7 @@ import { getAuthUserId } from "@/lib/session";
 import { repositories } from "@/lib/repositories";
 import { PageTitle } from "@/components/PageTitle";
 import { DiscoverFilters } from "./DiscoverFilters";
+import { DiscoverFilterRedirect } from "./DiscoverFilterRedirect";
 import { SwipeDeck } from "./SwipeDeck";
 
 export async function generateMetadata() {
@@ -56,6 +57,10 @@ export default async function DiscoverPage({ params, searchParams }) {
     // artık kenar boşluksuz/tam genişlik; masaüstünde ekran aşırı geniş
     // kalmasın diye orta genişlikte bir çerçeveye dönüyor.
     <main className="mx-auto flex h-[calc(100dvh-7.5rem-env(safe-area-inset-bottom))] w-full flex-col lg:h-[calc(100dvh-4rem)] lg:max-w-md lg:px-6 lg:py-8">
+      <DiscoverFilterRedirect
+        locale={locale}
+        hasQuery={Boolean(sp.gender || sp.country || sp.minAge || sp.maxAge)}
+      />
       <div className="px-4 pb-4 pt-4 lg:px-0 lg:pt-0">
         <PageTitle
           action={
