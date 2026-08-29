@@ -11,10 +11,17 @@ import { isActivePath } from "./navItems";
  * Mobil alt navigasyon (plan bölüm 6). `env(safe-area-inset-bottom)` ile
  * iPhone'daki home indicator çubuğunun altında kalmaz; PWA standalone
  * modda da doğru boşluğu bırakır.
+ *
+ * "Menü" artık bir dialog açmıyor, gerçek bir sayfaya (`/menu`) gidiyor:
+ * dialog iken tarayıcı geri tuşu menüyü kapatmak yerine altındaki
+ * sayfadan geri gidiyordu — gerçek bir rota olunca geri tuşu doğru
+ * şekilde bir önceki sayfaya (menüyü kapatarak) döner.
  */
-export function BottomNav({ items, onOpenMenu }) {
+export function BottomNav({ locale, items }) {
   const t = useI18n();
   const pathname = usePathname();
+  const menuHref = `/${locale}/menu`;
+  const menuActive = isActivePath(pathname, menuHref);
 
   return (
     <nav
@@ -44,15 +51,18 @@ export function BottomNav({ items, onOpenMenu }) {
         })}
 
         <li className="flex-1">
-          <button
-            type="button"
-            onClick={onOpenMenu}
+          <Link
+            href={menuHref}
+            aria-current={menuActive ? "page" : undefined}
             aria-label={t("nav.menu")}
-            className="flex h-16 w-full flex-col items-center justify-center gap-1 text-[11px] font-medium text-muted-foreground transition-colors active:text-foreground"
+            className={cn(
+              "flex h-16 w-full flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors",
+              menuActive ? "text-primary" : "text-muted-foreground active:text-foreground"
+            )}
           >
-            <MenuIcon className="h-6 w-6" />
+            <MenuIcon className={cn("h-6 w-6", menuActive && "scale-110 transition-transform")} />
             <span className="leading-none">{t("nav.menu")}</span>
-          </button>
+          </Link>
         </li>
       </ul>
     </nav>
