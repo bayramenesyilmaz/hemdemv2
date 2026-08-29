@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
 import { CountrySelect } from "@/components/CountrySelect";
 import { TestPicker } from "@/components/TestPicker";
+import { InfoBanner } from "@/components/InfoBanner";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/Dialog";
 import { updateProfileAction } from "@/lib/actions/profileActions";
 import { deleteAccountAction } from "@/lib/actions/authActions";
@@ -180,8 +181,9 @@ export function ProfileEditForm({ locale, profile, initialGateTest }) {
         </div>
       </div>
 
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-2">
         <label className="text-sm text-muted-foreground">{t("profile.gateTestLabel")}</label>
+        <InfoBanner>{t("discover.gateTestExplainer")}</InfoBanner>
         <TestPicker
           value={gateTestId}
           onValueChange={setGateTestId}

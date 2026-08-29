@@ -98,6 +98,10 @@ const tr = {
     quickSignUpTitle: "{name} kişisini beğenmek için hızlı kayıt ol",
     quickSignUpBody: "Sadece birkaç bilgi yeterli, beğenin hemen gönderilecek.",
     quickSignUpSubmit: "Kayıt Ol ve Beğen",
+    gateTestModalTitle: "{name} kişisini beğenmek için önce bu testi çöz",
+    gateTestExplainer:
+      "Kapı testi, bir kullanıcının kendisini beğenmeden önce çözmeni istediği bir uyum testidir. Cevapların, o kişinin belirlediği benzerlik oranını geçerse beğenin otomatik olarak gönderilir.",
+    likeSent: "Beğenin gönderildi!",
     errors: {
       gate_test_not_completed: "Bu kişiyi beğenmek için önce kapı testini çözmelisin.",
       gate_test_threshold_not_met: "Kapı testi benzerlik eşiğini karşılamıyorsun.",

@@ -115,7 +115,12 @@ export default async function PublicProfilePage({ params }) {
             </Button>
           ) : (
             <div className="flex flex-col gap-4">
-              <ProfileActions locale={locale} profileId={profile.id} profileName={profile.name} />
+              <ProfileActions
+                locale={locale}
+                profileId={profile.id}
+                profileName={profile.name}
+                gateTestId={profile.gateTestId}
+              />
               <SendMessageDialog locale={locale} recipientId={profile.id} recipientName={profile.name} />
             </div>
           ))}

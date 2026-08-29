@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/locales/client";
 import { EmptyState } from "@/components/EmptyState";
@@ -11,6 +11,7 @@ import { swipeAction } from "@/lib/actions/discoverActions";
 import { SendMessageDialog } from "../u/[id]/SendMessageDialog";
 import { SwipeCard } from "./SwipeCard";
 import { QuickSignUpDialog } from "./QuickSignUpDialog";
+import { GateTestDialog } from "./GateTestDialog";
 
 const GATE_TEST_ERRORS = new Set(["gate_test_not_completed", "gate_test_threshold_not_met"]);
 
@@ -22,9 +23,17 @@ export function SwipeDeck({ locale, initialCandidates, isGuest }) {
   const [error, setError] = useState(null);
   const [matchedProfile, setMatchedProfile] = useState(null);
   const [guestLikeTarget, setGuestLikeTarget] = useState(null);
+  const [gateTestTarget, setGateTestTarget] = useState(null);
+  const [likeSent, setLikeSent] = useState(false);
 
   const current = candidates[index];
   const upNext = candidates[index + 1];
+
+  useEffect(() => {
+    if (!likeSent) return;
+    const timeout = setTimeout(() => setLikeSent(false), 2500);
+    return () => clearTimeout(timeout);
+  }, [likeSent]);
 
   async function handleSwipe(action) {
     if (!current) return;
@@ -46,6 +55,13 @@ export function SwipeDeck({ locale, initialCandidates, isGuest }) {
 
     const result = await swipeAction(current.id, action);
     if (result.status === "error") {
+      // Kapı testi henüz çözülmemişse akışı bozmadan burada çözdürelim —
+      // testi geçemediyse (threshold_not_met) yapacak bir şey yok, sadece
+      // hatayı gösterip devam ediyoruz.
+      if (action !== "dislike" && result.message === "gate_test_not_completed") {
+        setGateTestTarget(current);
+        return;
+      }
       setError(GATE_TEST_ERRORS.has(result.message) ? t(`discover.errors.${result.message}`) : result.message);
       setIndex((i) => i + 1);
       return;
@@ -53,6 +69,26 @@ export function SwipeDeck({ locale, initialCandidates, isGuest }) {
 
     if (result.data.matched) {
       setMatchedProfile(current);
+    }
+    setIndex((i) => i + 1);
+  }
+
+  async function handleGateTestSolved() {
+    const target = gateTestTarget;
+    setGateTestTarget(null);
+    if (!target) return;
+
+    const result = await swipeAction(target.id, "like");
+    if (result.status === "error") {
+      setError(GATE_TEST_ERRORS.has(result.message) ? t(`discover.errors.${result.message}`) : result.message);
+      setIndex((i) => i + 1);
+      return;
+    }
+
+    if (result.data.matched) {
+      setMatchedProfile(target);
+    } else {
+      setLikeSent(true);
     }
     setIndex((i) => i + 1);
   }
@@ -149,6 +185,24 @@ export function SwipeDeck({ locale, initialCandidates, isGuest }) {
           onClose={() => setGuestLikeTarget(null)}
           onSuccess={() => router.push(`/${locale}/onboarding`)}
         />
+      )}
+
+      {gateTestTarget && (
+        <GateTestDialog
+          open={Boolean(gateTestTarget)}
+          onOpenChange={(open) => !open && setGateTestTarget(null)}
+          testId={gateTestTarget.gateTestId}
+          targetName={gateTestTarget.name}
+          onSolved={handleGateTestSolved}
+        />
+      )}
+
+      {likeSent && (
+        <div className="pointer-events-none fixed inset-x-0 top-[calc(3.5rem+env(safe-area-inset-top))] z-40 flex justify-center px-4 lg:top-4">
+          <p className="rounded-full bg-gradient-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-float">
+            {t("discover.likeSent")}
+          </p>
+        </div>
       )}
     </div>
   );

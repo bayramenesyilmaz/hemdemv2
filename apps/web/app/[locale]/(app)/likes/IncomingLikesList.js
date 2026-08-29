@@ -10,22 +10,35 @@ import { Button } from "@/components/ui/Button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/Dialog";
 import { CloseIcon, HeartIcon } from "@/components/icons";
 import { respondToIncomingLikeAction } from "@/lib/actions/discoverActions";
+import { GateTestDialog } from "../discover/GateTestDialog";
 
 export function IncomingLikesList({ locale, likers }) {
   const t = useI18n();
   const [processed, setProcessed] = useState(new Set());
   const [error, setError] = useState(null);
   const [matchedProfile, setMatchedProfile] = useState(null);
+  const [gateTestProfile, setGateTestProfile] = useState(null);
 
   async function handleRespond(fromUserId, action, profile) {
     setError(null);
     const result = await respondToIncomingLikeAction(fromUserId, action);
     if (result.status === "error") {
+      if (action === "like" && result.message === "gate_test_not_completed") {
+        setGateTestProfile(profile);
+        return;
+      }
       setError(t(`discover.errors.${result.message}`));
       return;
     }
     setProcessed((prev) => new Set(prev).add(fromUserId));
     if (result.data?.matched) setMatchedProfile(profile);
+  }
+
+  async function handleGateTestSolved() {
+    const profile = gateTestProfile;
+    setGateTestProfile(null);
+    if (!profile) return;
+    await handleRespond(profile.id, "like", profile);
   }
 
   const remaining = likers.filter(({ swipe }) => !processed.has(swipe.fromUser));
@@ -87,6 +100,16 @@ export function IncomingLikesList({ locale, likers }) {
           </div>
         </DialogContent>
       </Dialog>
+
+      {gateTestProfile && (
+        <GateTestDialog
+          open={Boolean(gateTestProfile)}
+          onOpenChange={(open) => !open && setGateTestProfile(null)}
+          testId={gateTestProfile.gateTestId}
+          targetName={gateTestProfile.name}
+          onSolved={handleGateTestSolved}
+        />
+      )}
     </div>
   );
 }

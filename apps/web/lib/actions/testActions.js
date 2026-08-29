@@ -18,6 +18,21 @@ export async function createTestAction(input) {
 }
 
 /**
+ * Kapı testi modalı gibi, testi tam sayfa yerine içeride göstermesi
+ * gereken yerler için — sadece soruları render etmeye yetecek alanları
+ * döner.
+ *
+ * @param {string} testId
+ */
+export async function fetchTestByIdAction(testId) {
+  const test = await repositories.test.findById(testId);
+  if (!test) {
+    return { status: "error", message: "test_not_found" };
+  }
+  return { status: "success", data: test };
+}
+
+/**
  * @param {string} testId
  * @param {{ questionId: string, choiceId: string }[]} userAnswers
  */
