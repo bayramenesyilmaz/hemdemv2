@@ -12,6 +12,7 @@ const tr = {
     leaderboardShort: "Liderlik",
     menu: "Menü",
     closeMenu: "Menüyü kapat",
+    refreshLabel: "Yenile",
     primaryNavLabel: "Ana navigasyon",
     profile: "Profilim",
     logout: "Çıkış Yap",

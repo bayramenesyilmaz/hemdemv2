@@ -9,6 +9,7 @@ import { PageTitle } from "@/components/PageTitle";
 import { SectionCard } from "@/components/SectionCard";
 import { EmptyState } from "@/components/EmptyState";
 import { Avatar } from "@/components/Avatar";
+import { RefreshButton } from "@/components/RefreshButton";
 import { MarkMessagesRead } from "./MarkMessagesRead";
 
 export async function generateMetadata() {
@@ -29,7 +30,7 @@ export default async function MessagesPage({ params }) {
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-6 lg:px-6 lg:py-8">
-      <PageTitle>{t("nav.messages")}</PageTitle>
+      <PageTitle action={<RefreshButton />}>{t("nav.messages")}</PageTitle>
       <MarkMessagesRead />
 
       {result.data.length === 0 ? (

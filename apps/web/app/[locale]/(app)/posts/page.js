@@ -10,6 +10,7 @@ import { buildMetadata } from "@/lib/seo";
 import { EmptyState } from "@/components/EmptyState";
 import { InfoBanner } from "@/components/InfoBanner";
 import { Button } from "@/components/ui/Button";
+import { RefreshButton } from "@/components/RefreshButton";
 import { PostComposerDialog } from "./PostComposerDialog";
 import { PostFeedList } from "./PostFeedList";
 import { PostAuthorRail } from "./PostAuthorRail";
@@ -92,9 +93,12 @@ export default async function PostsPage({ params }) {
       )}
 
       <section className="flex flex-col gap-4">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          {t("posts.feedSectionTitle")}
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            {t("posts.feedSectionTitle")}
+          </h2>
+          <RefreshButton className="-my-2" />
+        </div>
 
         {userId ? (
           <PostComposerDialog locale={locale} author={author} />

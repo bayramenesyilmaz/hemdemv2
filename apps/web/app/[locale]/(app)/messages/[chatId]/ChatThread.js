@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
 import { sendMessageAction, fetchChatMessagesAction } from "@/lib/actions/chatActions";
 
-const POLL_INTERVAL_MS = 4000;
+const POLL_INTERVAL_MS = 2500;
 
 /**
  * Sohbet mesaj akışı. Supabase Realtime (postgres_changes), RLS

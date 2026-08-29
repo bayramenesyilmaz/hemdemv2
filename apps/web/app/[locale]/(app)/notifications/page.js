@@ -10,6 +10,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { Avatar } from "@/components/Avatar";
 import { SimilarityBadge } from "@/components/SimilarityBadge";
 import { AdSlot } from "@/components/AdSlot";
+import { RefreshButton } from "@/components/RefreshButton";
 import { HeartIcon } from "@/components/icons";
 import { MarkNotificationsRead } from "./MarkNotificationsRead";
 import { cn } from "@/lib/cn";
@@ -32,7 +33,7 @@ export default async function NotificationsPage({ params }) {
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-6 lg:px-6 lg:py-8">
-      <PageTitle>{t("nav.notifications")}</PageTitle>
+      <PageTitle action={<RefreshButton />}>{t("nav.notifications")}</PageTitle>
 
       {result.status === "error" ? (
         <EmptyState

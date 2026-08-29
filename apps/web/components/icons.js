@@ -198,3 +198,12 @@ export function SparkIcon(props) {
     </Icon>
   );
 }
+
+export function RefreshIcon(props) {
+  return (
+    <Icon {...props}>
+      <path d="M20 11a8 8 0 0 0-14.6-4.6M4 4v5h5" />
+      <path d="M4 13a8 8 0 0 0 14.6 4.6M20 20v-5h-5" />
+    </Icon>
+  );
+}

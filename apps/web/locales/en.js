@@ -12,6 +12,7 @@ const en = {
     leaderboardShort: "Leaders",
     menu: "Menu",
     closeMenu: "Close menu",
+    refreshLabel: "Refresh",
     primaryNavLabel: "Main navigation",
     profile: "My Profile",
     logout: "Log Out",
