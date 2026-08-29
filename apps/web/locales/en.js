@@ -337,6 +337,7 @@ const en = {
     title: "Who Viewed My Profile",
     viewCount: "{count} people viewed your profile",
     unlockButton: "Unlock Viewers ({cost} coins)",
+    unlockRemainingButton: "Unlock {count} More ({cost} coins)",
     emptyTitle: "No one has viewed your profile yet",
     emptyBody: "Once someone views your profile, it'll show up here.",
     errors: {

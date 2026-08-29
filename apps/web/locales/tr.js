@@ -339,6 +339,7 @@ const tr = {
     title: "Profilimi Kim Görüntüledi",
     viewCount: "{count} kişi profilini görüntüledi",
     unlockButton: "Görüntüleyenleri Aç ({cost} coin)",
+    unlockRemainingButton: "Kalan {count} Kişiyi Aç ({cost} coin)",
     emptyTitle: "Henüz kimse profilini görüntülemedi",
     emptyBody: "Profilin görüntülendikçe burada görünecek.",
     errors: {
