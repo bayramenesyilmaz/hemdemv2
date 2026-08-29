@@ -53,7 +53,7 @@ export default async function NotificationsPage({ params }) {
               const href =
                 notification.type === "test_similarity" && test
                   ? `/${locale}/tests/${test.id}/compare/${actor.id}`
-                  : (notification.type === "match" || notification.type === "message") && chat
+                  : notification.type === "match" && chat
                     ? `/${locale}/messages/${chat.id}`
                     : `/${locale}/u/${actor.id}`;
 
@@ -81,9 +81,7 @@ export default async function NotificationsPage({ params }) {
                               })
                             : notification.type === "match"
                               ? t("notifications.matched", { name: actor.name })
-                              : notification.type === "message"
-                                ? t("notifications.newMessage", { name: actor.name })
-                                : t("notifications.incomingLike", { name: actor.name })}
+                              : t("notifications.incomingLike", { name: actor.name })}
                         </p>
                       </div>
                       {notification.similarity != null && (

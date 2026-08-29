@@ -25,13 +25,25 @@ export function createMockNotificationRepository(store) {
         .slice(0, limit);
     },
 
-    async countUnread(userId) {
-      return store.notifications.filter((n) => n.userId === userId && !n.isRead).length;
+    async countUnread(userId, filter = {}) {
+      return store.notifications.filter(
+        (n) =>
+          n.userId === userId &&
+          !n.isRead &&
+          (!filter.type || n.type === filter.type) &&
+          (!filter.excludeType || n.type !== filter.excludeType)
+      ).length;
     },
 
-    async markAllRead(userId) {
+    async markAllRead(userId, filter = {}) {
       for (const notification of store.notifications) {
-        if (notification.userId === userId) notification.isRead = true;
+        if (
+          notification.userId === userId &&
+          (!filter.type || notification.type === filter.type) &&
+          (!filter.excludeType || notification.type !== filter.excludeType)
+        ) {
+          notification.isRead = true;
+        }
       }
     },
   };

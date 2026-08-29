@@ -263,6 +263,7 @@ const en = {
     send: "Send",
     sendMessageButton: "Send Message",
     goToChat: "Go to Chat",
+    newMessageToast: "💬 You have a new message",
     sendMessageTitle: "Message {name}",
     sendMessageBody: "If you haven't matched yet, sending a message costs {cost} coins.",
     errors: {

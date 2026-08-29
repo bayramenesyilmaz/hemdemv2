@@ -45,22 +45,24 @@ export function createSupabaseNotificationRepository(client) {
       return (data ?? []).map(toNotification);
     },
 
-    async countUnread(userId) {
-      const { count, error } = await client
+    async countUnread(userId, filter = {}) {
+      let query = client
         .from("notifications")
         .select("*", { count: "exact", head: true })
         .eq("user_id", userId)
         .eq("is_read", false);
+      if (filter.type) query = query.eq("type", filter.type);
+      if (filter.excludeType) query = query.neq("type", filter.excludeType);
+      const { count, error } = await query;
       if (error) throw error;
       return count ?? 0;
     },
 
-    async markAllRead(userId) {
-      const { error } = await client
-        .from("notifications")
-        .update({ is_read: true })
-        .eq("user_id", userId)
-        .eq("is_read", false);
+    async markAllRead(userId, filter = {}) {
+      let query = client.from("notifications").update({ is_read: true }).eq("user_id", userId).eq("is_read", false);
+      if (filter.type) query = query.eq("type", filter.type);
+      if (filter.excludeType) query = query.neq("type", filter.excludeType);
+      const { error } = await query;
       if (error) throw error;
     },
   };

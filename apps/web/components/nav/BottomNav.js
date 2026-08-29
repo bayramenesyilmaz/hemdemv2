@@ -17,7 +17,7 @@ import { isActivePath } from "./navItems";
  * sayfadan geri gidiyordu — gerçek bir rota olunca geri tuşu doğru
  * şekilde bir önceki sayfaya (menüyü kapatarak) döner.
  */
-export function BottomNav({ locale, items }) {
+export function BottomNav({ locale, items, unreadMessageCount = 0 }) {
   const t = useI18n();
   const pathname = usePathname();
   const menuHref = `/${locale}/menu`;
@@ -31,6 +31,7 @@ export function BottomNav({ locale, items }) {
       <ul className="mx-auto flex max-w-lg items-stretch">
         {items.map(({ href, label, shortLabel, Icon }) => {
           const active = isActivePath(pathname, href);
+          const isMessages = href.endsWith("/messages");
           return (
             <li key={href} className="flex-1">
               <Link
@@ -41,7 +42,14 @@ export function BottomNav({ locale, items }) {
                   active ? "text-primary" : "text-muted-foreground active:text-foreground"
                 )}
               >
-                <Icon className={cn("h-6 w-6 shrink-0", active && "scale-110 transition-transform")} />
+                <span className="relative">
+                  <Icon className={cn("h-6 w-6 shrink-0", active && "scale-110 transition-transform")} />
+                  {isMessages && unreadMessageCount > 0 && (
+                    <span className="absolute -right-1.5 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-primary-foreground">
+                      {unreadMessageCount > 9 ? "9+" : unreadMessageCount}
+                    </span>
+                  )}
+                </span>
                 <span className="w-full truncate px-1 text-center leading-none">
                   {shortLabel ?? label}
                 </span>

@@ -1,13 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { fetchUnreadNotificationCountAction } from "@/lib/actions/notificationActions";
+import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { useI18n } from "@/locales/client";
+import { fetchUnreadNotificationCountAction, fetchUnreadMessageCountAction } from "@/lib/actions/notificationActions";
 import { AppHeader } from "./AppHeader";
 import { BottomNav } from "./BottomNav";
 import { Sidebar } from "./Sidebar";
 import { useNavItems } from "./navItems";
 
-const UNREAD_POLL_INTERVAL_MS = 8000;
+// Mesajların "akıcı" hissetmesi için kısa tutuluyor — bu projede RLS
+// politikası olmadığından Supabase Realtime'a client'tan abone
+// olunamıyor (bkz. ChatThread.js), sondaj (polling) tek seçenek.
+const UNREAD_POLL_INTERVAL_MS = 5000;
 
 /**
  * Mobil öncelikli uygulama kabuğu (plan bölüm 6 + 7):
@@ -28,23 +34,54 @@ export function AppShell({
   coinBalance,
   avatarUrl,
   unreadCount = 0,
+  unreadMessageCount = 0,
   children,
 }) {
+  const t = useI18n();
+  const pathname = usePathname();
   const { primary, secondary } = useNavItems({ locale, isAuthenticated, isAdmin });
 
   // Tek bir sondaj (polling) döngüsü hem mobil header'daki zil rozetini
-  // hem de masaüstü sidebar'daki "Bildirimler" rozetini besliyor —
-  // ikisi ayrı ayrı sondaj yapsaydı her 8 saniyede iki katı istek atardı.
+  // hem masaüstü sidebar'daki rozetleri hem de Mesajlar sekmesindeki
+  // rozeti besliyor — üçü ayrı ayrı sondaj yapsaydı gereksiz istek
+  // katlanırdı.
   const [liveUnreadCount, setLiveUnreadCount] = useState(unreadCount);
+  const [liveUnreadMessageCount, setLiveUnreadMessageCount] = useState(unreadMessageCount);
+  const [messageToastVisible, setMessageToastVisible] = useState(false);
+  const previousMessageCountRef = useRef(unreadMessageCount);
+  const pathnameRef = useRef(pathname);
+
+  useEffect(() => {
+    pathnameRef.current = pathname;
+  }, [pathname]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
     const interval = setInterval(async () => {
-      const count = await fetchUnreadNotificationCountAction();
+      const [count, messageCount] = await Promise.all([
+        fetchUnreadNotificationCountAction(),
+        fetchUnreadMessageCountAction(),
+      ]);
       setLiveUnreadCount(count);
+      setLiveUnreadMessageCount(messageCount);
+
+      // Web'de uygulama açıkken başka bir sayfadaysa (sohbet ekranının
+      // kendisinde değilse) yeni mesaj geldiğinde üstten kısa bir bildirim
+      // gösterilir — mobil zaten kendi bildirim kanalını kullanır, bu
+      // sadece web/PWA için "anlık" hissi veren bir yama.
+      if (messageCount > previousMessageCountRef.current && !pathnameRef.current.includes("/messages")) {
+        setMessageToastVisible(true);
+      }
+      previousMessageCountRef.current = messageCount;
     }, UNREAD_POLL_INTERVAL_MS);
     return () => clearInterval(interval);
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (!messageToastVisible) return;
+    const timeout = setTimeout(() => setMessageToastVisible(false), 4000);
+    return () => clearTimeout(timeout);
+  }, [messageToastVisible]);
 
   return (
     <div className="min-h-dvh bg-background lg:pl-64">
@@ -55,6 +92,7 @@ export function AppShell({
         isAuthenticated={isAuthenticated}
         coinBalance={coinBalance}
         unreadCount={liveUnreadCount}
+        unreadMessageCount={liveUnreadMessageCount}
       />
 
       <AppHeader
@@ -65,9 +103,19 @@ export function AppShell({
         unreadCount={liveUnreadCount}
       />
 
+      {messageToastVisible && (
+        <Link
+          href={`/${locale}/messages`}
+          onClick={() => setMessageToastVisible(false)}
+          className="fixed inset-x-0 top-[calc(3.5rem+env(safe-area-inset-top))] z-40 mx-auto flex w-fit items-center gap-2 rounded-full bg-gradient-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-float lg:left-64 lg:top-4"
+        >
+          {t("messages.newMessageToast")}
+        </Link>
+      )}
+
       <div className="pb-[calc(4rem+env(safe-area-inset-bottom))] lg:pb-0">{children}</div>
 
-      <BottomNav locale={locale} items={primary} />
+      <BottomNav locale={locale} items={primary} unreadMessageCount={liveUnreadMessageCount} />
     </div>
   );
 }
