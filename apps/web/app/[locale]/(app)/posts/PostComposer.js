@@ -21,7 +21,7 @@ const NO_TAG = "none";
 /** Test bölümünün üç hâli: kapalı, var olan bir testi etiketle, yeni test yaz. */
 const MODE = { none: "none", existing: "existing", create: "create" };
 
-export function PostComposer({ locale, author }) {
+export function PostComposer({ locale, author, onSuccess }) {
   const t = useI18n();
   const router = useRouter();
   const [content, setContent] = useState("");
@@ -75,6 +75,7 @@ export function PostComposer({ locale, author }) {
 
     reset();
     router.refresh();
+    onSuccess?.();
   }
 
   return (

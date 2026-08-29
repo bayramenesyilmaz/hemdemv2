@@ -7,11 +7,10 @@ import { getAuthUserId } from "@/lib/session";
 import { getCurrentProfile } from "@/lib/currentUser";
 import { repositories } from "@/lib/repositories";
 import { buildMetadata } from "@/lib/seo";
-import { PageTitle } from "@/components/PageTitle";
 import { EmptyState } from "@/components/EmptyState";
 import { InfoBanner } from "@/components/InfoBanner";
 import { Button } from "@/components/ui/Button";
-import { PostComposer } from "./PostComposer";
+import { PostComposerDialog } from "./PostComposerDialog";
 import { PostFeedList } from "./PostFeedList";
 import { PostAuthorRail } from "./PostAuthorRail";
 
@@ -65,7 +64,11 @@ export default async function PostsPage({ params }) {
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-4 px-4 py-6 lg:px-6 lg:py-8">
-      <PageTitle>{t("posts.title")}</PageTitle>
+      {/* Görsel olarak gizli: "Gönderiler" başlığı zaten aşağıdaki bölüm
+          etiketinde tekrar ediyordu (Durumlar/Gönderiler üstüne bir de
+          sayfa başlığı çok yer kaplıyordu) — SEO/ekran okuyucu için h1
+          hâlâ DOM'da duruyor, sadece görsel olarak alınmıyor. */}
+      <h1 className="sr-only">{t("posts.title")}</h1>
 
       {showNotesSection && (
         <>
@@ -94,7 +97,7 @@ export default async function PostsPage({ params }) {
         </h2>
 
         {userId ? (
-          <PostComposer locale={locale} author={author} />
+          <PostComposerDialog locale={locale} author={author} />
         ) : (
           <InfoBanner>
             {t("posts.guestNotice")}{" "}
