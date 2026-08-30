@@ -81,6 +81,9 @@ const tr = {
     title: "Keşfet",
     filter: "Filtrele",
     filterTitle: "Keşfeti Filtrele",
+    filterActiveHint: "Bir filtre aktif, bazı kişiler gizleniyor olabilir",
+    activeFilterNotice: "Bir filtre aktif — bazı kişiler bu yüzden karşına çıkmıyor olabilir.",
+    clearFilters: "Filtreleri Temizle",
     genderLabel: "Cinsiyet",
     anyGender: "Fark etmez",
     anyCountry: "Fark etmez",
@@ -230,6 +233,7 @@ const tr = {
       too_many_questions: "Bir testte en fazla 10 soru olabilir.",
       too_many_options: "Bir soruda en fazla 4 şık olabilir.",
       invalid_option: "Şıklar boş bırakılamaz.",
+      unexpected_error: "Bir şeyler ters gitti, lütfen tekrar dene.",
     },
   },
   notifications: {

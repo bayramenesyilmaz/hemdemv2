@@ -1,5 +1,6 @@
 import { validateSwipe } from "../../domain/entities/swipe.js";
 import { calculateAnswerSimilarity } from "../../domain/entities/test.js";
+import { safeCreateNotification } from "../notifications/safeCreateNotification.js";
 
 /**
  * Beğeni/geçme gönderir. Hedef kullanıcının bir "kapı testi" (gate test)
@@ -52,7 +53,9 @@ export async function likeUser(repositories, fromUserId, toUserId, action = "lik
 
   if (!reciprocalLiked) {
     // Henüz eşleşme yok: hedef kullanıcı beğenildiğini anında öğrensin.
-    await repositories.notification.create({ userId: toUserId, type: "incoming_like", actorId: fromUserId });
+    // Bildirim başarısız olsa bile beğeni zaten kaydedildi, bu yüzden
+    // (bkz. safeCreateNotification) hataya dayanıklı çağrılıyor.
+    await safeCreateNotification(repositories, { userId: toUserId, type: "incoming_like", actorId: fromUserId });
     return { status: "success", data: { matched: false } };
   }
 
@@ -64,8 +67,8 @@ export async function likeUser(repositories, fromUserId, toUserId, action = "lik
   }
 
   await Promise.all([
-    repositories.notification.create({ userId: fromUserId, type: "match", actorId: toUserId }),
-    repositories.notification.create({ userId: toUserId, type: "match", actorId: fromUserId }),
+    safeCreateNotification(repositories, { userId: fromUserId, type: "match", actorId: toUserId }),
+    safeCreateNotification(repositories, { userId: toUserId, type: "match", actorId: fromUserId }),
   ]);
 
   return { status: "success", data: { matched: true, match, chat } };

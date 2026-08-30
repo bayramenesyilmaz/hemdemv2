@@ -79,6 +79,9 @@ const en = {
     title: "Discover",
     filter: "Filter",
     filterTitle: "Filter Discover",
+    filterActiveHint: "A filter is active, some people may be hidden",
+    activeFilterNotice: "A filter is active — that may be why some people aren't showing up.",
+    clearFilters: "Clear Filters",
     genderLabel: "Gender",
     anyGender: "Any",
     anyCountry: "Any",
@@ -228,6 +231,7 @@ const en = {
       too_many_questions: "A test can have at most 10 questions.",
       too_many_options: "A question can have at most 4 options.",
       invalid_option: "Options cannot be empty.",
+      unexpected_error: "Something went wrong, please try again.",
     },
   },
   notifications: {

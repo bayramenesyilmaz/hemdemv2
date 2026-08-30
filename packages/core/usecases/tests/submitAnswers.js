@@ -2,6 +2,7 @@ import {
   calculateAnswerSimilarity,
   SIMILARITY_NOTIFY_THRESHOLD,
 } from "../../domain/entities/test.js";
+import { safeCreateNotification } from "../notifications/safeCreateNotification.js";
 
 /**
  * Bir teste cevap gönderir. Testler bir bilgi sınavı değildir: doğru
@@ -47,15 +48,19 @@ export async function submitAnswers(repositories, userId, testId, userAnswers) {
     if (similarity < SIMILARITY_NOTIFY_THRESHOLD) continue;
 
     newHighMatches += 1;
-    // Karşılıklı: iki taraf da birbirini görebilmeli.
-    await repositories.notification.create({
+    // Karşılıklı: iki taraf da birbirini görebilmeli. Bildirim oluşturma
+    // burada kasıtlı olarak hataya dayanıklı (bkz. safeCreateNotification) —
+    // aksi halde bildirim tablosuyla ilgili bir sorun, çözülmüş cevabın
+    // hiç kaydedilmemiş gibi görünmesine (istemci sonsuza kadar
+    // "gönderiliyor" durumunda takılı kalır) yol açabiliyordu.
+    await safeCreateNotification(repositories, {
       userId: other.userId,
       type: "test_similarity",
       actorId: userId,
       testId,
       similarity,
     });
-    await repositories.notification.create({
+    await safeCreateNotification(repositories, {
       userId,
       type: "test_similarity",
       actorId: other.userId,

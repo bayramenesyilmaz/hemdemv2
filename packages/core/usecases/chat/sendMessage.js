@@ -1,6 +1,7 @@
 import { validateMessageContent } from "../../domain/entities/chat.js";
 import { COIN_COSTS } from "../../domain/entities/coin.js";
 import { hasPerfectTestMatch } from "../tests/hasPerfectTestMatch.js";
+import { safeCreateNotification } from "../notifications/safeCreateNotification.js";
 
 /**
  * Mesaj gönderir. Sohbet açılma sırası:
@@ -55,7 +56,9 @@ export async function sendMessage(repositories, senderId, recipientId, content) 
 
   const message = await repositories.chat.createMessage(chat.id, { senderId, content });
   await repositories.chat.touchLastMessageAt(chat.id, message.createdAt);
-  await repositories.notification.create({ userId: recipientId, type: "message", actorId: senderId });
+  // Mesaj zaten kaydedildi; bildirim başarısız olsa bile mesajın
+  // gönderilmesi engellenmesin (bkz. safeCreateNotification).
+  await safeCreateNotification(repositories, { userId: recipientId, type: "message", actorId: senderId });
 
   return { status: "success", data: { chat, message } };
 }

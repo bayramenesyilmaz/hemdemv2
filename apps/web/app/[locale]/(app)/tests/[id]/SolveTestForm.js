@@ -37,7 +37,20 @@ export function SolveTestForm({ locale, test }) {
     setPhase("submitting");
 
     const userAnswers = test.questions.map((q) => ({ questionId: q.id, choiceId: choices[q.id] }));
-    const result = await submitAnswersAction(test.id, userAnswers);
+
+    let result;
+    try {
+      result = await submitAnswersAction(test.id, userAnswers);
+    } catch (err) {
+      // Beklenmedik bir sunucu hatası (örn. geçici bir bağlantı sorunu):
+      // yakalanmazsa "Gönderiliyor…" durumunda sonsuza kadar takılı
+      // kalıyordu — cevap aslında kaydedilmiş de olabilir, kullanıcı
+      // tekrar denerse "already_answered" görüp anlar.
+      console.error("[tests] cevap gönderilirken beklenmedik hata:", err);
+      setError("unexpected_error");
+      setPhase("answering");
+      return;
+    }
 
     if (result.status === "error") {
       if (result.message === "not_authenticated") {
