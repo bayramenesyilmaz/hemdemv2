@@ -13,6 +13,11 @@ const useMockData = !isVercelProduction && process.env.NEXT_PUBLIC_USE_MOCK_DATA
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ["@hemdem/core"],
+  // Next.js'in sol altta gösterdiği geliştirme rotası göstergesi (sadece
+  // `next dev`'de görünür) tam ekran modallerin (ör. kapı testi seçici)
+  // alt kısmındaki içeriğin üzerine biniyordu — üretim build'ini hiç
+  // etkilemiyor, sadece yerel geliştirmede kafa karıştırıyordu.
+  devIndicators: false,
   images: {
     remotePatterns: [
       {
