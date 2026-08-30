@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Hemdem",
-    "slug": "hemdem-mobile",
+    "slug": "hemdem",
     "scheme": "hemdem",
     "version": "0.1.0",
     "orientation": "portrait",
