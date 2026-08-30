@@ -27,6 +27,13 @@ export function DiscoverFilters({ locale, initialGender, initialCountry, initial
     initialMaxAge ? Number(initialMaxAge) : AGE_MAX,
   ]);
 
+  // Filtre önceki bir ziyaretten (localStorage) sessizce geri
+  // yükleniyor olabilir — kullanıcı bunu görmezse, kime bakmadığını
+  // hiç fark etmeden aramaya devam eder. Bu yüzden aktif bir filtre
+  // varken buton üzerinde her zaman görünür bir işaret gösterilir.
+  const hasActiveFilter =
+    Boolean(initialGender) || Boolean(initialCountry) || Boolean(initialMinAge) || Boolean(initialMaxAge);
+
   function applyFilters() {
     const params = new URLSearchParams();
     if (gender !== ALL) params.set("gender", gender);
@@ -46,15 +53,40 @@ export function DiscoverFilters({ locale, initialGender, initialCountry, initial
     setOpen(false);
   }
 
+  function clearFilters() {
+    setGender(ALL);
+    setCountry(ANY_COUNTRY);
+    setAgeRange([AGE_MIN, AGE_MAX]);
+    try {
+      localStorage.setItem(DISCOVER_FILTERS_STORAGE_KEY, "");
+    } catch {
+      // localStorage kapalıysa (gizli sekme vb.) sessizce yok say.
+    }
+    router.push(`/${locale}/discover`);
+    setOpen(false);
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button type="button" variant="outline">
+        <Button type="button" variant="outline" className="relative">
           {t("discover.filter")}
+          {hasActiveFilter && (
+            <span
+              className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-primary"
+              title={t("discover.filterActiveHint")}
+            />
+          )}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogTitle>{t("discover.filterTitle")}</DialogTitle>
+
+        {hasActiveFilter && (
+          <p className="mt-2 rounded-lg bg-primary/10 px-3 py-2 text-xs text-primary">
+            {t("discover.activeFilterNotice")}
+          </p>
+        )}
 
         <div className="mt-4 flex flex-col gap-4">
           <div className="flex flex-col gap-1">
@@ -98,15 +130,24 @@ export function DiscoverFilters({ locale, initialGender, initialCountry, initial
           </div>
         </div>
 
-        <div className="mt-6 flex justify-end gap-3">
-          <DialogClose asChild>
-            <Button type="button" variant="outline">
-              {t("profile.cancel")}
+        <div className="mt-6 flex items-center justify-between gap-3">
+          {hasActiveFilter ? (
+            <Button type="button" variant="ghost" onClick={clearFilters} className="text-destructive">
+              {t("discover.clearFilters")}
             </Button>
-          </DialogClose>
-          <Button type="button" variant="confirm" onClick={applyFilters}>
-            {t("tests.applyFilters")}
-          </Button>
+          ) : (
+            <span />
+          )}
+          <div className="flex gap-3">
+            <DialogClose asChild>
+              <Button type="button" variant="outline">
+                {t("profile.cancel")}
+              </Button>
+            </DialogClose>
+            <Button type="button" variant="confirm" onClick={applyFilters}>
+              {t("tests.applyFilters")}
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
