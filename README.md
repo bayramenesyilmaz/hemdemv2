@@ -38,6 +38,9 @@ Supabase kurulumu için `supabase/README.md` dosyasına bakın.
 
 ## Durum
 
-Faz 1-2 tamamlandı: monorepo iskeleti, domain/usecase/repository katmanları,
-Supabase şeması + RLS, Next.js + Tailwind + next-international (tr/en)
-temel kurulumu. Sıradaki fazlar için plan dokümanının 11. bölümüne bakın.
+Web uygulaması (`apps/web`) üretimde ve aktif geliştiriliyor — auth, keşfet/
+swipe, test/eşleşme sistemi, mesajlaşma, bildirimler, gönderiler, coin/puan
+sistemi, admin panel, PWA ve SEO dahil. Sırada `apps/mobile` (Expo/React
+Native) var. Güncel mimari özeti ve AI agent'lar için proje rehberi için
+[`CLAUDE.md`](./CLAUDE.md) dosyasına bakın — `PLAN.md` tarihsel bir kayıt,
+güncel tutulmuyor.
