@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useI18n } from "@/locales/client";
 import { Button } from "@/components/ui/Button";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/Dialog";
-import { PlusIcon } from "@/components/icons";
+import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/Dialog";
+import { CloseIcon, PlusIcon } from "@/components/icons";
 import { PostComposer } from "./PostComposer";
 
 /**
@@ -26,7 +26,18 @@ export function PostComposerDialog({ locale, author }) {
         </Button>
       </DialogTrigger>
       <DialogContent variant="full">
-        <DialogTitle>{t("posts.newPostButton")}</DialogTitle>
+        <div className="flex items-center justify-between gap-3">
+          <DialogTitle>{t("posts.newPostButton")}</DialogTitle>
+          <DialogClose asChild>
+            <button
+              type="button"
+              aria-label={t("nav.close")}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-muted-foreground active:bg-muted"
+            >
+              <CloseIcon className="h-6 w-6" />
+            </button>
+          </DialogClose>
+        </div>
         <div className="mt-4">
           <PostComposer locale={locale} author={author} onSuccess={() => setOpen(false)} />
         </div>
