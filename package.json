@@ -9,6 +9,7 @@
     "dev": "pnpm --filter @hemdem/web dev",
     "build": "pnpm --filter @hemdem/web build",
     "start": "pnpm --filter @hemdem/web start",
-    "lint": "pnpm --filter @hemdem/web lint"
+    "lint": "pnpm --filter @hemdem/web lint",
+    "mobile": "pnpm --filter @hemdem/mobile start"
   }
 }

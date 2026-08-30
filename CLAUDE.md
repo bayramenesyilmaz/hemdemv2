@@ -110,20 +110,46 @@ kabuğu altında (`(app)/`): `discover`, `tests` (+ `create`, `mine`, `history`,
 `leaderboard`, `menu`, `help`, `support`, `admin` (+ `users`, `tests`,
 `requests`), ve herkese açık profil `u/[id]`.
 
-## Mobil (apps/mobile, Expo) — planlanan, henüz yazılmadı
+## Mobil (apps/mobile, Expo) — iskelet kuruldu, ekranlar henüz eksik
 
 Öncelik **web'i bozmadan kusursuz bir mobil geçiş** — Vite'a olası bir
 web geçişi şu an gündemde değil, ayrı bir gelecek kararı, mobil işini
 etkilememeli.
 
-- `packages/core` doğrudan reuse edilecek, sadece UI katmanı sıfırdan:
-  swipe deck için `react-native-gesture-handler`/`reanimated`, Radix Dialog
-  yerine bottom-sheet kütüphanesi, fotoğraf yükleme için Expo API'leri,
-  Next.js routing yerine Expo Router/React Navigation.
-- pnpm monorepo + Metro bundler için gerekenler: `.npmrc`'de
-  `node-linker=hoisted` (ya da Metro'da `disableHierarchicalLookup`), ve
-  `metro.config.js`'de `watchFolders` ile repo kökünü izlemek (böylece
-  `packages/core` değişiklikleri Expo Go'da anında yansır).
-- Test: Expo Go (QR okutup canlı cihazda), EAS Build (Mac gerekmeden
-  yüklenebilir build), TestFlight/Play Store Internal Testing daha geniş beta
-  için.
+- Expo SDK 57 + Expo Router (`app/` dizini, dosya tabanlı routing).
+  `packages/core` **hiç değiştirilmeden** doğrudan reuse ediliyor —
+  `apps/mobile/lib/repositories.js` web'deki `apps/web/lib/repositories.js`
+  ile birebir aynı composition-root deseni, sadece şimdilik sabit mock
+  (henüz gerçek/mock anahtarı yok). Şu an sadece 2 ekran var: giriş
+  (`app/index.js`, mock auth ile) ve keşfet (`app/discover.js`,
+  `fetchDiscoverCandidates` usecase'ini doğrudan çağıran düz bir liste —
+  henüz swipe kart destesi değil).
+- **pnpm monorepo + Metro:** Beklenenin aksine `.npmrc`'de `node-linker=hoisted`
+  gibi bir ayara gerek YOK — Expo SDK 57'nin `@expo/metro-config`'i pnpm'in
+  symlink'li workspace yapısını ve `packages/core`'un `package.json`
+  `exports` map'ini (`unstable_enablePackageExports`) zaten varsayılan
+  olarak destekliyor; `pnpm why`/`expo export` ile doğrulandı. Tek gereken
+  `apps/mobile/metro.config.js`'deki `watchFolders` (repo kökünü izler, böylece
+  `packages/core`'daki bir değişiklik Expo Go'da anında yansır).
+- `react-native-gesture-handler`/`react-native-reanimated`/`react-native-worklets`
+  zaten kurulu (expo-router'ın kendisi bunlara peer olarak ihtiyaç duyuyor,
+  swipe deck'ten bağımsız) — `babel-preset-expo` bunları otomatik algılayıp
+  babel plugin'lerini ekliyor, `babel.config.js`'de elle bir şey eklemeye
+  gerek yok.
+- Mock seed'deki `avatarUrl` bir `data:image/svg+xml` URI'dir — React
+  Native'in `Image`'ı bunu render edemez (SVG data URI desteklemiyor).
+  Mobilde `components/InitialsAvatar.js` (düz View/Text ile baş harf
+  rozeti) kullanılıyor; ileride gerçek fotoğraf yüklemesi eklenince bu
+  zaten devre dışı kalacak.
+- Radix Dialog yerine bottom-sheet kütüphanesi, fotoğraf yükleme için Expo
+  API'leri gibi geri kalan UI katmanı adaptasyonları henüz yapılmadı.
+- **Önemli mimari not:** `apps/web`'de `SUPABASE_SERVICE_ROLE_KEY` sadece
+  sunucu tarafında (server actions) kullanılıyor. Mobilde JS bundle'ı
+  doğrudan cihazda çalıştığı için bu anahtar hiçbir şekilde mobil koda
+  gömülemez — gerçek Supabase'e geçildiğinde mobil, web'deki gibi
+  `packages/core/infrastructure/supabase/*`'i doğrudan çağıramaz, bunun
+  yerine web'in server action'larına benzer bir API katmanı (route
+  handler/Edge Function) üzerinden konuşması gerekecek.
+- Test: Expo Go (QR okutup canlı cihazda — `pnpm --filter @hemdem/mobile start`),
+  EAS Build (Mac gerekmeden yüklenebilir build), TestFlight/Play Store
+  Internal Testing daha geniş beta için.
