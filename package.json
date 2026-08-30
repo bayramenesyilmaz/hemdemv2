@@ -11,5 +11,8 @@
     "start": "pnpm --filter @hemdem/web start",
     "lint": "pnpm --filter @hemdem/web lint",
     "mobile": "pnpm --filter @hemdem/mobile start"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["unrs-resolver"]
   }
 }
