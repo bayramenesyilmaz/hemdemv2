@@ -35,38 +35,51 @@ export async function submitAnswers(repositories, userId, testId, userAnswers) {
   const answer = await repositories.test.saveAnswer({ userId, testId, userAnswers });
 
   if (test.point > 0) {
-    await repositories.point.increment(userId, test.point);
+    // Katılım puanı ikincil bir yan etkidir; cevap zaten kaydedildi.
+    // Puan tablosunda bir sorun olursa (bkz. safeCreateNotification'daki
+    // aynı gerekçe) tüm işlemi patlatıp kullanıcıyı "gönderiliyor"
+    // durumunda takılı bırakmasın.
+    try {
+      await repositories.point.increment(userId, test.point);
+    } catch (error) {
+      console.error("[tests] katılım puanı eklenemedi, cevap yine de kaydedildi:", error);
+    }
   }
 
-  const others = (await repositories.test.findAnswersByTest(testId)).filter(
-    (other) => other.userId !== userId
-  );
-
+  // Benzerlik hesaplama + bildirim adımlarının tamamı ikincil bir yan
+  // etkidir; cevap zaten kaydedildi. Burada beklenmedik bir hata (ör.
+  // findAnswersByTest'in kendisi patlarsa) tüm işlemi geçersiz kılıp
+  // kullanıcıyı "gönderiliyor" durumunda takılı bırakmasın diye tek bir
+  // try/catch ile sarmalanıyor.
   let newHighMatches = 0;
-  for (const other of others) {
-    const similarity = calculateAnswerSimilarity(userAnswers, other.userAnswers);
-    if (similarity < SIMILARITY_NOTIFY_THRESHOLD) continue;
+  try {
+    const others = (await repositories.test.findAnswersByTest(testId)).filter(
+      (other) => other.userId !== userId
+    );
 
-    newHighMatches += 1;
-    // Karşılıklı: iki taraf da birbirini görebilmeli. Bildirim oluşturma
-    // burada kasıtlı olarak hataya dayanıklı (bkz. safeCreateNotification) —
-    // aksi halde bildirim tablosuyla ilgili bir sorun, çözülmüş cevabın
-    // hiç kaydedilmemiş gibi görünmesine (istemci sonsuza kadar
-    // "gönderiliyor" durumunda takılı kalır) yol açabiliyordu.
-    await safeCreateNotification(repositories, {
-      userId: other.userId,
-      type: "test_similarity",
-      actorId: userId,
-      testId,
-      similarity,
-    });
-    await safeCreateNotification(repositories, {
-      userId,
-      type: "test_similarity",
-      actorId: other.userId,
-      testId,
-      similarity,
-    });
+    for (const other of others) {
+      const similarity = calculateAnswerSimilarity(userAnswers, other.userAnswers);
+      if (similarity < SIMILARITY_NOTIFY_THRESHOLD) continue;
+
+      newHighMatches += 1;
+      // Karşılıklı: iki taraf da birbirini görebilmeli.
+      await safeCreateNotification(repositories, {
+        userId: other.userId,
+        type: "test_similarity",
+        actorId: userId,
+        testId,
+        similarity,
+      });
+      await safeCreateNotification(repositories, {
+        userId,
+        type: "test_similarity",
+        actorId: other.userId,
+        testId,
+        similarity,
+      });
+    }
+  } catch (error) {
+    console.error("[tests] benzerlik/bildirim adımı başarısız, cevap yine de kaydedildi:", error);
   }
 
   return { status: "success", data: { answer, newHighMatches } };
