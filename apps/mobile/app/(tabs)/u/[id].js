@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, TextInput, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { likeUser } from "@hemdem/core/usecases/discover/likeUser";
 import { sendMessage } from "@hemdem/core/usecases/chat/sendMessage";
 import { repositories } from "../../../lib/repositories";
 import { useSession } from "../../../lib/session";
-import { colors } from "../../../lib/theme";
+import { colors, radii, spacing } from "../../../lib/theme";
 import { InitialsAvatar } from "../../../components/InitialsAvatar";
+import { Button } from "../../../components/ui/Button";
+import { Screen } from "../../../components/ui/Screen";
 
 export default function PublicProfileScreen() {
   const { id } = useLocalSearchParams();
@@ -53,31 +55,32 @@ export default function PublicProfileScreen() {
 
   if (!profile) {
     return (
-      <View style={[styles.container, styles.center]}>
+      <Screen style={styles.center}>
         <ActivityIndicator color={colors.primary} />
-      </View>
+      </Screen>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <Pressable onPress={() => router.back()}>
-        <Text style={styles.back}>‹ Geri</Text>
-      </Pressable>
+    <Screen contentStyle={styles.content}>
+      <Button variant="ghost" style={styles.backButton} onPress={() => router.back()}>
+        ‹ Geri
+      </Button>
 
       <View style={styles.header}>
-        <InitialsAvatar name={profile.name} size={88} />
+        <InitialsAvatar name={profile.name} size={96} />
         <Text style={styles.name}>{profile.name}</Text>
+        {profile.country && <Text style={styles.country}>{profile.country}</Text>}
         {profile.bio && <Text style={styles.bio}>{profile.bio}</Text>}
       </View>
 
       <View style={styles.actions}>
-        <Pressable style={styles.likeButton} onPress={handleLike}>
-          <Text style={styles.likeButtonText}>❤️ Beğen</Text>
-        </Pressable>
-        <Pressable style={styles.messageButton} onPress={() => setShowMessageBox((v) => !v)}>
-          <Text style={styles.messageButtonText}>💬 Mesaj</Text>
-        </Pressable>
+        <Button variant="primary" style={styles.actionButton} onPress={handleLike}>
+          ❤️ Beğen
+        </Button>
+        <Button variant="outline" style={styles.actionButton} onPress={() => setShowMessageBox((v) => !v)}>
+          💬 Mesaj
+        </Button>
       </View>
 
       {likeStatus === "matched" && <Text style={styles.status}>🎉 Eşleştiniz!</Text>}
@@ -95,36 +98,31 @@ export default function PublicProfileScreen() {
             placeholder="Mesajını yaz..."
             placeholderTextColor={colors.mutedDark}
           />
-          <Pressable style={styles.sendButton} onPress={handleSendMessage} disabled={sending}>
-            {sending ? <ActivityIndicator color="#fff" /> : <Text style={styles.sendButtonText}>Gönder</Text>}
-          </Pressable>
+          <Button variant="primary" onPress={handleSendMessage} loading={sending} disabled={!messageDraft.trim()}>
+            Gönder
+          </Button>
           {messageStatus && <Text style={styles.error}>{messageStatus}</Text>}
         </View>
       )}
-    </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-    paddingTop: 60,
-    paddingHorizontal: 20,
-  },
   center: {
     alignItems: "center",
     justifyContent: "center",
   },
-  back: {
-    color: colors.muted,
-    fontSize: 15,
-    marginBottom: 12,
+  content: {
+    gap: spacing.lg,
+  },
+  backButton: {
+    alignSelf: "flex-start",
+    paddingHorizontal: 0,
   },
   header: {
     alignItems: "center",
     gap: 6,
-    marginBottom: 24,
   },
   name: {
     color: colors.foreground,
@@ -132,69 +130,42 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     marginTop: 8,
   },
+  country: {
+    color: colors.mutedForeground,
+    fontSize: 13,
+  },
   bio: {
-    color: colors.muted,
+    color: colors.mutedForeground,
     fontSize: 14,
     textAlign: "center",
+    marginTop: 4,
   },
   actions: {
     flexDirection: "row",
-    gap: 12,
+    gap: spacing.md,
   },
-  likeButton: {
+  actionButton: {
     flex: 1,
-    backgroundColor: colors.primary,
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
-  },
-  likeButtonText: {
-    color: "#fff",
-    fontWeight: "700",
-  },
-  messageButton: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
-  },
-  messageButtonText: {
-    color: colors.foreground,
-    fontWeight: "700",
   },
   status: {
-    marginTop: 12,
     color: colors.primary,
     textAlign: "center",
     fontWeight: "600",
   },
   error: {
-    marginTop: 12,
     color: colors.danger,
     textAlign: "center",
   },
   messageBox: {
-    marginTop: 16,
-    gap: 8,
+    gap: spacing.sm,
   },
   messageInput: {
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 10,
-    paddingHorizontal: 14,
+    borderRadius: radii.md,
+    paddingHorizontal: spacing.md,
     paddingVertical: 10,
     color: colors.foreground,
-  },
-  sendButton: {
-    backgroundColor: colors.primary,
-    borderRadius: 10,
-    paddingVertical: 12,
-    alignItems: "center",
-  },
-  sendButtonText: {
-    color: "#fff",
-    fontWeight: "700",
+    backgroundColor: colors.card,
   },
 });

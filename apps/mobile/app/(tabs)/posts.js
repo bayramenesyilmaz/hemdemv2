@@ -5,10 +5,16 @@ import { fetchFeed } from "@hemdem/core/usecases/posts/fetchFeed";
 import { createPost } from "@hemdem/core/usecases/posts/createPost";
 import { repositories } from "../../lib/repositories";
 import { useSession } from "../../lib/session";
-import { colors } from "../../lib/theme";
+import { colors, radii, spacing } from "../../lib/theme";
 import { InitialsAvatar } from "../../components/InitialsAvatar";
+import { Card } from "../../components/ui/Card";
+import { Button } from "../../components/ui/Button";
+import { Badge } from "../../components/ui/Badge";
+import { EmptyState } from "../../components/ui/EmptyState";
+import { useScreenInsets } from "../../components/ui/Screen";
 
 export default function PostsScreen() {
+  const insets = useScreenInsets();
   const router = useRouter();
   const { userId } = useSession();
   const [posts, setPosts] = useState([]);
@@ -38,49 +44,58 @@ export default function PostsScreen() {
     }
   }
 
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.center]}>
+        <ActivityIndicator color={colors.primary} />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Gönderiler</Text>
-
-      <View style={styles.composer}>
-        <TextInput
-          style={styles.composerInput}
-          value={draft}
-          onChangeText={setDraft}
-          placeholder="Aklından ne geçiyor?"
-          placeholderTextColor={colors.mutedDark}
-          multiline
-        />
-        <Pressable style={styles.postButton} onPress={handlePost} disabled={posting || !draft.trim()}>
-          {posting ? <ActivityIndicator color="#fff" /> : <Text style={styles.postButtonText}>Paylaş</Text>}
-        </Pressable>
-      </View>
-
-      {loading ? (
-        <View style={styles.center}>
-          <ActivityIndicator color={colors.primary} />
-        </View>
-      ) : (
-        <FlatList
-          data={posts}
-          keyExtractor={(item) => String(item.post.id)}
-          contentContainerStyle={styles.list}
-          renderItem={({ item }) => (
-            <View style={styles.card}>
-              <Pressable style={styles.author} onPress={() => router.push(`/u/${item.author.id}`)}>
-                <InitialsAvatar name={item.author.name} size={32} />
-                <Text style={styles.authorName}>{item.author.name}</Text>
-              </Pressable>
-              <Text style={styles.content}>{item.post.content}</Text>
-              {item.taggedTest && (
-                <View style={styles.testBadge}>
-                  <Text style={styles.testBadgeText}>📋 {item.taggedTest.title}</Text>
-                </View>
-              )}
-            </View>
-          )}
-        />
-      )}
+      <FlatList
+        data={posts}
+        keyExtractor={(item) => String(item.post.id)}
+        contentContainerStyle={[insets, styles.list]}
+        ListHeaderComponent={
+          <>
+            <Text style={styles.title}>Gönderiler</Text>
+            <Card style={styles.composer}>
+              <TextInput
+                style={styles.composerInput}
+                value={draft}
+                onChangeText={setDraft}
+                placeholder="Aklından ne geçiyor?"
+                placeholderTextColor={colors.mutedDark}
+                multiline
+              />
+              <Button
+                variant="primary"
+                style={styles.postButton}
+                onPress={handlePost}
+                disabled={!draft.trim()}
+                loading={posting}
+              >
+                Paylaş
+              </Button>
+            </Card>
+          </>
+        }
+        ListEmptyComponent={
+          <EmptyState icon="📝" title="Henüz gönderi yok" description="İlk gönderiyi sen paylaş." />
+        }
+        renderItem={({ item }) => (
+          <Card style={styles.card}>
+            <Pressable style={styles.author} onPress={() => router.push(`/u/${item.author.id}`)}>
+              <InitialsAvatar name={item.author.name} size={36} />
+              <Text style={styles.authorName}>{item.author.name}</Text>
+            </Pressable>
+            <Text style={styles.content}>{item.post.content}</Text>
+            {item.taggedTest && <Badge>📋 {item.taggedTest.title}</Badge>}
+          </Card>
+        )}
+      />
     </View>
   );
 }
@@ -89,58 +104,40 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    paddingTop: 60,
   },
   center: {
     alignItems: "center",
     justifyContent: "center",
-    paddingTop: 40,
   },
   title: {
     fontSize: 24,
     fontWeight: "800",
     color: colors.foreground,
-    paddingHorizontal: 20,
-    marginBottom: 12,
+    marginBottom: spacing.md,
   },
   composer: {
-    marginHorizontal: 20,
-    marginBottom: 16,
-    backgroundColor: colors.card,
-    borderRadius: 14,
-    padding: 12,
-    gap: 8,
+    gap: spacing.sm,
+    marginBottom: spacing.lg,
   },
   composerInput: {
     color: colors.foreground,
     minHeight: 40,
+    fontSize: 14,
   },
   postButton: {
     alignSelf: "flex-end",
-    backgroundColor: colors.primary,
-    borderRadius: 10,
-    paddingVertical: 8,
-    paddingHorizontal: 18,
-  },
-  postButtonText: {
-    color: "#fff",
-    fontWeight: "700",
   },
   list: {
-    paddingHorizontal: 20,
     paddingBottom: 40,
-    gap: 12,
+    gap: spacing.md,
   },
   card: {
-    backgroundColor: colors.card,
-    borderRadius: 14,
-    padding: 14,
-    gap: 8,
+    gap: spacing.sm,
   },
   author: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: spacing.sm,
   },
   authorName: {
     color: colors.foreground,
@@ -148,16 +145,5 @@ const styles = StyleSheet.create({
   },
   content: {
     color: colors.foreground,
-  },
-  testBadge: {
-    alignSelf: "flex-start",
-    backgroundColor: colors.cardAlt,
-    borderRadius: 8,
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-  },
-  testBadgeText: {
-    color: colors.muted,
-    fontSize: 12,
   },
 });

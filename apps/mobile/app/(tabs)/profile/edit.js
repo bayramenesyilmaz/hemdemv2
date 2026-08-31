@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
 import { updateProfile } from "@hemdem/core/usecases/profile/updateProfile";
 import { repositories } from "../../../lib/repositories";
 import { useSession } from "../../../lib/session";
-import { colors } from "../../../lib/theme";
+import { colors, radii, spacing } from "../../../lib/theme";
+import { Button } from "../../../components/ui/Button";
+import { ScreenHeader } from "../../../components/ui/ScreenHeader";
+import { Screen } from "../../../components/ui/Screen";
 
 /**
  * Web'deki profil düzenleme formunun sadeleştirilmiş mobil hali —
@@ -49,76 +52,66 @@ export default function EditProfileScreen() {
 
   if (loading) {
     return (
-      <View style={[styles.container, styles.center]}>
+      <Screen style={styles.center}>
         <ActivityIndicator color={colors.primary} />
-      </View>
+      </Screen>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <Pressable onPress={() => router.back()}>
-        <Text style={styles.back}>‹ Geri</Text>
-      </Pressable>
-      <Text style={styles.title}>Profili Düzenle</Text>
+    <Screen contentStyle={styles.content}>
+      <ScreenHeader title="Profili Düzenle" back />
 
-      <Text style={styles.label}>Ad</Text>
-      <TextInput style={styles.input} value={name} onChangeText={setName} />
+      <View style={styles.field}>
+        <Text style={styles.label}>Ad</Text>
+        <TextInput style={styles.input} value={name} onChangeText={setName} placeholderTextColor={colors.mutedDark} />
+      </View>
 
-      <Text style={styles.label}>Hakkında</Text>
-      <TextInput
-        style={[styles.input, styles.textarea]}
-        value={bio}
-        onChangeText={setBio}
-        multiline
-        numberOfLines={4}
-      />
+      <View style={styles.field}>
+        <Text style={styles.label}>Hakkında</Text>
+        <TextInput
+          style={[styles.input, styles.textarea]}
+          value={bio}
+          onChangeText={setBio}
+          multiline
+          numberOfLines={4}
+          placeholderTextColor={colors.mutedDark}
+        />
+      </View>
 
       {error && <Text style={styles.error}>{error}</Text>}
 
-      <Pressable style={styles.saveButton} onPress={handleSave} disabled={saving}>
-        {saving ? <ActivityIndicator color="#fff" /> : <Text style={styles.saveButtonText}>Kaydet</Text>}
-      </Pressable>
-    </View>
+      <Button variant="primary" onPress={handleSave} loading={saving}>
+        Kaydet
+      </Button>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-    paddingTop: 60,
-    paddingHorizontal: 20,
-  },
   center: {
     alignItems: "center",
     justifyContent: "center",
   },
-  back: {
-    color: colors.muted,
-    fontSize: 15,
-    marginBottom: 12,
+  content: {
+    gap: spacing.lg,
   },
-  title: {
-    fontSize: 22,
-    fontWeight: "800",
-    color: colors.foreground,
-    marginBottom: 20,
+  field: {
+    gap: spacing.xs,
   },
   label: {
-    color: colors.muted,
+    color: colors.mutedForeground,
     fontSize: 13,
-    marginBottom: 6,
-    marginTop: 12,
   },
   input: {
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 10,
-    paddingHorizontal: 14,
+    borderRadius: radii.md,
+    paddingHorizontal: spacing.md,
     paddingVertical: 10,
     color: colors.foreground,
     fontSize: 15,
+    backgroundColor: colors.card,
   },
   textarea: {
     minHeight: 90,
@@ -126,17 +119,5 @@ const styles = StyleSheet.create({
   },
   error: {
     color: colors.danger,
-    marginTop: 12,
-  },
-  saveButton: {
-    marginTop: 24,
-    backgroundColor: colors.primary,
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
-  },
-  saveButtonText: {
-    color: "#fff",
-    fontWeight: "700",
   },
 });

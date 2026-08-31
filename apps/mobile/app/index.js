@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 import { repositories } from "../lib/repositories";
 import { useSession } from "../lib/session";
+import { colors, gradients, radii, spacing } from "../lib/theme";
+import { Button } from "../components/ui/Button";
 
 const ERROR_MESSAGES = {
   invalid_credentials: "E-posta veya şifre hatalı.",
@@ -39,94 +42,120 @@ export default function LoginScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+      <View style={styles.logoBadge}>
+        <LinearGradient colors={gradients.primary} style={styles.logoFill}>
+          <Text style={styles.logoText}>H</Text>
+        </LinearGradient>
+      </View>
       <Text style={styles.title}>Hemdem</Text>
       <Text style={styles.subtitle}>Uyum testleriyle tanış.</Text>
 
       <View style={styles.form}>
-        <Text style={styles.label}>E-posta</Text>
-        <TextInput
-          style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-          keyboardType="email-address"
-        />
+        <View style={styles.field}>
+          <Text style={styles.label}>E-posta</Text>
+          <TextInput
+            style={styles.input}
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            placeholderTextColor={colors.mutedDark}
+          />
+        </View>
 
-        <Text style={styles.label}>Şifre</Text>
-        <TextInput style={styles.input} value={password} onChangeText={setPassword} secureTextEntry />
+        <View style={styles.field}>
+          <Text style={styles.label}>Şifre</Text>
+          <TextInput
+            style={styles.input}
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            placeholderTextColor={colors.mutedDark}
+          />
+        </View>
 
         {error && <Text style={styles.error}>{error}</Text>}
 
-        <Pressable style={styles.button} onPress={handleLogin} disabled={loading}>
-          {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Giriş Yap</Text>}
-        </Pressable>
+        <Button variant="primary" onPress={handleLogin} loading={loading} style={styles.submitButton}>
+          Giriş Yap
+        </Button>
 
         <Text style={styles.hint}>Demo hesap otomatik dolduruldu.</Text>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0a0a0f",
+    backgroundColor: colors.background,
     alignItems: "center",
     justifyContent: "center",
-    padding: 24,
-    gap: 8,
+    padding: spacing.xl,
+  },
+  logoBadge: {
+    width: 64,
+    height: 64,
+    borderRadius: radii.xl,
+    overflow: "hidden",
+    marginBottom: spacing.md,
+  },
+  logoFill: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  logoText: {
+    color: "#fff",
+    fontSize: 30,
+    fontWeight: "800",
   },
   title: {
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: "800",
-    color: "#fff",
+    color: colors.foreground,
   },
   subtitle: {
     fontSize: 14,
-    color: "#9ca3af",
-    marginBottom: 24,
+    color: colors.mutedForeground,
+    marginTop: 4,
+    marginBottom: spacing.xxl,
   },
   form: {
     width: "100%",
     maxWidth: 360,
-    gap: 6,
+    gap: spacing.md,
+  },
+  field: {
+    gap: spacing.xs,
   },
   label: {
     fontSize: 13,
-    color: "#9ca3af",
-    marginTop: 8,
+    color: colors.mutedForeground,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#27272a",
-    borderRadius: 10,
-    paddingHorizontal: 14,
+    borderColor: colors.border,
+    borderRadius: radii.md,
+    paddingHorizontal: spacing.md,
     paddingVertical: 10,
-    color: "#fff",
+    color: colors.foreground,
     fontSize: 15,
+    backgroundColor: colors.card,
   },
   error: {
-    color: "#f87171",
+    color: colors.danger,
     fontSize: 13,
-    marginTop: 4,
   },
-  button: {
-    marginTop: 16,
-    backgroundColor: "#e11d48",
-    borderRadius: 10,
-    paddingVertical: 12,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 15,
+  submitButton: {
+    marginTop: spacing.xs,
   },
   hint: {
-    marginTop: 12,
+    marginTop: spacing.xs,
     textAlign: "center",
-    color: "#6b7280",
+    color: colors.mutedDark,
     fontSize: 12,
   },
 });

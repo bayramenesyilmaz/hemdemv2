@@ -1,10 +1,21 @@
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 import { repositories } from "../../../lib/repositories";
 import { useSession } from "../../../lib/session";
-import { colors } from "../../../lib/theme";
+import { colors, gradients, radii, spacing } from "../../../lib/theme";
 import { InitialsAvatar } from "../../../components/InitialsAvatar";
+import { Button } from "../../../components/ui/Button";
+import { Screen } from "../../../components/ui/Screen";
+
+const LINKS = [
+  { href: "/profile/edit", label: "Profili Düzenle", icon: "✏️" },
+  { href: "/profile/viewers", label: "Profilimi Görüntüleyenler", icon: "👁️" },
+  { href: "/posts", label: "Gönderiler", icon: "📝" },
+  { href: "/notifications", label: "Bildirimler", icon: "🔔" },
+  { href: "/leaderboard", label: "Liderlik Tablosu", icon: "🏆" },
+];
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -37,65 +48,62 @@ export default function ProfileScreen() {
 
   if (!profile) {
     return (
-      <View style={[styles.container, styles.center]}>
+      <Screen style={styles.center}>
         <ActivityIndicator color={colors.primary} />
-      </View>
+      </Screen>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <Screen contentStyle={styles.content}>
       <View style={styles.header}>
-        <InitialsAvatar name={profile.name} size={72} />
+        <InitialsAvatar name={profile.name} size={80} />
         <Text style={styles.name}>{profile.name}</Text>
         {profile.bio && <Text style={styles.bio}>{profile.bio}</Text>}
       </View>
 
-      <Pressable style={styles.coinCard} onPress={() => router.push("/coins")}>
-        <Text style={styles.coinLabel}>Bakiye</Text>
-        <Text style={styles.coinValue}>{coins} coin</Text>
+      <Pressable onPress={() => router.push("/coins")}>
+        <LinearGradient colors={gradients.surface} style={styles.coinCard}>
+          <View>
+            <Text style={styles.coinLabel}>Bakiye</Text>
+            <Text style={styles.coinValue}>{coins} coin</Text>
+          </View>
+          <Text style={styles.coinChevron}>›</Text>
+        </LinearGradient>
       </Pressable>
 
       <View style={styles.linkList}>
-        <Pressable style={styles.link} onPress={() => router.push("/profile/edit")}>
-          <Text style={styles.linkText}>Profili Düzenle</Text>
-        </Pressable>
-        <Pressable style={styles.link} onPress={() => router.push("/profile/viewers")}>
-          <Text style={styles.linkText}>Profilimi Görüntüleyenler</Text>
-        </Pressable>
-        <Pressable style={styles.link} onPress={() => router.push("/posts")}>
-          <Text style={styles.linkText}>Gönderiler</Text>
-        </Pressable>
-        <Pressable style={styles.link} onPress={() => router.push("/notifications")}>
-          <Text style={styles.linkText}>Bildirimler</Text>
-        </Pressable>
-        <Pressable style={styles.link} onPress={() => router.push("/leaderboard")}>
-          <Text style={styles.linkText}>Liderlik Tablosu</Text>
-        </Pressable>
+        {LINKS.map((link) => (
+          <Pressable
+            key={link.href}
+            style={({ pressed }) => [styles.link, pressed && styles.linkPressed]}
+            onPress={() => router.push(link.href)}
+          >
+            <Text style={styles.linkIcon}>{link.icon}</Text>
+            <Text style={styles.linkText}>{link.label}</Text>
+            <Text style={styles.linkChevron}>›</Text>
+          </Pressable>
+        ))}
       </View>
 
-      <Pressable style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Çıkış Yap</Text>
-      </Pressable>
-    </View>
+      <Button variant="delete" onPress={handleLogout}>
+        Çıkış Yap
+      </Button>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-    paddingTop: 60,
-    paddingHorizontal: 20,
-  },
   center: {
     alignItems: "center",
     justifyContent: "center",
   },
+  content: {
+    gap: spacing.lg,
+  },
   header: {
     alignItems: "center",
     gap: 6,
-    marginBottom: 24,
   },
   name: {
     color: colors.foreground,
@@ -104,50 +112,58 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   bio: {
-    color: colors.muted,
+    color: colors.mutedForeground,
     fontSize: 14,
     textAlign: "center",
   },
   coinCard: {
-    backgroundColor: colors.card,
-    borderRadius: 14,
-    padding: 16,
-    marginBottom: 24,
+    borderRadius: radii.lg,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
   coinLabel: {
-    color: colors.muted,
-    fontSize: 14,
+    color: colors.mutedForeground,
+    fontSize: 13,
   },
   coinValue: {
     color: colors.foreground,
+    fontWeight: "800",
+    fontSize: 18,
+    marginTop: 2,
+  },
+  coinChevron: {
+    color: colors.primary,
+    fontSize: 22,
     fontWeight: "700",
-    fontSize: 16,
   },
   linkList: {
-    gap: 8,
-    marginBottom: 24,
+    gap: spacing.xs,
   },
   link: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
     backgroundColor: colors.card,
-    borderRadius: 12,
-    padding: 14,
+    borderRadius: radii.md,
+    padding: spacing.md,
+  },
+  linkPressed: {
+    backgroundColor: colors.cardAlt,
+  },
+  linkIcon: {
+    fontSize: 18,
   },
   linkText: {
+    flex: 1,
     color: colors.foreground,
     fontWeight: "600",
   },
-  logoutButton: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
-  },
-  logoutText: {
-    color: colors.danger,
-    fontWeight: "700",
+  linkChevron: {
+    color: colors.mutedForeground,
+    fontSize: 18,
   },
 });

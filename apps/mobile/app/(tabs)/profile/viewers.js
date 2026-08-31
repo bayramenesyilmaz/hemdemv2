@@ -6,14 +6,19 @@ import { fetchProfileViewersPreview } from "@hemdem/core/usecases/profile/fetchP
 import { unlockProfileViewers } from "@hemdem/core/usecases/profile/unlockProfileViewers";
 import { repositories } from "../../../lib/repositories";
 import { useSession } from "../../../lib/session";
-import { colors } from "../../../lib/theme";
+import { colors, spacing } from "../../../lib/theme";
 import { InitialsAvatar } from "../../../components/InitialsAvatar";
+import { Button } from "../../../components/ui/Button";
+import { EmptyState } from "../../../components/ui/EmptyState";
+import { ScreenHeader } from "../../../components/ui/ScreenHeader";
+import { useScreenInsets } from "../../../components/ui/Screen";
 
 const ERROR_MESSAGES = {
   insufficient_coins: "Bunun için yeterli coin'in yok.",
 };
 
 export default function ProfileViewersScreen() {
+  const insets = useScreenInsets();
   const router = useRouter();
   const { userId } = useSession();
   const [preview, setPreview] = useState(null);
@@ -65,47 +70,39 @@ export default function ProfileViewersScreen() {
 
   return (
     <View style={styles.container}>
-      <Pressable onPress={() => router.back()}>
-        <Text style={styles.back}>‹ Profil</Text>
-      </Pressable>
-
-      <Text style={styles.title}>Profilimi Görüntüleyenler</Text>
-      <Text style={styles.count}>{preview.totalCount} kişi profilini görüntüledi.</Text>
-
-      {preview.totalCount === 0 ? (
-        <View style={styles.center}>
-          <Text style={styles.empty}>Henüz kimse profilini görüntülemedi.</Text>
-        </View>
-      ) : (
-        <>
-          <FlatList
-            data={combined}
-            keyExtractor={({ viewer }) => viewer.id}
-            contentContainerStyle={styles.list}
-            renderItem={({ item }) => (
-              <Pressable style={styles.row} onPress={() => router.push(`/u/${item.viewer.id}`)}>
-                <InitialsAvatar name={item.viewer.name} size={40} />
-                <Text style={styles.name}>{item.viewer.name}</Text>
-              </Pressable>
-            )}
-          />
-
-          {remainingCount > 0 && !viewers && (
+      <FlatList
+        data={combined}
+        keyExtractor={({ viewer }) => viewer.id}
+        contentContainerStyle={[insets, styles.list]}
+        ListHeaderComponent={
+          <>
+            <ScreenHeader
+              title="Profilimi Görüntüleyenler"
+              back
+              subtitle={`${preview.totalCount} kişi profilini görüntüledi.`}
+            />
+          </>
+        }
+        ListEmptyComponent={
+          <EmptyState icon="👁️" title="Henüz kimse profilini görüntülemedi" />
+        }
+        renderItem={({ item }) => (
+          <Pressable style={styles.row} onPress={() => router.push(`/u/${item.viewer.id}`)}>
+            <InitialsAvatar name={item.viewer.name} size={44} />
+            <Text style={styles.name}>{item.viewer.name}</Text>
+          </Pressable>
+        )}
+        ListFooterComponent={
+          remainingCount > 0 && !viewers ? (
             <View style={styles.unlockPanel}>
               {error && <Text style={styles.error}>{error}</Text>}
-              <Pressable style={styles.unlockButton} onPress={handleUnlock} disabled={unlocking}>
-                {unlocking ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text style={styles.unlockButtonText}>
-                    Kalan {remainingCount} kişiyi gör ({COIN_COSTS.unlockProfileViewers} coin)
-                  </Text>
-                )}
-              </Pressable>
+              <Button variant="primary" onPress={handleUnlock} loading={unlocking}>
+                {`Kalan ${remainingCount} kişiyi gör (${COIN_COSTS.unlockProfileViewers} coin)`}
+              </Button>
             </View>
-          )}
-        </>
-      )}
+          ) : null
+        }
+      />
     </View>
   );
 }
@@ -114,41 +111,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    paddingTop: 60,
-    paddingHorizontal: 20,
   },
   center: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
-  back: {
-    color: colors.muted,
-    fontSize: 15,
-    marginBottom: 12,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "800",
-    color: colors.foreground,
-  },
-  count: {
-    color: colors.muted,
-    fontSize: 13,
-    marginTop: 4,
-    marginBottom: 16,
-  },
-  empty: {
-    color: colors.muted,
-  },
   list: {
-    gap: 4,
+    paddingBottom: 40,
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
-    paddingVertical: 8,
+    gap: spacing.md,
+    paddingVertical: spacing.sm,
   },
   name: {
     color: colors.foreground,
@@ -156,22 +132,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   unlockPanel: {
-    marginTop: 16,
-    gap: 8,
+    marginTop: spacing.lg,
+    gap: spacing.sm,
   },
   error: {
     color: colors.danger,
     fontSize: 13,
-  },
-  unlockButton: {
-    backgroundColor: colors.primary,
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
-  },
-  unlockButtonText: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 14,
   },
 });
