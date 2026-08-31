@@ -1,10 +1,28 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
+import { TEST_CATEGORIES } from "@hemdem/core/domain/entities/test";
 import { repositories } from "../../../lib/repositories";
-import { colors } from "../../../lib/theme";
+import { colors, radii, spacing } from "../../../lib/theme";
+import { Card } from "../../../components/ui/Card";
+import { Button } from "../../../components/ui/Button";
+import { EmptyState } from "../../../components/ui/EmptyState";
+import { useScreenInsets } from "../../../components/ui/Screen";
+
+const CATEGORY_LABELS = {
+  love: "Aşk",
+  personality: "Kişilik",
+  fun: "Eğlence",
+  career: "Kariyer",
+};
+
+function categoryLabelOf(categoryId) {
+  const key = TEST_CATEGORIES.find((c) => c.id === categoryId)?.key ?? "personality";
+  return CATEGORY_LABELS[key];
+}
 
 export default function TestsScreen() {
+  const insets = useScreenInsets();
   const router = useRouter();
   const [tests, setTests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,31 +51,46 @@ export default function TestsScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerRow}>
-        <Text style={styles.title}>Testler</Text>
-        <Pressable style={styles.addButton} onPress={() => router.push("/tests/create")}>
-          <Text style={styles.addButtonText}>+ Oluştur</Text>
-        </Pressable>
-      </View>
-
-      <View style={styles.linkRow}>
-        <Pressable style={styles.linkChip} onPress={() => router.push("/tests/mine")}>
-          <Text style={styles.linkChipText}>Testlerim</Text>
-        </Pressable>
-        <Pressable style={styles.linkChip} onPress={() => router.push("/tests/history")}>
-          <Text style={styles.linkChipText}>Geçmiş</Text>
-        </Pressable>
-      </View>
-
       <FlatList
         data={tests}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={[insets, styles.list]}
+        ListHeaderComponent={
+          <>
+            <View style={styles.headerRow}>
+              <Text style={styles.title}>Testler</Text>
+              <Button variant="primary" onPress={() => router.push("/tests/create")}>
+                + Oluştur
+              </Button>
+            </View>
+
+            <View style={styles.linkRow}>
+              <Button variant="outline" style={styles.linkChip} onPress={() => router.push("/tests/mine")}>
+                Testlerim
+              </Button>
+              <Button variant="outline" style={styles.linkChip} onPress={() => router.push("/tests/history")}>
+                Geçmiş
+              </Button>
+            </View>
+          </>
+        }
+        ListEmptyComponent={
+          <EmptyState icon="📋" title="Henüz test yok" description="İlk testi sen oluştur." />
+        }
         renderItem={({ item }) => (
-          <Pressable style={styles.card} onPress={() => router.push(`/tests/${item.id}`)}>
-            <Text style={styles.testTitle}>{item.title}</Text>
-            <Text style={styles.testMeta}>{item.questions.length} soru</Text>
-          </Pressable>
+          <Card onPress={() => router.push(`/tests/${item.id}`)} style={styles.card}>
+            <View style={styles.cardMain}>
+              <Text style={styles.testTitle} numberOfLines={1}>
+                {item.title}
+              </Text>
+              <Text style={styles.testMeta}>
+                {categoryLabelOf(item.categoryId)} · {item.language.toUpperCase()}
+              </Text>
+            </View>
+            <View style={styles.countPill}>
+              <Text style={styles.countPillText}>{item.questions.length} soru</Text>
+            </View>
+          </Card>
         )}
       />
     </View>
@@ -68,7 +101,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    paddingTop: 60,
   },
   center: {
     alignItems: "center",
@@ -78,52 +110,34 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
-    marginBottom: 12,
+    marginBottom: spacing.md,
   },
   title: {
     fontSize: 24,
     fontWeight: "800",
     color: colors.foreground,
   },
-  addButton: {
-    backgroundColor: colors.primary,
-    borderRadius: 10,
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-  },
-  addButtonText: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 13,
-  },
   linkRow: {
     flexDirection: "row",
-    gap: 8,
-    paddingHorizontal: 20,
-    marginBottom: 16,
+    gap: spacing.sm,
+    marginBottom: spacing.lg,
   },
   linkChip: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 20,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-  },
-  linkChipText: {
-    color: colors.foreground,
-    fontSize: 13,
-    fontWeight: "600",
+    flex: 1,
   },
   list: {
-    paddingHorizontal: 20,
+    gap: spacing.sm,
     paddingBottom: 40,
-    gap: 10,
   },
   card: {
-    backgroundColor: colors.card,
-    borderRadius: 14,
-    padding: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: spacing.md,
+  },
+  cardMain: {
+    flex: 1,
+    minWidth: 0,
   },
   testTitle: {
     color: colors.foreground,
@@ -131,8 +145,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   testMeta: {
-    color: colors.muted,
+    color: colors.mutedForeground,
     fontSize: 13,
     marginTop: 4,
+  },
+  countPill: {
+    backgroundColor: colors.primarySoft,
+    borderRadius: radii.full,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  countPillText: {
+    color: colors.primary,
+    fontWeight: "700",
+    fontSize: 12,
   },
 });

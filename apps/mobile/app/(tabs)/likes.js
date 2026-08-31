@@ -1,13 +1,18 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, Modal, StyleSheet, Text, View } from "react-native";
 import { fetchIncomingLikes } from "@hemdem/core/usecases/discover/fetchIncomingLikes";
 import { likeUser } from "@hemdem/core/usecases/discover/likeUser";
 import { repositories } from "../../lib/repositories";
 import { useSession } from "../../lib/session";
-import { colors } from "../../lib/theme";
+import { colors, radii, spacing } from "../../lib/theme";
 import { InitialsAvatar } from "../../components/InitialsAvatar";
+import { Card } from "../../components/ui/Card";
+import { Button } from "../../components/ui/Button";
+import { EmptyState } from "../../components/ui/EmptyState";
+import { useScreenInsets } from "../../components/ui/Screen";
 
 export default function LikesScreen() {
+  const insets = useScreenInsets();
   const { userId } = useSession();
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -52,45 +57,50 @@ export default function LikesScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Beğenenler</Text>
-
-      {matchName && (
-        <View style={styles.matchBanner}>
-          <Text style={styles.matchText}>🎉 {matchName} ile eşleştin!</Text>
-        </View>
-      )}
-
-      {entries.length === 0 ? (
-        <View style={styles.center}>
-          <Text style={styles.empty}>Şu an bekleyen beğenin yok.</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={entries}
-          keyExtractor={(item) => item.fromUser.id}
-          contentContainerStyle={styles.list}
-          renderItem={({ item }) => (
-            <View style={styles.card}>
-              <InitialsAvatar name={item.fromUser.name} size={48} />
-              <Text style={styles.name}>{item.fromUser.name}</Text>
-              <View style={styles.actions}>
-                <Pressable
-                  style={[styles.actionButton, styles.rejectButton]}
-                  onPress={() => respond(item.fromUser.id, item.fromUser.name, "dislike")}
-                >
-                  <Text style={styles.rejectText}>Geç</Text>
-                </Pressable>
-                <Pressable
-                  style={[styles.actionButton, styles.acceptButton]}
-                  onPress={() => respond(item.fromUser.id, item.fromUser.name, "like")}
-                >
-                  <Text style={styles.acceptText}>Beğen</Text>
-                </Pressable>
-              </View>
+      <FlatList
+        data={entries}
+        keyExtractor={(item) => item.fromUser.id}
+        contentContainerStyle={[insets, styles.list]}
+        ListHeaderComponent={<Text style={styles.title}>Beğenenler</Text>}
+        ListEmptyComponent={
+          <EmptyState icon="💌" title="Şu an bekleyen beğenin yok" description="Yeni beğeniler burada birikecek." />
+        }
+        renderItem={({ item }) => (
+          <Card style={styles.card}>
+            <InitialsAvatar name={item.fromUser.name} size={52} />
+            <Text style={styles.name}>{item.fromUser.name}</Text>
+            <View style={styles.actions}>
+              <Button
+                variant="outline"
+                style={styles.actionButton}
+                onPress={() => respond(item.fromUser.id, item.fromUser.name, "dislike")}
+              >
+                Geç
+              </Button>
+              <Button
+                variant="primary"
+                style={styles.actionButton}
+                onPress={() => respond(item.fromUser.id, item.fromUser.name, "like")}
+              >
+                Beğen
+              </Button>
             </View>
-          )}
-        />
-      )}
+          </Card>
+        )}
+      />
+
+      <Modal visible={Boolean(matchName)} transparent animationType="fade">
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalEmoji}>🎉</Text>
+            <Text style={styles.modalTitle}>Eşleştiniz!</Text>
+            <Text style={styles.modalBody}>{matchName} ile eşleştin.</Text>
+            <Button variant="primary" onPress={() => setMatchName(null)} style={styles.modalButton}>
+              Tamam
+            </Button>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -99,10 +109,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    paddingTop: 60,
   },
   center: {
-    flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -110,35 +118,16 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "800",
     color: colors.foreground,
-    paddingHorizontal: 20,
-    marginBottom: 12,
-  },
-  matchBanner: {
-    marginHorizontal: 20,
-    marginBottom: 12,
-    backgroundColor: colors.primary,
-    borderRadius: 12,
-    padding: 12,
-  },
-  matchText: {
-    color: "#fff",
-    fontWeight: "700",
-    textAlign: "center",
-  },
-  empty: {
-    color: colors.muted,
+    marginBottom: spacing.lg,
   },
   list: {
-    paddingHorizontal: 20,
+    gap: spacing.md,
+    flexGrow: 1,
     paddingBottom: 40,
-    gap: 10,
   },
   card: {
-    backgroundColor: colors.card,
-    borderRadius: 14,
-    padding: 16,
     alignItems: "center",
-    gap: 8,
+    gap: spacing.sm,
   },
   name: {
     color: colors.foreground,
@@ -147,27 +136,47 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: "row",
-    gap: 12,
-    marginTop: 4,
+    gap: spacing.md,
+    marginTop: spacing.xs,
+    width: "100%",
   },
   actionButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 10,
+    flex: 1,
   },
-  rejectButton: {
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: spacing.xl,
+  },
+  modalCard: {
+    width: "100%",
+    maxWidth: 340,
+    backgroundColor: colors.card,
+    borderRadius: radii.xl,
     borderWidth: 1,
     borderColor: colors.border,
+    padding: spacing.xl,
+    alignItems: "center",
+    gap: spacing.xs,
   },
-  rejectText: {
-    color: colors.muted,
-    fontWeight: "600",
+  modalEmoji: {
+    fontSize: 40,
+    marginBottom: spacing.xs,
   },
-  acceptButton: {
-    backgroundColor: colors.primary,
+  modalTitle: {
+    color: colors.foreground,
+    fontSize: 20,
+    fontWeight: "800",
   },
-  acceptText: {
-    color: "#fff",
-    fontWeight: "700",
+  modalBody: {
+    color: colors.mutedForeground,
+    fontSize: 14,
+    textAlign: "center",
+    marginBottom: spacing.md,
+  },
+  modalButton: {
+    width: "100%",
   },
 });

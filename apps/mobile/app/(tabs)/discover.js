@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { fetchDiscoverCandidates } from "@hemdem/core/usecases/discover/fetchDiscoverCandidates";
 import { likeUser } from "@hemdem/core/usecases/discover/likeUser";
 import { repositories } from "../../lib/repositories";
 import { useSession } from "../../lib/session";
-import { colors } from "../../lib/theme";
+import { colors, gradients, radii, spacing } from "../../lib/theme";
 import { SwipeCard } from "../../components/SwipeCard";
+import { EmptyState } from "../../components/ui/EmptyState";
+import { Button } from "../../components/ui/Button";
+import { Screen } from "../../components/ui/Screen";
 
 export default function DiscoverScreen() {
   const { userId } = useSession();
@@ -47,35 +51,38 @@ export default function DiscoverScreen() {
     }
   }
 
+  function handleButtonSwipe(action) {
+    const current = candidates[0];
+    if (current) handleSwiped(current.id, action);
+  }
+
   if (loading) {
     return (
-      <View style={[styles.container, styles.center]}>
+      <Screen style={styles.center}>
         <ActivityIndicator color={colors.primary} />
-      </View>
+      </Screen>
     );
   }
 
   if (error) {
     return (
-      <View style={[styles.container, styles.center]}>
+      <Screen style={styles.center}>
         <Text style={styles.error}>{error}</Text>
-      </View>
+      </Screen>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <Screen contentStyle={styles.screenContent}>
       <Text style={styles.title}>Keşfet</Text>
-
-      {matchName && (
-        <View style={styles.matchBanner}>
-          <Text style={styles.matchText}>🎉 {matchName} ile eşleştin!</Text>
-        </View>
-      )}
 
       <View style={styles.deck}>
         {candidates.length === 0 ? (
-          <Text style={styles.empty}>Şu an gösterilecek kimse yok.</Text>
+          <EmptyState
+            icon="🔍"
+            title="Şu an gösterilecek kimse yok"
+            description="Filtrelerini genişletmeyi dene ya da daha sonra tekrar bak."
+          />
         ) : (
           candidates
             .slice(0, 2)
@@ -90,48 +97,134 @@ export default function DiscoverScreen() {
             ))
         )}
       </View>
-    </View>
+
+      {candidates.length > 0 && (
+        <View style={styles.actions}>
+          <Pressable style={styles.nopeButton} onPress={() => handleButtonSwipe("dislike")}>
+            <Text style={styles.nopeButtonText}>✕</Text>
+          </Pressable>
+          <Pressable style={styles.likeButtonWrap} onPress={() => handleButtonSwipe("like")}>
+            <LinearGradient colors={gradients.primary} style={styles.likeButton}>
+              <Text style={styles.likeButtonText}>♥</Text>
+            </LinearGradient>
+          </Pressable>
+        </View>
+      )}
+
+      <Modal visible={Boolean(matchName)} transparent animationType="fade">
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalEmoji}>🎉</Text>
+            <Text style={styles.modalTitle}>Eşleştiniz!</Text>
+            <Text style={styles.modalBody}>{matchName} ile eşleştin. Şimdi mesajlaşmaya başlayabilirsin.</Text>
+            <Button variant="primary" onPress={() => setMatchName(null)} style={styles.modalButton}>
+              Kaydırmaya Devam Et
+            </Button>
+          </View>
+        </View>
+      </Modal>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-    paddingTop: 60,
-  },
   center: {
     alignItems: "center",
     justifyContent: "center",
+  },
+  screenContent: {
+    flex: 1,
+    paddingBottom: 0,
   },
   title: {
     fontSize: 24,
     fontWeight: "800",
     color: colors.foreground,
-    paddingHorizontal: 20,
-    marginBottom: 12,
-  },
-  matchBanner: {
-    marginHorizontal: 20,
-    marginBottom: 12,
-    backgroundColor: colors.primary,
-    borderRadius: 12,
-    padding: 12,
-  },
-  matchText: {
-    color: "#fff",
-    fontWeight: "700",
-    textAlign: "center",
+    marginBottom: spacing.md,
   },
   deck: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
-  empty: {
-    color: colors.muted,
-  },
   error: {
     color: colors.danger,
+  },
+  actions: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.xl,
+    paddingVertical: spacing.lg,
+  },
+  nopeButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  nopeButtonText: {
+    color: colors.mutedForeground,
+    fontSize: 26,
+    fontWeight: "700",
+  },
+  likeButtonWrap: {
+    borderRadius: 34,
+    shadowColor: colors.primary,
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 8,
+  },
+  likeButton: {
+    width: 68,
+    height: 68,
+    borderRadius: 34,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  likeButtonText: {
+    color: "#fff",
+    fontSize: 30,
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: spacing.xl,
+  },
+  modalCard: {
+    width: "100%",
+    maxWidth: 340,
+    backgroundColor: colors.card,
+    borderRadius: radii.xl,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.xl,
+    alignItems: "center",
+    gap: spacing.xs,
+  },
+  modalEmoji: {
+    fontSize: 40,
+    marginBottom: spacing.xs,
+  },
+  modalTitle: {
+    color: colors.foreground,
+    fontSize: 20,
+    fontWeight: "800",
+  },
+  modalBody: {
+    color: colors.mutedForeground,
+    fontSize: 14,
+    textAlign: "center",
+    marginBottom: spacing.md,
+  },
+  modalButton: {
+    width: "100%",
   },
 });
