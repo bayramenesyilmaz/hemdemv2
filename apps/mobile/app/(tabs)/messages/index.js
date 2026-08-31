@@ -4,10 +4,13 @@ import { useRouter } from "expo-router";
 import { fetchChatList } from "@hemdem/core/usecases/chat/fetchChatList";
 import { repositories } from "../../../lib/repositories";
 import { useSession } from "../../../lib/session";
-import { colors } from "../../../lib/theme";
+import { colors, spacing } from "../../../lib/theme";
 import { InitialsAvatar } from "../../../components/InitialsAvatar";
+import { EmptyState } from "../../../components/ui/EmptyState";
+import { useScreenInsets } from "../../../components/ui/Screen";
 
 export default function MessagesScreen() {
+  const insets = useScreenInsets();
   const router = useRouter();
   const { userId } = useSession();
   const [chats, setChats] = useState([]);
@@ -38,30 +41,30 @@ export default function MessagesScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Mesajlar</Text>
-
-      {chats.length === 0 ? (
-        <View style={styles.center}>
-          <Text style={styles.empty}>Henüz bir sohbetin yok.</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={chats}
-          keyExtractor={(item) => String(item.chat.id)}
-          contentContainerStyle={styles.list}
-          renderItem={({ item }) => (
-            <Pressable style={styles.row} onPress={() => router.push(`/messages/${item.chat.id}`)}>
-              <InitialsAvatar name={item.otherUser.name} size={48} />
-              <View style={styles.rowText}>
-                <Text style={styles.name}>{item.otherUser.name}</Text>
-                <Text style={styles.preview} numberOfLines={1}>
-                  {item.lastMessage ? item.lastMessage.content : "Henüz mesaj yok"}
-                </Text>
-              </View>
-            </Pressable>
-          )}
-        />
-      )}
+      <FlatList
+        data={chats}
+        keyExtractor={(item) => String(item.chat.id)}
+        contentContainerStyle={[insets, styles.list]}
+        ListHeaderComponent={<Text style={styles.title}>Mesajlar</Text>}
+        ListEmptyComponent={
+          <EmptyState icon="💬" title="Henüz bir sohbetin yok" description="Eşleştiğin kişilerle burada mesajlaşabilirsin." />
+        }
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        renderItem={({ item }) => (
+          <Pressable
+            style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
+            onPress={() => router.push(`/messages/${item.chat.id}`)}
+          >
+            <InitialsAvatar name={item.otherUser.name} size={52} />
+            <View style={styles.rowText}>
+              <Text style={styles.name}>{item.otherUser.name}</Text>
+              <Text style={styles.preview} numberOfLines={1}>
+                {item.lastMessage ? item.lastMessage.content : "Henüz mesaj yok"}
+              </Text>
+            </View>
+          </Pressable>
+        )}
+      />
     </View>
   );
 }
@@ -70,7 +73,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    paddingTop: 60,
   },
   center: {
     flex: 1,
@@ -81,22 +83,25 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "800",
     color: colors.foreground,
-    paddingHorizontal: 20,
-    marginBottom: 12,
-  },
-  empty: {
-    color: colors.muted,
+    marginBottom: spacing.md,
   },
   list: {
-    paddingHorizontal: 20,
     paddingBottom: 40,
-    gap: 4,
+    flexGrow: 1,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: colors.border,
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
-    paddingVertical: 10,
+    gap: spacing.md,
+    paddingVertical: spacing.md,
+    borderRadius: 12,
+  },
+  rowPressed: {
+    backgroundColor: colors.card,
   },
   rowText: {
     flex: 1,

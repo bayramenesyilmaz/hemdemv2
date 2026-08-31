@@ -11,15 +11,19 @@ import {
   View,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 import { fetchChatMessages } from "@hemdem/core/usecases/chat/fetchChatMessages";
 import { sendMessage } from "@hemdem/core/usecases/chat/sendMessage";
 import { repositories } from "../../../lib/repositories";
 import { useSession } from "../../../lib/session";
-import { colors } from "../../../lib/theme";
+import { colors, gradients, radii, spacing } from "../../../lib/theme";
+import { ScreenHeader } from "../../../components/ui/ScreenHeader";
+import { useScreenInsets } from "../../../components/ui/Screen";
 
 const POLL_INTERVAL_MS = 3000;
 
 export default function ChatThreadScreen() {
+  const insets = useScreenInsets();
   const { chatId } = useLocalSearchParams();
   const { userId } = useSession();
   const [otherUser, setOtherUser] = useState(null);
@@ -77,7 +81,9 @@ export default function ChatThreadScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       keyboardVerticalOffset={60}
     >
-      <Text style={styles.title}>{otherUser?.name}</Text>
+      <View style={[insets, styles.headerWrap]}>
+        <ScreenHeader title={otherUser?.name ?? ""} back />
+      </View>
 
       <FlatList
         ref={listRef}
@@ -87,9 +93,16 @@ export default function ChatThreadScreen() {
         onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: false })}
         renderItem={({ item }) => {
           const mine = item.senderId === userId;
+          if (mine) {
+            return (
+              <LinearGradient colors={gradients.primary} style={[styles.bubble, styles.bubbleMine]}>
+                <Text style={styles.bubbleTextMine}>{item.content}</Text>
+              </LinearGradient>
+            );
+          }
           return (
-            <View style={[styles.bubble, mine ? styles.bubbleMine : styles.bubbleTheirs]}>
-              <Text style={mine ? styles.bubbleTextMine : styles.bubbleText}>{item.content}</Text>
+            <View style={[styles.bubble, styles.bubbleTheirs]}>
+              <Text style={styles.bubbleText}>{item.content}</Text>
             </View>
           );
         }}
@@ -103,8 +116,17 @@ export default function ChatThreadScreen() {
           placeholder="Mesaj yaz..."
           placeholderTextColor={colors.mutedDark}
         />
-        <Pressable style={styles.sendButton} onPress={handleSend} disabled={sending || !draft.trim()}>
-          <Text style={styles.sendButtonText}>Gönder</Text>
+        <Pressable
+          style={({ pressed }) => [styles.sendButton, pressed && styles.sendButtonPressed]}
+          onPress={handleSend}
+          disabled={sending || !draft.trim()}
+        >
+          <LinearGradient
+            colors={sending || !draft.trim() ? [colors.cardAlt, colors.cardAlt] : gradients.primary}
+            style={styles.sendButtonFill}
+          >
+            {sending ? <ActivityIndicator color="#fff" size="small" /> : <Text style={styles.sendButtonText}>➤</Text>}
+          </LinearGradient>
         </Pressable>
       </View>
     </KeyboardAvoidingView>
@@ -115,37 +137,35 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    paddingTop: 60,
   },
   center: {
     alignItems: "center",
     justifyContent: "center",
   },
-  title: {
-    fontSize: 18,
-    fontWeight: "800",
-    color: colors.foreground,
-    paddingHorizontal: 20,
-    marginBottom: 12,
+  headerWrap: {
+    paddingBottom: 0,
   },
   list: {
-    paddingHorizontal: 20,
-    paddingBottom: 12,
-    gap: 8,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+    gap: spacing.sm,
   },
   bubble: {
     maxWidth: "80%",
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    borderRadius: radii.lg,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
   },
   bubbleMine: {
     alignSelf: "flex-end",
-    backgroundColor: colors.primary,
+    borderBottomRightRadius: 4,
   },
   bubbleTheirs: {
     alignSelf: "flex-start",
     backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderBottomLeftRadius: 4,
   },
   bubbleText: {
     color: colors.foreground,
@@ -155,9 +175,10 @@ const styles = StyleSheet.create({
   },
   inputRow: {
     flexDirection: "row",
-    gap: 8,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
+    alignItems: "center",
+    gap: spacing.sm,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
     borderTopWidth: 1,
     borderTopColor: colors.border,
   },
@@ -165,18 +186,28 @@ const styles = StyleSheet.create({
     flex: 1,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 10,
-    paddingHorizontal: 14,
+    borderRadius: radii.full,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: 10,
     color: colors.foreground,
+    backgroundColor: colors.card,
   },
   sendButton: {
-    backgroundColor: colors.primary,
-    borderRadius: 10,
-    paddingHorizontal: 16,
+    borderRadius: radii.full,
+    overflow: "hidden",
+  },
+  sendButtonPressed: {
+    opacity: 0.85,
+  },
+  sendButtonFill: {
+    width: 44,
+    height: 44,
+    alignItems: "center",
     justifyContent: "center",
   },
   sendButtonText: {
     color: "#fff",
+    fontSize: 18,
     fontWeight: "700",
   },
 });

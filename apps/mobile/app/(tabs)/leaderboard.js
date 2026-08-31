@@ -1,11 +1,18 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 import { repositories } from "../../lib/repositories";
-import { colors } from "../../lib/theme";
+import { colors, gradients, radii, spacing } from "../../lib/theme";
 import { InitialsAvatar } from "../../components/InitialsAvatar";
+import { Card } from "../../components/ui/Card";
+import { ScreenHeader } from "../../components/ui/ScreenHeader";
+import { useScreenInsets } from "../../components/ui/Screen";
+
+const MEDALS = ["🥇", "🥈", "🥉"];
 
 export default function LeaderboardScreen() {
+  const insets = useScreenInsets();
   const router = useRouter();
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,32 +32,40 @@ export default function LeaderboardScreen() {
     };
   }, []);
 
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.center]}>
+        <ActivityIndicator color={colors.primary} />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <Pressable onPress={() => router.back()}>
-        <Text style={styles.back}>‹ Geri</Text>
-      </Pressable>
-      <Text style={styles.title}>Liderlik Tablosu</Text>
-
-      {loading ? (
-        <View style={styles.center}>
-          <ActivityIndicator color={colors.primary} />
-        </View>
-      ) : (
-        <FlatList
-          data={entries}
-          keyExtractor={(item) => item.userId}
-          contentContainerStyle={styles.list}
-          renderItem={({ item, index }) => (
-            <Pressable style={styles.row} onPress={() => router.push(`/u/${item.userId}`)}>
-              <Text style={[styles.rank, index < 3 && styles.rankTop]}>{index + 1}</Text>
-              <InitialsAvatar name={item.profile.name} size={40} />
-              <Text style={styles.name}>{item.profile.name}</Text>
+      <FlatList
+        data={entries}
+        keyExtractor={(item) => item.userId}
+        contentContainerStyle={[insets, styles.list]}
+        ListHeaderComponent={<ScreenHeader title="Liderlik Tablosu" back />}
+        renderItem={({ item, index }) => (
+          <Card onPress={() => router.push(`/u/${item.userId}`)} style={styles.row}>
+            {index < 3 ? (
+              <Text style={styles.medal}>{MEDALS[index]}</Text>
+            ) : (
+              <View style={styles.rankCircle}>
+                <Text style={styles.rank}>{index + 1}</Text>
+              </View>
+            )}
+            <InitialsAvatar name={item.profile.name} size={44} />
+            <Text style={styles.name} numberOfLines={1}>
+              {item.profile.name}
+            </Text>
+            <LinearGradient colors={gradients.surface} style={styles.pointsPill}>
               <Text style={styles.points}>{item.point}</Text>
-            </Pressable>
-          )}
-        />
-      )}
+            </LinearGradient>
+          </Card>
+        )}
+      />
     </View>
   );
 }
@@ -59,53 +74,52 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    paddingTop: 60,
-    paddingHorizontal: 20,
-  },
-  back: {
-    color: colors.muted,
-    fontSize: 15,
-    marginBottom: 12,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "800",
-    color: colors.foreground,
-    marginBottom: 16,
   },
   center: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingTop: 40,
   },
   list: {
-    gap: 8,
+    gap: spacing.sm,
     paddingBottom: 40,
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
-    backgroundColor: colors.card,
-    borderRadius: 12,
-    padding: 12,
+    gap: spacing.md,
+  },
+  medal: {
+    width: 28,
+    textAlign: "center",
+    fontSize: 20,
+  },
+  rankCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: radii.full,
+    backgroundColor: colors.cardAlt,
+    alignItems: "center",
+    justifyContent: "center",
   },
   rank: {
-    width: 24,
-    textAlign: "center",
-    color: colors.muted,
+    color: colors.mutedForeground,
     fontWeight: "700",
-  },
-  rankTop: {
-    color: colors.primary,
+    fontSize: 12,
   },
   name: {
     flex: 1,
     color: colors.foreground,
     fontWeight: "600",
   },
+  pointsPill: {
+    borderRadius: radii.full,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 4,
+  },
   points: {
     color: colors.primary,
-    fontWeight: "700",
+    fontWeight: "800",
+    fontSize: 13,
   },
 });

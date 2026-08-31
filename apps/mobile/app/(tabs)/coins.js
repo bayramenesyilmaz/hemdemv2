@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
-import { useRouter } from "expo-router";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { AD_WATCH_TIERS } from "@hemdem/core/domain/entities/coin";
 import { grantAdWatchReward } from "@hemdem/core/usecases/coins/grantAdWatchReward";
 import { repositories } from "../../lib/repositories";
 import { useSession } from "../../lib/session";
-import { colors } from "../../lib/theme";
+import { colors, gradients, radii, spacing } from "../../lib/theme";
+import { Card } from "../../components/ui/Card";
+import { Button } from "../../components/ui/Button";
+import { ScreenHeader } from "../../components/ui/ScreenHeader";
+import { Screen } from "../../components/ui/Screen";
 
 export default function CoinsScreen() {
-  const router = useRouter();
   const { userId } = useSession();
   const [balance, setBalance] = useState(null);
   const [claimingTier, setClaimingTier] = useState(null);
@@ -31,83 +34,79 @@ export default function CoinsScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <Pressable onPress={() => router.back()}>
-        <Text style={styles.back}>‹ Geri</Text>
-      </Pressable>
-      <Text style={styles.title}>Coin Kazan</Text>
-      <Text style={styles.balance}>{balance == null ? "…" : `${balance} coin`}</Text>
+    <Screen contentStyle={styles.content}>
+      <ScreenHeader title="Coin Kazan" back />
+
+      <LinearGradient colors={gradients.surface} style={styles.balanceCard}>
+        <Text style={styles.balanceLabel}>Bakiyen</Text>
+        <Text style={styles.balanceValue}>{balance == null ? "…" : `${balance} coin`}</Text>
+      </LinearGradient>
 
       <View style={styles.list}>
         {AD_WATCH_TIERS.map((tier) => (
-          <Pressable
-            key={tier.tier}
-            style={styles.card}
-            onPress={() => handleWatch(tier)}
-            disabled={claimingTier != null}
-          >
-            <View>
+          <Card key={tier.tier} style={styles.card}>
+            <View style={styles.cardText}>
               <Text style={styles.cardTitle}>{tier.seconds} saniyelik reklam</Text>
               <Text style={styles.cardReward}>+{tier.coinReward} coin</Text>
             </View>
-            {claimingTier === tier.tier ? (
-              <ActivityIndicator color={colors.primary} />
-            ) : (
-              <Text style={styles.watchLabel}>İzle</Text>
-            )}
-          </Pressable>
+            <Button
+              variant="primary"
+              style={styles.watchButton}
+              onPress={() => handleWatch(tier)}
+              disabled={claimingTier != null}
+              loading={claimingTier === tier.tier}
+            >
+              İzle
+            </Button>
+          </Card>
         ))}
       </View>
-    </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-    paddingTop: 60,
-    paddingHorizontal: 20,
+  content: {
+    gap: spacing.lg,
   },
-  back: {
-    color: colors.muted,
-    fontSize: 15,
-    marginBottom: 12,
+  balanceCard: {
+    borderRadius: radii.lg,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "800",
-    color: colors.foreground,
+  balanceLabel: {
+    color: colors.mutedForeground,
+    fontSize: 13,
   },
-  balance: {
+  balanceValue: {
     color: colors.primary,
-    fontWeight: "700",
-    fontSize: 16,
-    marginTop: 4,
-    marginBottom: 20,
+    fontWeight: "800",
+    fontSize: 22,
+    marginTop: 2,
   },
   list: {
-    gap: 10,
+    gap: spacing.sm,
   },
   card: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: colors.card,
-    borderRadius: 14,
-    padding: 16,
+    gap: spacing.md,
+  },
+  cardText: {
+    flex: 1,
   },
   cardTitle: {
     color: colors.foreground,
     fontWeight: "700",
   },
   cardReward: {
-    color: colors.muted,
+    color: colors.mutedForeground,
     fontSize: 13,
     marginTop: 2,
   },
-  watchLabel: {
-    color: colors.primary,
-    fontWeight: "700",
+  watchButton: {
+    minWidth: 84,
   },
 });

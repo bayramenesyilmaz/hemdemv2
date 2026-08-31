@@ -4,8 +4,12 @@ import { fetchNotifications } from "@hemdem/core/usecases/notifications/fetchNot
 import { markNotificationsRead } from "@hemdem/core/usecases/notifications/markNotificationsRead";
 import { repositories } from "../../lib/repositories";
 import { useSession } from "../../lib/session";
-import { colors } from "../../lib/theme";
+import { colors, radii, spacing } from "../../lib/theme";
 import { InitialsAvatar } from "../../components/InitialsAvatar";
+import { Card } from "../../components/ui/Card";
+import { Badge } from "../../components/ui/Badge";
+import { EmptyState } from "../../components/ui/EmptyState";
+import { useScreenInsets } from "../../components/ui/Screen";
 
 function notificationText({ notification, actor, test }) {
   if (notification.type === "test_similarity" && test) {
@@ -18,6 +22,7 @@ function notificationText({ notification, actor, test }) {
 }
 
 export default function NotificationsScreen() {
+  const insets = useScreenInsets();
   const { userId } = useSession();
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -48,28 +53,25 @@ export default function NotificationsScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Bildirimler</Text>
-
-      {entries.length === 0 ? (
-        <View style={styles.center}>
-          <Text style={styles.empty}>Henüz bildirimin yok.</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={entries}
-          keyExtractor={(item) => String(item.notification.id)}
-          contentContainerStyle={styles.list}
-          renderItem={({ item }) => (
-            <View style={[styles.row, !item.notification.isRead && styles.rowUnread]}>
-              <InitialsAvatar name={item.actor.name} size={40} />
-              <Text style={styles.text}>{notificationText(item)}</Text>
-              {item.notification.similarity != null && (
-                <Text style={styles.badge}>%{item.notification.similarity}</Text>
-              )}
-            </View>
-          )}
-        />
-      )}
+      <FlatList
+        data={entries}
+        keyExtractor={(item) => String(item.notification.id)}
+        contentContainerStyle={[insets, styles.list]}
+        ListHeaderComponent={<Text style={styles.title}>Bildirimler</Text>}
+        ListEmptyComponent={
+          <EmptyState icon="🔔" title="Henüz bildirimin yok" description="Beğeni, eşleşme ve uyum bildirimleri burada birikecek." />
+        }
+        renderItem={({ item }) => (
+          <Card style={[styles.row, !item.notification.isRead && styles.rowUnread]}>
+            <InitialsAvatar name={item.actor.name} size={44} />
+            <Text style={styles.text}>{notificationText(item)}</Text>
+            {item.notification.similarity != null && (
+              <Badge tone="primary">%{item.notification.similarity}</Badge>
+            )}
+            {!item.notification.isRead && <View style={styles.unreadDot} />}
+          </Card>
+        )}
+      />
     </View>
   );
 }
@@ -78,7 +80,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    paddingTop: 60,
   },
   center: {
     flex: 1,
@@ -89,27 +90,18 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "800",
     color: colors.foreground,
-    paddingHorizontal: 20,
-    marginBottom: 12,
-  },
-  empty: {
-    color: colors.muted,
+    marginBottom: spacing.md,
   },
   list: {
-    paddingHorizontal: 20,
+    gap: spacing.sm,
     paddingBottom: 40,
-    gap: 8,
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
-    backgroundColor: colors.card,
-    borderRadius: 12,
-    padding: 12,
+    gap: spacing.md,
   },
   rowUnread: {
-    borderWidth: 1,
     borderColor: colors.primary,
   },
   text: {
@@ -117,9 +109,10 @@ const styles = StyleSheet.create({
     color: colors.foreground,
     fontSize: 14,
   },
-  badge: {
-    color: colors.primary,
-    fontWeight: "700",
-    fontSize: 13,
+  unreadDot: {
+    width: 8,
+    height: 8,
+    borderRadius: radii.full,
+    backgroundColor: colors.primary,
   },
 });
