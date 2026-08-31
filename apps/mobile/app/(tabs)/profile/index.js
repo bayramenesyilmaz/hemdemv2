@@ -60,6 +60,9 @@ export default function ProfileScreen() {
         <Pressable style={styles.link} onPress={() => router.push("/profile/edit")}>
           <Text style={styles.linkText}>Profili Düzenle</Text>
         </Pressable>
+        <Pressable style={styles.link} onPress={() => router.push("/profile/viewers")}>
+          <Text style={styles.linkText}>Profilimi Görüntüleyenler</Text>
+        </Pressable>
         <Pressable style={styles.link} onPress={() => router.push("/posts")}>
           <Text style={styles.linkText}>Gönderiler</Text>
         </Pressable>

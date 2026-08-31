@@ -33,7 +33,22 @@ export default function TestsScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Testler</Text>
+      <View style={styles.headerRow}>
+        <Text style={styles.title}>Testler</Text>
+        <Pressable style={styles.addButton} onPress={() => router.push("/tests/create")}>
+          <Text style={styles.addButtonText}>+ Oluştur</Text>
+        </Pressable>
+      </View>
+
+      <View style={styles.linkRow}>
+        <Pressable style={styles.linkChip} onPress={() => router.push("/tests/mine")}>
+          <Text style={styles.linkChipText}>Testlerim</Text>
+        </Pressable>
+        <Pressable style={styles.linkChip} onPress={() => router.push("/tests/history")}>
+          <Text style={styles.linkChipText}>Geçmiş</Text>
+        </Pressable>
+      </View>
+
       <FlatList
         data={tests}
         keyExtractor={(item) => item.id}
@@ -59,12 +74,46 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    marginBottom: 12,
+  },
   title: {
     fontSize: 24,
     fontWeight: "800",
     color: colors.foreground,
+  },
+  addButton: {
+    backgroundColor: colors.primary,
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+  },
+  addButtonText: {
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: 13,
+  },
+  linkRow: {
+    flexDirection: "row",
+    gap: 8,
     paddingHorizontal: 20,
-    marginBottom: 12,
+    marginBottom: 16,
+  },
+  linkChip: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  linkChipText: {
+    color: colors.foreground,
+    fontSize: 13,
+    fontWeight: "600",
   },
   list: {
     paddingHorizontal: 20,

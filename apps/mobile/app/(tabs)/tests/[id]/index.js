@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { submitAnswers } from "@hemdem/core/usecases/tests/submitAnswers";
-import { repositories } from "../../../lib/repositories";
-import { useSession } from "../../../lib/session";
-import { colors } from "../../../lib/theme";
+import { repositories } from "../../../../lib/repositories";
+import { useSession } from "../../../../lib/session";
+import { colors } from "../../../../lib/theme";
 
 export default function SolveTestScreen() {
   const { id } = useLocalSearchParams();
@@ -18,8 +18,16 @@ export default function SolveTestScreen() {
   useEffect(() => {
     let cancelled = false;
     async function load() {
-      const found = await repositories.test.findById(id);
-      if (!cancelled) setTest(found);
+      const [found, existingAnswer] = await Promise.all([
+        repositories.test.findById(id),
+        repositories.test.findAnswer(userId, id),
+      ]);
+      if (cancelled) return;
+      if (existingAnswer) {
+        router.replace(`/tests/${id}/result`);
+        return;
+      }
+      setTest(found);
     }
     load();
     return () => {
@@ -47,7 +55,7 @@ export default function SolveTestScreen() {
       setError(result.message);
       return;
     }
-    router.back();
+    router.replace(`/tests/${id}/result`);
   }
 
   return (
