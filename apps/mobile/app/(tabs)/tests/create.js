@@ -1,11 +1,15 @@
 import { useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
 import { TEST_CATEGORIES, TEST_LIMITS } from "@hemdem/core/domain/entities/test";
 import { createTest } from "@hemdem/core/usecases/tests/createTest";
 import { repositories } from "../../../lib/repositories";
 import { useSession } from "../../../lib/session";
-import { colors } from "../../../lib/theme";
+import { colors, radii, spacing } from "../../../lib/theme";
+import { Card } from "../../../components/ui/Card";
+import { Button } from "../../../components/ui/Button";
+import { ScreenHeader } from "../../../components/ui/ScreenHeader";
+import { useScreenInsets } from "../../../components/ui/Screen";
 
 const CATEGORY_LABELS = {
   love: "Aşk",
@@ -44,6 +48,7 @@ function newQuestion() {
 }
 
 export default function CreateTestScreen() {
+  const insets = useScreenInsets();
   const router = useRouter();
   const { userId } = useSession();
   const [title, setTitle] = useState("");
@@ -114,12 +119,8 @@ export default function CreateTestScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Pressable onPress={() => router.back()}>
-        <Text style={styles.back}>‹ Testler</Text>
-      </Pressable>
-
-      <Text style={styles.title}>Test Oluştur</Text>
+    <ScrollView style={styles.container} contentContainerStyle={[insets, styles.content]}>
+      <ScreenHeader title="Test Oluştur" back />
 
       <Text style={styles.label}>Başlık</Text>
       <TextInput
@@ -149,7 +150,7 @@ export default function CreateTestScreen() {
 
       <Text style={styles.label}>Sorular ({questions.length}/{TEST_LIMITS.maxQuestions})</Text>
       {questions.map((question, qIndex) => (
-        <View key={question.id} style={styles.questionCard}>
+        <Card key={question.id} style={styles.questionCard}>
           <View style={styles.questionHeader}>
             <Text style={styles.questionIndex}>Soru {qIndex + 1}</Text>
             {questions.length > 1 && (
@@ -188,20 +189,20 @@ export default function CreateTestScreen() {
               <Text style={styles.addLink}>+ Şık ekle</Text>
             </Pressable>
           )}
-        </View>
+        </Card>
       ))}
 
       {questions.length < TEST_LIMITS.maxQuestions && (
-        <Pressable style={styles.addQuestionButton} onPress={addQuestion}>
-          <Text style={styles.addQuestionButtonText}>+ Soru ekle</Text>
-        </Pressable>
+        <Button variant="outline" onPress={addQuestion}>
+          + Soru ekle
+        </Button>
       )}
 
       {error && <Text style={styles.error}>{error}</Text>}
 
-      <Pressable style={styles.submitButton} onPress={handleSubmit} disabled={loading}>
-        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitButtonText}>Testi Oluştur</Text>}
-      </Pressable>
+      <Button variant="primary" onPress={handleSubmit} loading={loading}>
+        Testi Oluştur
+      </Button>
     </ScrollView>
   );
 }

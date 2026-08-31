@@ -51,7 +51,7 @@ export function Button({
         {...props}
       >
         <LinearGradient
-          colors={isDisabled ? [colors.muted, colors.muted] : gradients.primary}
+          colors={isDisabled ? [colors.cardAlt, colors.cardAlt] : gradients.primary}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.content}

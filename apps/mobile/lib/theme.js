@@ -14,7 +14,11 @@ export const colors = {
   primaryDark: "#b73c52",
   primarySoft: "rgba(217,72,97,0.14)",
   foreground: "#f0eeef",
-  muted: "#242127",
+  // `muted` daha önce buradaki ekranların çoğunda "soluk metin" anlamında
+  // kullanılıyordu (ör. alt başlıklar, boş durum yazıları) — tasarım
+  // sistemi eklenirken bu kullanım hâlâ birçok dosyada duruyor, o yüzden
+  // aynı anlamı koruyoruz. Soluk YÜZEY rengi için ayrı `cardAlt` var.
+  muted: "#9d99a3",
   mutedForeground: "#9d99a3",
   mutedDark: "#6f6b74",
   danger: "#dd5555",

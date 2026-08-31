@@ -4,9 +4,14 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { submitAnswers } from "@hemdem/core/usecases/tests/submitAnswers";
 import { repositories } from "../../../../lib/repositories";
 import { useSession } from "../../../../lib/session";
-import { colors } from "../../../../lib/theme";
+import { colors, radii, spacing } from "../../../../lib/theme";
+import { Card } from "../../../../components/ui/Card";
+import { Button } from "../../../../components/ui/Button";
+import { ScreenHeader } from "../../../../components/ui/ScreenHeader";
+import { useScreenInsets } from "../../../../components/ui/Screen";
 
 export default function SolveTestScreen() {
+  const insets = useScreenInsets();
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const { userId } = useSession();
@@ -43,6 +48,7 @@ export default function SolveTestScreen() {
     );
   }
 
+  const answeredCount = Object.keys(choices).length;
   const allAnswered = test.questions.every((q) => choices[q.id]);
 
   async function handleSubmit() {
@@ -59,11 +65,21 @@ export default function SolveTestScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>{test.title}</Text>
+    <ScrollView style={styles.container} contentContainerStyle={[insets, styles.content]}>
+      <ScreenHeader
+        title={test.title}
+        back
+        subtitle={`${answeredCount}/${test.questions.length} soru cevaplandı`}
+      />
+
+      <View style={styles.progressTrack}>
+        <View
+          style={[styles.progressFill, { width: `${(answeredCount / test.questions.length) * 100}%` }]}
+        />
+      </View>
 
       {test.questions.map((question, index) => (
-        <View key={question.id} style={styles.questionCard}>
+        <Card key={question.id} style={styles.questionCard}>
           <Text style={styles.questionText}>
             {index + 1}. {question.text}
           </Text>
@@ -75,26 +91,19 @@ export default function SolveTestScreen() {
                 style={[styles.option, selected && styles.optionSelected]}
                 onPress={() => setChoices((prev) => ({ ...prev, [question.id]: option.id }))}
               >
+                <View style={[styles.radio, selected && styles.radioSelected]} />
                 <Text style={[styles.optionText, selected && styles.optionTextSelected]}>{option.text}</Text>
               </Pressable>
             );
           })}
-        </View>
+        </Card>
       ))}
 
       {error && <Text style={styles.error}>{error}</Text>}
 
-      <Pressable
-        style={[styles.submitButton, (!allAnswered || submitting) && styles.submitButtonDisabled]}
-        onPress={handleSubmit}
-        disabled={!allAnswered || submitting}
-      >
-        {submitting ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.submitButtonText}>Cevapları Gönder</Text>
-        )}
-      </Pressable>
+      <Button variant="primary" onPress={handleSubmit} disabled={!allAnswered} loading={submitting}>
+        Cevapları Gönder
+      </Button>
     </ScrollView>
   );
 }
@@ -109,39 +118,57 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   content: {
-    paddingTop: 60,
-    paddingHorizontal: 20,
     paddingBottom: 60,
-    gap: 16,
+    gap: spacing.lg,
   },
-  title: {
-    fontSize: 22,
-    fontWeight: "800",
-    color: colors.foreground,
+  progressTrack: {
+    height: 6,
+    borderRadius: radii.full,
+    backgroundColor: colors.cardAlt,
+    overflow: "hidden",
+    marginTop: -spacing.sm,
+  },
+  progressFill: {
+    height: 6,
+    borderRadius: radii.full,
+    backgroundColor: colors.primary,
   },
   questionCard: {
-    backgroundColor: colors.card,
-    borderRadius: 14,
-    padding: 16,
-    gap: 8,
+    gap: spacing.sm,
   },
   questionText: {
     color: colors.foreground,
     fontWeight: "700",
+    fontSize: 15,
     marginBottom: 4,
   },
   option: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
+    borderRadius: radii.md,
+    paddingVertical: 12,
+    paddingHorizontal: spacing.md,
   },
   optionSelected: {
     borderColor: colors.primary,
-    backgroundColor: "rgba(225,29,72,0.15)",
+    backgroundColor: colors.primarySoft,
+  },
+  radio: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 2,
+    borderColor: colors.border,
+  },
+  radioSelected: {
+    borderColor: colors.primary,
+    backgroundColor: colors.primary,
   },
   optionText: {
+    flex: 1,
     color: colors.foreground,
     fontSize: 14,
   },
@@ -150,19 +177,6 @@ const styles = StyleSheet.create({
   },
   error: {
     color: colors.danger,
-  },
-  submitButton: {
-    backgroundColor: colors.primary,
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
-  },
-  submitButtonDisabled: {
-    opacity: 0.5,
-  },
-  submitButtonText: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 15,
+    fontSize: 13,
   },
 });

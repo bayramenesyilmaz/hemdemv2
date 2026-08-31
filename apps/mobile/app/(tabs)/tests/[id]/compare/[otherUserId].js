@@ -1,13 +1,18 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { compareAnswers } from "@hemdem/core/usecases/tests/compareAnswers";
 import { repositories } from "../../../../../lib/repositories";
 import { useSession } from "../../../../../lib/session";
-import { colors } from "../../../../../lib/theme";
+import { colors, radii, spacing } from "../../../../../lib/theme";
 import { InitialsAvatar } from "../../../../../components/InitialsAvatar";
+import { Card } from "../../../../../components/ui/Card";
+import { Badge } from "../../../../../components/ui/Badge";
+import { ScreenHeader } from "../../../../../components/ui/ScreenHeader";
+import { useScreenInsets } from "../../../../../components/ui/Screen";
 
 export default function CompareAnswersScreen() {
+  const insets = useScreenInsets();
   const { id, otherUserId } = useLocalSearchParams();
   const router = useRouter();
   const { userId } = useSession();
@@ -54,17 +59,15 @@ export default function CompareAnswersScreen() {
   const matchCount = rows.filter((row) => row.isMatch).length;
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Pressable onPress={() => router.push(`/tests/${test.id}/result`)}>
-        <Text style={styles.back}>‹ Sonuçlara dön</Text>
-      </Pressable>
+    <ScrollView style={styles.container} contentContainerStyle={[insets, styles.content]}>
+      <ScreenHeader
+        title={test.title}
+        back
+        onBack={() => router.push(`/tests/${test.id}/result`)}
+        subtitle={`${matchCount}/${rows.length} soruda aynı cevabı verdiniz`}
+      />
 
-      <Text style={styles.title}>{test.title}</Text>
-      <Text style={styles.subtitle}>
-        {matchCount}/{rows.length} soruda aynı cevabı verdiniz
-      </Text>
-
-      <View style={styles.matchHeader}>
+      <Card style={styles.matchHeader}>
         <View style={styles.matchPerson}>
           <InitialsAvatar name="Sen" size={56} />
           <Text style={styles.matchName}>Sen</Text>
@@ -76,15 +79,15 @@ export default function CompareAnswersScreen() {
             {otherProfile.name}
           </Text>
         </View>
-      </View>
+      </Card>
 
       {rows.map((row, index) => (
-        <View key={row.questionId} style={[styles.questionCard, row.isMatch && styles.questionCardMatch]}>
+        <Card key={row.questionId} style={[styles.questionCard, row.isMatch && styles.questionCardMatch]}>
           <View style={styles.questionHeader}>
             <Text style={styles.questionText}>
               {index + 1}. {row.questionText}
             </Text>
-            {row.isMatch && <Text style={styles.matchBadge}>Aynı cevap</Text>}
+            {row.isMatch && <Badge tone="primary">Aynı cevap</Badge>}
           </View>
           <View style={styles.answerRow}>
             <View style={styles.answerCell}>
@@ -98,7 +101,7 @@ export default function CompareAnswersScreen() {
               <Text style={styles.answerText}>{row.otherChoice ?? "—"}</Text>
             </View>
           </View>
-        </View>
+        </Card>
       ))}
     </ScrollView>
   );
@@ -114,25 +117,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   content: {
-    paddingTop: 60,
-    paddingHorizontal: 20,
     paddingBottom: 60,
-    gap: 14,
-  },
-  back: {
-    color: colors.muted,
-    fontSize: 15,
-    marginBottom: 4,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "800",
-    color: colors.foreground,
-  },
-  subtitle: {
-    color: colors.muted,
-    fontSize: 13,
-    marginBottom: 4,
+    gap: spacing.md,
   },
   error: {
     color: colors.danger,
@@ -141,15 +127,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 20,
-    backgroundColor: colors.card,
-    borderRadius: 14,
-    padding: 16,
-    marginBottom: 4,
+    gap: spacing.xl,
   },
   matchPerson: {
     alignItems: "center",
-    gap: 6,
+    gap: spacing.xs,
     maxWidth: 88,
   },
   matchName: {
@@ -163,19 +145,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   questionCard: {
-    backgroundColor: colors.card,
-    borderRadius: 14,
-    padding: 14,
-    gap: 10,
+    gap: spacing.sm,
   },
   questionCardMatch: {
-    borderWidth: 1,
-    borderColor: "rgba(225,29,72,0.4)",
+    borderColor: "rgba(217,72,97,0.4)",
   },
   questionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    gap: 8,
+    alignItems: "flex-start",
+    gap: spacing.sm,
   },
   questionText: {
     flex: 1,
@@ -183,24 +162,19 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 14,
   },
-  matchBadge: {
-    color: colors.primary,
-    fontSize: 11,
-    fontWeight: "700",
-  },
   answerRow: {
     flexDirection: "row",
-    gap: 8,
+    gap: spacing.sm,
   },
   answerCell: {
     flex: 1,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 10,
-    padding: 10,
+    borderRadius: radii.md,
+    padding: spacing.sm,
   },
   answerLabel: {
-    color: colors.muted,
+    color: colors.mutedForeground,
     fontSize: 10,
     fontWeight: "700",
     marginBottom: 2,
