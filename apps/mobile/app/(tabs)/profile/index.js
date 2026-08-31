@@ -7,14 +7,14 @@ import { useSession } from "../../../lib/session";
 import { colors, gradients, radii, spacing } from "../../../lib/theme";
 import { InitialsAvatar } from "../../../components/InitialsAvatar";
 import { Button } from "../../../components/ui/Button";
+import { ScreenHeader } from "../../../components/ui/ScreenHeader";
 import { Screen } from "../../../components/ui/Screen";
 
+// Bildirimler/Gönderiler/Liderlik artık üst bar veya "Diğer" menüsünden
+// erişiliyor; burada sadece doğrudan profille ilgili kısayollar kalıyor.
 const LINKS = [
   { href: "/profile/edit", label: "Profili Düzenle", icon: "✏️" },
   { href: "/profile/viewers", label: "Profilimi Görüntüleyenler", icon: "👁️" },
-  { href: "/posts", label: "Gönderiler", icon: "📝" },
-  { href: "/notifications", label: "Bildirimler", icon: "🔔" },
-  { href: "/leaderboard", label: "Liderlik Tablosu", icon: "🏆" },
 ];
 
 export default function ProfileScreen() {
@@ -56,6 +56,8 @@ export default function ProfileScreen() {
 
   return (
     <Screen contentStyle={styles.content}>
+      <ScreenHeader title="Profil" back />
+
       <View style={styles.header}>
         <InitialsAvatar name={profile.name} size={80} />
         <Text style={styles.name}>{profile.name}</Text>

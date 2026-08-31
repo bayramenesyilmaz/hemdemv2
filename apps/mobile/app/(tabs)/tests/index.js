@@ -7,7 +7,7 @@ import { colors, radii, spacing } from "../../../lib/theme";
 import { Card } from "../../../components/ui/Card";
 import { Button } from "../../../components/ui/Button";
 import { EmptyState } from "../../../components/ui/EmptyState";
-import { useScreenInsets } from "../../../components/ui/Screen";
+import { AppTopBar } from "../../../components/nav/AppTopBar";
 
 const CATEGORY_LABELS = {
   love: "Aşk",
@@ -22,7 +22,6 @@ function categoryLabelOf(categoryId) {
 }
 
 export default function TestsScreen() {
-  const insets = useScreenInsets();
   const router = useRouter();
   const [tests, setTests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,18 +42,22 @@ export default function TestsScreen() {
 
   if (loading) {
     return (
-      <View style={[styles.container, styles.center]}>
-        <ActivityIndicator color={colors.primary} />
+      <View style={styles.container}>
+        <AppTopBar />
+        <View style={styles.center}>
+          <ActivityIndicator color={colors.primary} />
+        </View>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
+      <AppTopBar />
       <FlatList
         data={tests}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={[insets, styles.list]}
+        contentContainerStyle={styles.list}
         ListHeaderComponent={
           <>
             <View style={styles.headerRow}>
@@ -103,6 +106,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   center: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -110,6 +114,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    marginTop: spacing.md,
     marginBottom: spacing.md,
   },
   title: {
@@ -126,6 +131,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   list: {
+    paddingHorizontal: spacing.xl,
     gap: spacing.sm,
     paddingBottom: 40,
   },

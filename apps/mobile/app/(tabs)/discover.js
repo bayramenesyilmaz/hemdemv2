@@ -9,7 +9,7 @@ import { colors, gradients, radii, spacing } from "../../lib/theme";
 import { SwipeCard } from "../../components/SwipeCard";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { Button } from "../../components/ui/Button";
-import { Screen } from "../../components/ui/Screen";
+import { AppTopBar } from "../../components/nav/AppTopBar";
 
 export default function DiscoverScreen() {
   const { userId } = useSession();
@@ -58,23 +58,29 @@ export default function DiscoverScreen() {
 
   if (loading) {
     return (
-      <Screen style={styles.center}>
-        <ActivityIndicator color={colors.primary} />
-      </Screen>
+      <View style={styles.container}>
+        <AppTopBar />
+        <View style={styles.center}>
+          <ActivityIndicator color={colors.primary} />
+        </View>
+      </View>
     );
   }
 
   if (error) {
     return (
-      <Screen style={styles.center}>
-        <Text style={styles.error}>{error}</Text>
-      </Screen>
+      <View style={styles.container}>
+        <AppTopBar />
+        <View style={styles.center}>
+          <Text style={styles.error}>{error}</Text>
+        </View>
+      </View>
     );
   }
 
   return (
-    <Screen contentStyle={styles.screenContent}>
-      <Text style={styles.title}>Keşfet</Text>
+    <View style={styles.container}>
+      <AppTopBar />
 
       <View style={styles.deck}>
         {candidates.length === 0 ? (
@@ -123,24 +129,19 @@ export default function DiscoverScreen() {
           </View>
         </View>
       </Modal>
-    </Screen>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
   center: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
-  },
-  screenContent: {
-    flex: 1,
-    paddingBottom: 0,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "800",
-    color: colors.foreground,
-    marginBottom: spacing.md,
   },
   deck: {
     flex: 1,

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
 import { fetchNotifications } from "@hemdem/core/usecases/notifications/fetchNotifications";
 import { markNotificationsRead } from "@hemdem/core/usecases/notifications/markNotificationsRead";
 import { repositories } from "../../lib/repositories";
@@ -9,6 +10,7 @@ import { InitialsAvatar } from "../../components/InitialsAvatar";
 import { Card } from "../../components/ui/Card";
 import { Badge } from "../../components/ui/Badge";
 import { EmptyState } from "../../components/ui/EmptyState";
+import { ScreenHeader } from "../../components/ui/ScreenHeader";
 import { useScreenInsets } from "../../components/ui/Screen";
 
 function notificationText({ notification, actor, test }) {
@@ -21,8 +23,15 @@ function notificationText({ notification, actor, test }) {
   return `${actor.name} seni beğendi.`;
 }
 
+function notificationHref({ notification, actor, test, chat }) {
+  if (notification.type === "test_similarity" && test) return `/tests/${test.id}/result`;
+  if (notification.type === "match" && chat) return `/messages/${chat.id}`;
+  return `/u/${actor.id}`;
+}
+
 export default function NotificationsScreen() {
   const insets = useScreenInsets();
+  const router = useRouter();
   const { userId } = useSession();
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -57,12 +66,15 @@ export default function NotificationsScreen() {
         data={entries}
         keyExtractor={(item) => String(item.notification.id)}
         contentContainerStyle={[insets, styles.list]}
-        ListHeaderComponent={<Text style={styles.title}>Bildirimler</Text>}
+        ListHeaderComponent={<ScreenHeader title="Bildirimler" back />}
         ListEmptyComponent={
           <EmptyState icon="🔔" title="Henüz bildirimin yok" description="Beğeni, eşleşme ve uyum bildirimleri burada birikecek." />
         }
         renderItem={({ item }) => (
-          <Card style={[styles.row, !item.notification.isRead && styles.rowUnread]}>
+          <Card
+            style={[styles.row, !item.notification.isRead && styles.rowUnread]}
+            onPress={() => router.push(notificationHref(item))}
+          >
             <InitialsAvatar name={item.actor.name} size={44} />
             <Text style={styles.text}>{notificationText(item)}</Text>
             {item.notification.similarity != null && (

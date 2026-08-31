@@ -1,70 +1,72 @@
-import { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
-import { useRouter } from "expo-router";
-import { fetchChatList } from "@hemdem/core/usecases/chat/fetchChatList";
-import { repositories } from "../../../lib/repositories";
-import { useSession } from "../../../lib/session";
-import { colors, spacing } from "../../../lib/theme";
-import { InitialsAvatar } from "../../../components/InitialsAvatar";
-import { EmptyState } from "../../../components/ui/EmptyState";
-import { useScreenInsets } from "../../../components/ui/Screen";
+import { useRef, useState } from "react";
+import { Animated, Dimensions, Pressable, StyleSheet, Text, View } from "react-native";
+import { colors, radii, spacing } from "../../../lib/theme";
+import { AppTopBar } from "../../../components/nav/AppTopBar";
+import { ChatsList } from "../../../components/messages/ChatsList";
+import { LikesList } from "../../../components/messages/LikesList";
 
+const SCREEN_WIDTH = Dimensions.get("window").width;
+const TABS = ["Sohbetler", "İstekler"];
+
+/**
+ * Mesajlar artık kaydırmalı iki alt sekme içeriyor: Sohbetler ve
+ * İstekler (eskiden ayrı bir "Beğenenler" alt bar sekmesiydi — hem
+ * anlamsal olarak mesajlaşma öncesi bir adım olduğu hem de alt barı 5
+ * sekmeye indirmek için buraya taşındı).
+ */
 export default function MessagesScreen() {
-  const insets = useScreenInsets();
-  const router = useRouter();
-  const { userId } = useSession();
-  const [chats, setChats] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const scrollRef = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [likesCount, setLikesCount] = useState(0);
 
-  useEffect(() => {
-    if (!userId) return;
-    let cancelled = false;
-    async function load() {
-      const result = await fetchChatList(repositories, userId);
-      if (cancelled) return;
-      if (result.status === "success") setChats(result.data);
-      setLoading(false);
-    }
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, [userId]);
+  function goToTab(index) {
+    setActiveIndex(index);
+    scrollRef.current?.scrollTo({ x: index * SCREEN_WIDTH, animated: true });
+  }
 
-  if (loading) {
-    return (
-      <View style={[styles.container, styles.center]}>
-        <ActivityIndicator color={colors.primary} />
-      </View>
-    );
+  function handleMomentumEnd(event) {
+    const index = Math.round(event.nativeEvent.contentOffset.x / SCREEN_WIDTH);
+    setActiveIndex(index);
   }
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={chats}
-        keyExtractor={(item) => String(item.chat.id)}
-        contentContainerStyle={[insets, styles.list]}
-        ListHeaderComponent={<Text style={styles.title}>Mesajlar</Text>}
-        ListEmptyComponent={
-          <EmptyState icon="💬" title="Henüz bir sohbetin yok" description="Eşleştiğin kişilerle burada mesajlaşabilirsin." />
-        }
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-        renderItem={({ item }) => (
+      <AppTopBar />
+
+      <View style={styles.segmentRow}>
+        {TABS.map((label, index) => (
           <Pressable
-            style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
-            onPress={() => router.push(`/messages/${item.chat.id}`)}
+            key={label}
+            style={[styles.segment, activeIndex === index && styles.segmentActive]}
+            onPress={() => goToTab(index)}
           >
-            <InitialsAvatar name={item.otherUser.name} size={52} />
-            <View style={styles.rowText}>
-              <Text style={styles.name}>{item.otherUser.name}</Text>
-              <Text style={styles.preview} numberOfLines={1}>
-                {item.lastMessage ? item.lastMessage.content : "Henüz mesaj yok"}
-              </Text>
-            </View>
+            <Text style={[styles.segmentText, activeIndex === index && styles.segmentTextActive]}>
+              {label}
+            </Text>
+            {index === 1 && likesCount > 0 && (
+              <View style={styles.segmentBadge}>
+                <Text style={styles.segmentBadgeText}>{likesCount > 9 ? "9+" : likesCount}</Text>
+              </View>
+            )}
           </Pressable>
-        )}
-      />
+        ))}
+      </View>
+
+      <Animated.ScrollView
+        ref={scrollRef}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        onMomentumScrollEnd={handleMomentumEnd}
+        style={styles.pager}
+      >
+        <View style={{ width: SCREEN_WIDTH }}>
+          <ChatsList />
+        </View>
+        <View style={{ width: SCREEN_WIDTH }}>
+          <LikesList onCountChange={setLikesCount} />
+        </View>
+      </Animated.ScrollView>
     </View>
   );
 }
@@ -74,46 +76,52 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  center: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+  segmentRow: {
+    flexDirection: "row",
+    gap: spacing.sm,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.sm,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "800",
-    color: colors.foreground,
-    marginBottom: spacing.md,
-  },
-  list: {
-    paddingBottom: 40,
-    flexGrow: 1,
-  },
-  separator: {
-    height: 1,
-    backgroundColor: colors.border,
-  },
-  row: {
+  segment: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.md,
-    paddingVertical: spacing.md,
-    borderRadius: 12,
-  },
-  rowPressed: {
-    backgroundColor: colors.card,
-  },
-  rowText: {
+    justifyContent: "center",
+    gap: spacing.xs,
     flex: 1,
+    paddingVertical: 10,
+    borderRadius: radii.full,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
-  name: {
-    color: colors.foreground,
+  segmentActive: {
+    backgroundColor: colors.primarySoft,
+    borderColor: colors.primary,
+  },
+  segmentText: {
+    color: colors.mutedForeground,
     fontWeight: "700",
-    fontSize: 15,
-  },
-  preview: {
-    color: colors.muted,
     fontSize: 13,
-    marginTop: 2,
+  },
+  segmentTextActive: {
+    color: colors.primary,
+  },
+  segmentBadge: {
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: colors.primary,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 4,
+  },
+  segmentBadgeText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "800",
+  },
+  pager: {
+    flex: 1,
   },
 });

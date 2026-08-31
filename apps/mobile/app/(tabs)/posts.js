@@ -11,10 +11,9 @@ import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { Badge } from "../../components/ui/Badge";
 import { EmptyState } from "../../components/ui/EmptyState";
-import { useScreenInsets } from "../../components/ui/Screen";
+import { AppTopBar } from "../../components/nav/AppTopBar";
 
 export default function PostsScreen() {
-  const insets = useScreenInsets();
   const router = useRouter();
   const { userId } = useSession();
   const [posts, setPosts] = useState([]);
@@ -46,18 +45,22 @@ export default function PostsScreen() {
 
   if (loading) {
     return (
-      <View style={[styles.container, styles.center]}>
-        <ActivityIndicator color={colors.primary} />
+      <View style={styles.container}>
+        <AppTopBar />
+        <View style={styles.center}>
+          <ActivityIndicator color={colors.primary} />
+        </View>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
+      <AppTopBar />
       <FlatList
         data={posts}
         keyExtractor={(item) => String(item.post.id)}
-        contentContainerStyle={[insets, styles.list]}
+        contentContainerStyle={styles.list}
         ListHeaderComponent={
           <>
             <Text style={styles.title}>Gönderiler</Text>
@@ -92,7 +95,11 @@ export default function PostsScreen() {
               <Text style={styles.authorName}>{item.author.name}</Text>
             </Pressable>
             <Text style={styles.content}>{item.post.content}</Text>
-            {item.taggedTest && <Badge>📋 {item.taggedTest.title}</Badge>}
+            {item.taggedTest && (
+              <Pressable onPress={() => router.push(`/tests/${item.taggedTest.id}`)}>
+                <Badge>📋 {item.taggedTest.title}</Badge>
+              </Pressable>
+            )}
           </Card>
         )}
       />
@@ -106,6 +113,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   center: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -113,6 +121,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "800",
     color: colors.foreground,
+    marginTop: spacing.md,
     marginBottom: spacing.md,
   },
   composer: {
@@ -128,6 +137,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
   },
   list: {
+    paddingHorizontal: spacing.xl,
     paddingBottom: 40,
     gap: spacing.md,
   },

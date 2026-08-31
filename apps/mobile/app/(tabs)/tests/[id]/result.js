@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { fetchTestResults } from "@hemdem/core/usecases/tests/fetchTestResults";
 import { repositories } from "../../../../lib/repositories";
@@ -91,14 +91,14 @@ export default function TestResultScreen() {
         }
         renderItem={({ item }) => (
           <Card style={styles.card}>
-            <View style={styles.cardHeader}>
+            <Pressable style={styles.cardHeader} onPress={() => router.push(`/u/${item.profile.id}`)}>
               <InitialsAvatar name={item.profile.name} size={44} />
               <View style={styles.cardHeaderText}>
                 <Text style={styles.name}>{item.profile.name}</Text>
                 {item.profile.country && <Text style={styles.country}>{item.profile.country}</Text>}
               </View>
               <Text style={styles.similarity}>%{item.similarity}</Text>
-            </View>
+            </Pressable>
 
             <View style={styles.barTrack}>
               <View style={[styles.barFill, { width: `${item.similarity}%` }]} />

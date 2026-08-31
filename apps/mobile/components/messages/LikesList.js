@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Modal, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
 import { fetchIncomingLikes } from "@hemdem/core/usecases/discover/fetchIncomingLikes";
 import { likeUser } from "@hemdem/core/usecases/discover/likeUser";
 import { repositories } from "../../lib/repositories";
 import { useSession } from "../../lib/session";
 import { colors, radii, spacing } from "../../lib/theme";
-import { InitialsAvatar } from "../../components/InitialsAvatar";
-import { Card } from "../../components/ui/Card";
-import { Button } from "../../components/ui/Button";
-import { EmptyState } from "../../components/ui/EmptyState";
-import { useScreenInsets } from "../../components/ui/Screen";
+import { InitialsAvatar } from "../InitialsAvatar";
+import { Card } from "../ui/Card";
+import { Button } from "../ui/Button";
+import { EmptyState } from "../ui/EmptyState";
 
-export default function LikesScreen() {
-  const insets = useScreenInsets();
+export function LikesList({ contentContainerStyle, onCountChange }) {
+  const router = useRouter();
   const { userId } = useSession();
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,8 +30,10 @@ export default function LikesScreen() {
           fromUser: await repositories.user.findById(swipe.fromUser),
         }))
       );
-      setEntries(enriched.filter((e) => e.fromUser));
+      const filtered = enriched.filter((e) => e.fromUser);
+      setEntries(filtered);
       setLoading(false);
+      onCountChange?.(filtered.length);
     }
     load();
     return () => {
@@ -40,7 +42,11 @@ export default function LikesScreen() {
   }, [userId]);
 
   async function respond(fromUserId, name, action) {
-    setEntries((prev) => prev.filter((e) => e.fromUser.id !== fromUserId));
+    setEntries((prev) => {
+      const next = prev.filter((e) => e.fromUser.id !== fromUserId);
+      onCountChange?.(next.length);
+      return next;
+    });
     const result = await likeUser(repositories, userId, fromUserId, action);
     if (result.status === "success" && result.data.matched) {
       setMatchName(name);
@@ -49,26 +55,27 @@ export default function LikesScreen() {
 
   if (loading) {
     return (
-      <View style={[styles.container, styles.center]}>
+      <View style={styles.center}>
         <ActivityIndicator color={colors.primary} />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <>
       <FlatList
         data={entries}
         keyExtractor={(item) => item.fromUser.id}
-        contentContainerStyle={[insets, styles.list]}
-        ListHeaderComponent={<Text style={styles.title}>Beğenenler</Text>}
+        contentContainerStyle={[styles.list, contentContainerStyle]}
         ListEmptyComponent={
           <EmptyState icon="💌" title="Şu an bekleyen beğenin yok" description="Yeni beğeniler burada birikecek." />
         }
         renderItem={({ item }) => (
           <Card style={styles.card}>
-            <InitialsAvatar name={item.fromUser.name} size={52} />
-            <Text style={styles.name}>{item.fromUser.name}</Text>
+            <Pressable style={styles.identity} onPress={() => router.push(`/u/${item.fromUser.id}`)}>
+              <InitialsAvatar name={item.fromUser.name} size={52} />
+              <Text style={styles.name}>{item.fromUser.name}</Text>
+            </Pressable>
             <View style={styles.actions}>
               <Button
                 variant="outline"
@@ -101,31 +108,28 @@ export default function LikesScreen() {
           </View>
         </View>
       </Modal>
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
   center: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "800",
-    color: colors.foreground,
-    marginBottom: spacing.lg,
+    paddingTop: 60,
   },
   list: {
+    paddingHorizontal: spacing.xl,
     gap: spacing.md,
     flexGrow: 1,
     paddingBottom: 40,
   },
   card: {
+    alignItems: "center",
+    gap: spacing.sm,
+  },
+  identity: {
     alignItems: "center",
     gap: spacing.sm,
   },
