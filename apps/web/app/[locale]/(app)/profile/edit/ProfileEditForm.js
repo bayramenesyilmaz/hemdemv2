@@ -12,14 +12,15 @@ import { CountrySelect } from "@/components/CountrySelect";
 import { TestPicker } from "@/components/TestPicker";
 import { InfoBanner } from "@/components/InfoBanner";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/Dialog";
-import { updateProfileAction } from "@/lib/actions/profileActions";
+import { updateProfileAction, uploadAvatarAction } from "@/lib/actions/profileActions";
 import { deleteAccountAction } from "@/lib/actions/authActions";
 import { mockSignOutAction } from "@/lib/actions/mockAuthActions";
 import { getSupabaseBrowserClient } from "@/lib/supabaseBrowserClient";
-import { uploadAvatar } from "@/lib/supabaseStorage";
 
 const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === "true";
 const NO_GATE_TEST = "none";
+const MAX_AVATAR_SIZE_BYTES = 5 * 1024 * 1024;
+const ALLOWED_AVATAR_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 export function ProfileEditForm({ locale, profile, initialGateTest }) {
   const t = useI18n();
@@ -55,12 +56,36 @@ export function ProfileEditForm({ locale, profile, initialGateTest }) {
       return;
     }
 
+    // Sunucu (uploadAvatar usecase'i) aynı kontrolleri zaten yapıyor —
+    // burada tekrarlanması sadece geçersiz bir dosya için gereksiz bir
+    // yükleme turunu (ve büyük dosyalarda gözle görülür bir bekleyişi)
+    // önlemek için.
+    if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
+      setError(t("profile.avatarInvalidType"));
+      event.target.value = "";
+      return;
+    }
+    if (file.size > MAX_AVATAR_SIZE_BYTES) {
+      setError(t("profile.avatarTooLarge"));
+      event.target.value = "";
+      return;
+    }
+
+    setError(null);
     setAvatarUploading(true);
     try {
-      const url = await uploadAvatar(file, profile.id);
-      setAvatarUrl(url);
-    } catch (err) {
-      setError(err.message);
+      const formData = new FormData();
+      formData.set("avatar", file);
+      const result = await uploadAvatarAction(formData);
+      if (result.status === "error") {
+        setError(
+          result.message === "file_too_large" ? t("profile.avatarTooLarge") : t("profile.avatarInvalidType")
+        );
+        return;
+      }
+      setAvatarUrl(result.data.avatarUrl);
+    } catch {
+      setError(t("profile.avatarUploadFailed"));
     } finally {
       setAvatarUploading(false);
     }

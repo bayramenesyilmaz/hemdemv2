@@ -26,6 +26,15 @@ const nextConfig = {
       },
     ],
   },
+  experimental: {
+    serverActions: {
+      // Varsayılan 1MB, kırpılmamış bir profil fotoğrafı için genelde
+      // yetmiyor (avatar yükleme server action'a çevrildi, bkz.
+      // profileActions.js) — istemci tarafında da 5MB sınırı var, burada
+      // multipart form-data'nın ekstra baytları için biraz pay bırakılıyor.
+      bodySizeLimit: "6mb",
+    },
+  },
   env: {
     NEXT_PUBLIC_USE_MOCK_DATA: useMockData ? "true" : "false",
   },
