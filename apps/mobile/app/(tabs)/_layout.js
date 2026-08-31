@@ -37,6 +37,14 @@ export default function TabsLayout() {
         options={{ title: "Testler", tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>📋</Text> }}
       />
       <Tabs.Screen
+        name="likes"
+        options={{ title: "Beğenenler", tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>❤️</Text> }}
+      />
+      <Tabs.Screen
+        name="messages"
+        options={{ title: "Mesajlar", tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>💬</Text> }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{ title: "Profil", tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>👤</Text> }}
       />
