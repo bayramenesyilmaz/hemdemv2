@@ -42,12 +42,12 @@ export default function LeaderboardScreen() {
           keyExtractor={(item) => item.userId}
           contentContainerStyle={styles.list}
           renderItem={({ item, index }) => (
-            <View style={styles.row}>
+            <Pressable style={styles.row} onPress={() => router.push(`/u/${item.userId}`)}>
               <Text style={[styles.rank, index < 3 && styles.rankTop]}>{index + 1}</Text>
               <InitialsAvatar name={item.profile.name} size={40} />
               <Text style={styles.name}>{item.profile.name}</Text>
               <Text style={styles.points}>{item.point}</Text>
-            </View>
+            </Pressable>
           )}
         />
       )}

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
-import { repositories } from "../../lib/repositories";
-import { useSession } from "../../lib/session";
-import { colors } from "../../lib/theme";
-import { InitialsAvatar } from "../../components/InitialsAvatar";
+import { repositories } from "../../../lib/repositories";
+import { useSession } from "../../../lib/session";
+import { colors } from "../../../lib/theme";
+import { InitialsAvatar } from "../../../components/InitialsAvatar";
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -57,6 +57,12 @@ export default function ProfileScreen() {
       </Pressable>
 
       <View style={styles.linkList}>
+        <Pressable style={styles.link} onPress={() => router.push("/profile/edit")}>
+          <Text style={styles.linkText}>Profili Düzenle</Text>
+        </Pressable>
+        <Pressable style={styles.link} onPress={() => router.push("/posts")}>
+          <Text style={styles.linkText}>Gönderiler</Text>
+        </Pressable>
         <Pressable style={styles.link} onPress={() => router.push("/notifications")}>
           <Text style={styles.linkText}>Bildirimler</Text>
         </Pressable>

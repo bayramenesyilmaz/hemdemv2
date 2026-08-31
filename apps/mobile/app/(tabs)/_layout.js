@@ -55,6 +55,8 @@ export default function TabsLayout() {
       <Tabs.Screen name="notifications" options={{ href: null }} />
       <Tabs.Screen name="coins" options={{ href: null }} />
       <Tabs.Screen name="leaderboard" options={{ href: null }} />
+      <Tabs.Screen name="posts" options={{ href: null }} />
+      <Tabs.Screen name="u/[id]" options={{ href: null }} />
     </Tabs>
   );
 }
