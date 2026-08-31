@@ -48,6 +48,13 @@ export default function TabsLayout() {
         name="profile"
         options={{ title: "Profil", tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>👤</Text> }}
       />
+      {/* Alt çubukta göstermek için 6. sekme fazla kalabalık olurdu —
+          Bildirimler ve Coin Kazan Profil ekranından erişilen ayrı
+          rotalar (href: null onları çubuktan gizler, navigasyona
+          kapatmaz). */}
+      <Tabs.Screen name="notifications" options={{ href: null }} />
+      <Tabs.Screen name="coins" options={{ href: null }} />
+      <Tabs.Screen name="leaderboard" options={{ href: null }} />
     </Tabs>
   );
 }

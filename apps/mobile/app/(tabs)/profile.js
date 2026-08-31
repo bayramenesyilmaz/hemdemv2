@@ -51,9 +51,18 @@ export default function ProfileScreen() {
         {profile.bio && <Text style={styles.bio}>{profile.bio}</Text>}
       </View>
 
-      <View style={styles.coinCard}>
+      <Pressable style={styles.coinCard} onPress={() => router.push("/coins")}>
         <Text style={styles.coinLabel}>Bakiye</Text>
         <Text style={styles.coinValue}>{coins} coin</Text>
+      </Pressable>
+
+      <View style={styles.linkList}>
+        <Pressable style={styles.link} onPress={() => router.push("/notifications")}>
+          <Text style={styles.linkText}>Bildirimler</Text>
+        </Pressable>
+        <Pressable style={styles.link} onPress={() => router.push("/leaderboard")}>
+          <Text style={styles.linkText}>Liderlik Tablosu</Text>
+        </Pressable>
       </View>
 
       <Pressable style={styles.logoutButton} onPress={handleLogout}>
@@ -107,6 +116,19 @@ const styles = StyleSheet.create({
     color: colors.foreground,
     fontWeight: "700",
     fontSize: 16,
+  },
+  linkList: {
+    gap: 8,
+    marginBottom: 24,
+  },
+  link: {
+    backgroundColor: colors.card,
+    borderRadius: 12,
+    padding: 14,
+  },
+  linkText: {
+    color: colors.foreground,
+    fontWeight: "600",
   },
   logoutButton: {
     borderWidth: 1,
