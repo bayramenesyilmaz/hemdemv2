@@ -1,6 +1,6 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
 import { setStaticParamsLocale } from "next-international/server";
 import { calculateAge } from "@hemdem/core/domain/entities/user";
 import { getI18n } from "@/locales/server";
@@ -13,6 +13,7 @@ import { MessagesIcon } from "@/components/icons";
 import { SendMessageDialog } from "./SendMessageDialog";
 import { ProfileActions } from "./ProfileActions";
 import { SafetyMenu } from "./SafetyMenu";
+import { SolvedTestsSection } from "./SolvedTestsSection";
 
 export async function generateMetadata({ params }) {
   const { locale, id } = await params;
@@ -44,11 +45,6 @@ export default async function PublicProfilePage({ params }) {
   const viewCount = await repositories.profileView.countViews(profile.id);
   const existingChat =
     viewerId && viewerId !== profile.id ? await repositories.chat.findByPair(viewerId, profile.id) : null;
-
-  const answers = await repositories.test.findAnswersByUser(profile.id);
-  const solvedTests = (await Promise.all(answers.map((a) => repositories.test.findById(a.testId)))).filter(
-    Boolean
-  );
 
   const t = await getI18n();
   const socialEntries = Object.entries(profile.socialLinks ?? {});
@@ -149,28 +145,9 @@ export default async function PublicProfilePage({ params }) {
         )}
       </SectionCard>
 
-      {solvedTests.length > 0 && (
-        <SectionCard className="mx-4 flex flex-col gap-3 lg:mx-0">
-          <h2 className="text-sm font-semibold text-foreground">{t("profile.solvedTestsTitle")}</h2>
-          <div className="flex flex-col gap-2">
-            {solvedTests.map((test) => (
-              <Link
-                key={test.id}
-                href={
-                  viewerId === profile.id
-                    ? `/${locale}/tests/${test.id}/result`
-                    : viewerId
-                      ? `/${locale}/tests/${test.id}/compare/${profile.id}`
-                      : `/${locale}/tests/${test.id}`
-                }
-                className="rounded-lg px-3 py-2.5 text-sm font-medium text-foreground underline-offset-2 hover:bg-muted hover:underline"
-              >
-                {test.title}
-              </Link>
-            ))}
-          </div>
-        </SectionCard>
-      )}
+      <Suspense fallback={null}>
+        <SolvedTestsSection profileId={profile.id} viewerId={viewerId} locale={locale} />
+      </Suspense>
     </main>
   );
 }

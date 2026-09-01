@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Modal, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { fetchDiscoverCandidates } from "@hemdem/core/usecases/discover/fetchDiscoverCandidates";
@@ -13,6 +13,7 @@ import { EmptyState } from "../../components/ui/EmptyState";
 import { Button } from "../../components/ui/Button";
 import { AppTopBar } from "../../components/nav/AppTopBar";
 import { DiscoverFiltersModal } from "../../components/discover/DiscoverFiltersModal";
+import { MessageComposerModal } from "../../components/MessageComposerModal";
 
 export default function DiscoverScreen() {
   const router = useRouter();
@@ -170,37 +171,16 @@ export default function DiscoverScreen() {
         onApply={setFilters}
       />
 
-      <Modal visible={Boolean(messageTarget)} transparent animationType="fade" onRequestClose={() => setMessageTarget(null)}>
-        <View style={styles.modalBackdrop}>
-          <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>{messageTarget?.name}'e mesaj gönder</Text>
-            <TextInput
-              style={styles.messageInput}
-              value={messageDraft}
-              onChangeText={setMessageDraft}
-              placeholder="Mesajını yaz..."
-              placeholderTextColor={colors.mutedDark}
-              multiline
-              autoFocus
-            />
-            {messageError && <Text style={styles.error}>{messageError}</Text>}
-            <View style={styles.modalActions}>
-              <Button variant="outline" style={styles.modalActionButton} onPress={() => setMessageTarget(null)}>
-                Vazgeç
-              </Button>
-              <Button
-                variant="primary"
-                style={styles.modalActionButton}
-                onPress={handleSendMessage}
-                loading={messageSending}
-                disabled={!messageDraft.trim()}
-              >
-                Gönder
-              </Button>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <MessageComposerModal
+        visible={Boolean(messageTarget)}
+        recipientName={messageTarget?.name}
+        draft={messageDraft}
+        onChangeDraft={setMessageDraft}
+        onCancel={() => setMessageTarget(null)}
+        onSend={handleSendMessage}
+        sending={messageSending}
+        error={messageError}
+      />
 
       <Modal visible={Boolean(matchName)} transparent animationType="fade">
         <View style={styles.modalBackdrop}>
@@ -354,23 +334,5 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     width: "100%",
-  },
-  messageInput: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 10,
-    color: colors.foreground,
-    minHeight: 70,
-    textAlignVertical: "top",
-  },
-  modalActions: {
-    flexDirection: "row",
-    gap: spacing.sm,
-    marginTop: spacing.xs,
-  },
-  modalActionButton: {
-    flex: 1,
   },
 });
