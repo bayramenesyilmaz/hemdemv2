@@ -475,6 +475,14 @@ const tr = {
     },
     contactLink: "Talep Gönder",
   },
+  share: {
+    button: "🔗 Paylaş",
+    copied: "✓ Kopyalandı",
+    testTitle: "Hemdem'de bir uyum testi",
+    testText: "\"{title}\" testini çöz, benimle uyumunu gör!",
+    profileTitle: "Hemdem'de profilim",
+    profileText: "Hemdem'de profilime göz at!",
+  },
   admin: {
     title: "Yönetim Paneli",
     usersLink: "Kullanıcılar",

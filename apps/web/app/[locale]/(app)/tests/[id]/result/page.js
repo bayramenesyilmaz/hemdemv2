@@ -12,6 +12,7 @@ import { Avatar } from "@/components/Avatar";
 import { AdSlot } from "@/components/AdSlot";
 import { SimilarityBadge, SimilarityBar } from "@/components/SimilarityBadge";
 import { Button } from "@/components/ui/Button";
+import { ShareButton } from "@/components/ShareButton";
 import { HeartIcon, MessagesIcon } from "@/components/icons";
 
 export async function generateMetadata() {
@@ -48,6 +49,14 @@ export default async function TestResultPage({ params }) {
         <p className="text-sm text-muted-foreground">
           {t("tests.resultSubtitle", { count: matches.length })}
         </p>
+        <ShareButton
+          path={`/${locale}/tests/${test.id}`}
+          title={t("share.testTitle")}
+          text={t("share.testText", { title: test.title })}
+          label={t("share.button")}
+          copiedLabel={t("share.copied")}
+          className="self-start"
+        />
       </header>
 
       {perfectMatches.length > 0 && (

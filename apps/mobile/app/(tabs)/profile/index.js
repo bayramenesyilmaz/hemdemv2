@@ -7,6 +7,7 @@ import { useSession } from "../../../lib/session";
 import { colors, gradients, radii, spacing } from "../../../lib/theme";
 import { InitialsAvatar } from "../../../components/InitialsAvatar";
 import { isRenderableImageUri } from "../../../lib/avatar";
+import { shareLink } from "../../../lib/share";
 import { Button } from "../../../components/ui/Button";
 import { ScreenHeader } from "../../../components/ui/ScreenHeader";
 import { Screen } from "../../../components/ui/Screen";
@@ -57,7 +58,18 @@ export default function ProfileScreen() {
 
   return (
     <Screen contentStyle={styles.content}>
-      <ScreenHeader title="Profil" back />
+      <ScreenHeader
+        title="Profil"
+        back
+        action={
+          <Pressable
+            style={styles.shareButton}
+            onPress={() => shareLink({ text: "Hemdem'de profilime göz at!", path: `/tr/u/${profile.id}` })}
+          >
+            <Text style={styles.shareButtonText}>🔗</Text>
+          </Pressable>
+        }
+      />
 
       <View style={styles.header}>
         {isRenderableImageUri(profile.avatarUrl) ? (
@@ -107,6 +119,19 @@ const styles = StyleSheet.create({
   },
   content: {
     gap: spacing.lg,
+  },
+  shareButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  shareButtonText: {
+    fontSize: 15,
   },
   header: {
     alignItems: "center",

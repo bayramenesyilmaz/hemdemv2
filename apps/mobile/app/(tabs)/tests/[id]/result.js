@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { fetchTestResults } from "@hemdem/core/usecases/tests/fetchTestResults";
 import { repositories } from "../../../../lib/repositories";
 import { useSession } from "../../../../lib/session";
+import { shareLink } from "../../../../lib/share";
 import { colors, radii, spacing } from "../../../../lib/theme";
 import { InitialsAvatar } from "../../../../components/InitialsAvatar";
 import { Card } from "../../../../components/ui/Card";
@@ -76,6 +77,19 @@ export default function TestResultScreen() {
                   ? `${matches.length} kişi bu testi çözdü, en uyumlu olduklarınla eşleştik.`
                   : "Bu testi henüz senden başka çözen yok."
               }
+              action={
+                <Pressable
+                  style={styles.shareButton}
+                  onPress={() =>
+                    shareLink({
+                      text: `"${test.title}" testini çöz, benimle uyumunu gör!`,
+                      path: `/tr/tests/${test.id}`,
+                    })
+                  }
+                >
+                  <Text style={styles.shareButtonText}>🔗</Text>
+                </Pressable>
+              }
             />
             {perfectMatches.length > 0 && (
               <View style={styles.perfectBanner}>
@@ -133,6 +147,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  shareButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  shareButtonText: {
+    fontSize: 15,
   },
   center: {
     flex: 1,

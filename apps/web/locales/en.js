@@ -472,6 +472,14 @@ const en = {
     },
     contactLink: "Submit a Request",
   },
+  share: {
+    button: "🔗 Share",
+    copied: "✓ Copied",
+    testTitle: "A compatibility test on Hemdem",
+    testText: "Take the \"{title}\" test and see how compatible we are!",
+    profileTitle: "My profile on Hemdem",
+    profileText: "Check out my profile on Hemdem!",
+  },
   admin: {
     title: "Admin Panel",
     usersLink: "Users",

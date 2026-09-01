@@ -9,6 +9,7 @@ import { PageTitle } from "@/components/PageTitle";
 import { SectionCard } from "@/components/SectionCard";
 import { Button } from "@/components/ui/Button";
 import { Avatar } from "@/components/Avatar";
+import { ShareButton } from "@/components/ShareButton";
 import { CoinIcon, UserIcon, SupportIcon } from "@/components/icons";
 
 export async function generateMetadata() {
@@ -46,6 +47,15 @@ export default async function ProfilePage({ params }) {
       <PageTitle action={<Button href={`/${locale}/profile/edit`} variant="edit">{t("profile.edit")}</Button>}>
         {t("profile.title")}
       </PageTitle>
+
+      <ShareButton
+        path={`/${locale}/u/${userId}`}
+        title={t("share.profileTitle")}
+        text={t("share.profileText")}
+        label={t("share.button")}
+        copiedLabel={t("share.copied")}
+        className="self-start"
+      />
 
       <SectionCard className="flex animate-fade-in flex-col gap-4 bg-gradient-surface">
         <div className="flex items-center gap-4">
