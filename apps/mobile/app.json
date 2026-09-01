@@ -18,14 +18,24 @@
           "resizeMode": "contain",
           "backgroundColor": "#121014"
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Profil fotoğrafı seçebilmek için fotoğraflarına erişim izni gerekiyor."
+        }
       ]
     ],
     "ios": {
       "bundleIdentifier": "com.hemdem.mobile",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Profil fotoğrafı seçebilmek için fotoğraflarına erişim izni gerekiyor."
+      }
     },
     "android": {
       "package": "com.hemdem.mobile",
+      "permissions": ["READ_MEDIA_IMAGES"],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",

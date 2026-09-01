@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { repositories } from "../../../lib/repositories";
 import { useSession } from "../../../lib/session";
 import { colors, gradients, radii, spacing } from "../../../lib/theme";
 import { InitialsAvatar } from "../../../components/InitialsAvatar";
+import { isRenderableImageUri } from "../../../lib/avatar";
 import { Button } from "../../../components/ui/Button";
 import { ScreenHeader } from "../../../components/ui/ScreenHeader";
 import { Screen } from "../../../components/ui/Screen";
@@ -59,7 +60,11 @@ export default function ProfileScreen() {
       <ScreenHeader title="Profil" back />
 
       <View style={styles.header}>
-        <InitialsAvatar name={profile.name} size={80} />
+        {isRenderableImageUri(profile.avatarUrl) ? (
+          <Image source={{ uri: profile.avatarUrl }} style={styles.avatarImage} />
+        ) : (
+          <InitialsAvatar name={profile.name} size={80} />
+        )}
         <Text style={styles.name}>{profile.name}</Text>
         {profile.bio && <Text style={styles.bio}>{profile.bio}</Text>}
       </View>
@@ -106,6 +111,11 @@ const styles = StyleSheet.create({
   header: {
     alignItems: "center",
     gap: 6,
+  },
+  avatarImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
   },
   name: {
     color: colors.foreground,
