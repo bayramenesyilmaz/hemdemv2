@@ -35,6 +35,12 @@ export function createMockNotificationRepository(store) {
       ).length;
     },
 
+    async countUnreadSummary(userId) {
+      const unread = store.notifications.filter((n) => n.userId === userId && !n.isRead);
+      const message = unread.filter((n) => n.type === "message").length;
+      return { general: unread.length - message, message };
+    },
+
     async markAllRead(userId, filter = {}) {
       for (const notification of store.notifications) {
         if (

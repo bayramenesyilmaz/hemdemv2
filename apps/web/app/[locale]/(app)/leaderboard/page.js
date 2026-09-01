@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { unstable_cache } from "next/cache";
 import { setStaticParamsLocale } from "next-international/server";
 import { getI18n } from "@/locales/server";
 import { repositories } from "@/lib/repositories";
@@ -23,12 +24,26 @@ export async function generateMetadata({ params }) {
   });
 }
 
+// Liderlik tablosu tüm kullanıcılar için aynı, kullanıcıya özel değil —
+// her sayfa görüntülemede yeniden hesaplamak yerine 60sn'lik bir pencerede
+// önbelleklenir (Next'in per-request cache()'inden farklı: burada istekler
+// ARASI paylaşılır). Bu, service-role/RLS-yok tasarımını bozmaz — önbellek
+// uygulama katmanında, DB'de değil.
+const getCachedLeaderboard = unstable_cache(
+  async () => {
+    const entries = await repositories.test.findLeaderboard(50);
+    const profiles = await Promise.all(entries.map((e) => repositories.user.findById(e.userId)));
+    return { entries, profiles };
+  },
+  ["leaderboard-top-50"],
+  { revalidate: 60 }
+);
+
 export default async function LeaderboardPage({ params }) {
   const { locale } = await params;
   setStaticParamsLocale(locale);
 
-  const entries = await repositories.test.findLeaderboard(50);
-  const profiles = await Promise.all(entries.map((e) => repositories.user.findById(e.userId)));
+  const { entries, profiles } = await getCachedLeaderboard();
   const t = await getI18n();
 
   return (

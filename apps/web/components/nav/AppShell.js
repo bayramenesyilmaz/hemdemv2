@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useI18n } from "@/locales/client";
-import { fetchUnreadNotificationCountAction, fetchUnreadMessageCountAction } from "@/lib/actions/notificationActions";
+import { fetchUnreadSummaryAction } from "@/lib/actions/notificationActions";
 import { AppHeader } from "./AppHeader";
 import { BottomNav } from "./BottomNav";
 import { Sidebar } from "./Sidebar";
@@ -57,24 +57,39 @@ export function AppShell({
 
   useEffect(() => {
     if (!isAuthenticated) return;
-    const interval = setInterval(async () => {
-      const [count, messageCount] = await Promise.all([
-        fetchUnreadNotificationCountAction(),
-        fetchUnreadMessageCountAction(),
-      ]);
-      setLiveUnreadCount(count);
-      setLiveUnreadMessageCount(messageCount);
+    let cancelled = false;
+
+    // Sekme arka plandayken (document.hidden) DB isteği atlanır — global
+    // ölçekte boşta duran her sekme aksi halde sonsuza kadar 5sn'de bir
+    // istek atmaya devam eder. Öne dönünce visibilitychange dinleyicisi
+    // hemen bir kez tazeler, sayaçlar bayat kalmasın diye.
+    async function tick() {
+      if (document.hidden) return;
+      const summary = await fetchUnreadSummaryAction();
+      if (cancelled) return;
+      setLiveUnreadCount(summary.general);
+      setLiveUnreadMessageCount(summary.message);
 
       // Web'de uygulama açıkken başka bir sayfadaysa (sohbet ekranının
       // kendisinde değilse) yeni mesaj geldiğinde üstten kısa bir bildirim
       // gösterilir — mobil zaten kendi bildirim kanalını kullanır, bu
       // sadece web/PWA için "anlık" hissi veren bir yama.
-      if (messageCount > previousMessageCountRef.current && !pathnameRef.current.includes("/messages")) {
+      if (summary.message > previousMessageCountRef.current && !pathnameRef.current.includes("/messages")) {
         setMessageToastVisible(true);
       }
-      previousMessageCountRef.current = messageCount;
-    }, UNREAD_POLL_INTERVAL_MS);
-    return () => clearInterval(interval);
+      previousMessageCountRef.current = summary.message;
+    }
+
+    const interval = setInterval(tick, UNREAD_POLL_INTERVAL_MS);
+    function handleVisibilityChange() {
+      if (!document.hidden) tick();
+    }
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [isAuthenticated]);
 
   useEffect(() => {

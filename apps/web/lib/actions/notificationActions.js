@@ -4,7 +4,7 @@ import { markNotificationsRead } from "@hemdem/core/usecases/notifications/markN
 import { markMessageNotificationsRead } from "@hemdem/core/usecases/notifications/markMessageNotificationsRead";
 import { repositories } from "@/lib/repositories";
 import { getAuthUserId } from "@/lib/session";
-import { safeCountUnreadNotifications, safeCountUnreadMessageNotifications } from "@/lib/notifications";
+import { safeFetchUnreadSummary } from "@/lib/notifications";
 
 export async function markNotificationsReadAction() {
   const userId = await getAuthUserId();
@@ -15,24 +15,13 @@ export async function markNotificationsReadAction() {
 }
 
 /**
- * Header'daki bildirim rozetinin kısa aralıklarla anlık taze kalması için
- * — Supabase Realtime bu projede kullanılamadığından (bkz. ChatThread.js'
- * teki aynı gerekçe) sondaj (polling) ile yeni bildirim sayısı çekilir.
+ * AppShell'in sürekli poll döngüsü için — genel + mesaj sayacını TEK
+ * HTTP isteği/DB sorgusunda döndürür (bkz. lib/notifications.js).
  */
-export async function fetchUnreadNotificationCountAction() {
+export async function fetchUnreadSummaryAction() {
   const userId = await getAuthUserId();
-  if (!userId) return 0;
-  return safeCountUnreadNotifications(userId);
-}
-
-/**
- * Mesajlar sekmesindeki rozet için — genel bildirim sayısından ayrı
- * sondajlanır (bkz. countUnreadMessageNotifications.js).
- */
-export async function fetchUnreadMessageCountAction() {
-  const userId = await getAuthUserId();
-  if (!userId) return 0;
-  return safeCountUnreadMessageNotifications(userId);
+  if (!userId) return { general: 0, message: 0 };
+  return safeFetchUnreadSummary(userId);
 }
 
 export async function markMessageNotificationsReadAction() {

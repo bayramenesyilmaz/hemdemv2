@@ -30,13 +30,24 @@ export function ChatThread({ chatId, currentUserId, initialMessages, recipientId
   }, [messages.length]);
 
   useEffect(() => {
-    const interval = setInterval(async () => {
+    // Sekme arka plandayken bu ekrandan uzaklaşılmış demektir — istek
+    // atlanır, öne dönünce hemen bir kez tazelenir.
+    async function tick() {
+      if (document.hidden) return;
       const result = await fetchChatMessagesAction(chatId);
       if (result.status === "success") {
         setMessages(result.data.messages);
       }
-    }, POLL_INTERVAL_MS);
-    return () => clearInterval(interval);
+    }
+    const interval = setInterval(tick, POLL_INTERVAL_MS);
+    function handleVisibilityChange() {
+      if (!document.hidden) tick();
+    }
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [chatId]);
 
   async function handleSubmit(event) {

@@ -1,6 +1,7 @@
 import "server-only";
 import { countUnreadNotifications } from "@hemdem/core/usecases/notifications/countUnreadNotifications";
 import { countUnreadMessageNotifications } from "@hemdem/core/usecases/notifications/countUnreadMessageNotifications";
+import { fetchUnreadSummary } from "@hemdem/core/usecases/notifications/fetchUnreadSummary";
 import { fetchNotifications } from "@hemdem/core/usecases/notifications/fetchNotifications";
 import { repositories } from "@/lib/repositories";
 
@@ -31,6 +32,21 @@ export async function safeCountUnreadMessageNotifications(userId) {
   } catch (error) {
     console.error("[notifications] okunmamış mesaj sayısı okunamadı, muhtemelen migration 0003 eksik:", error);
     return 0;
+  }
+}
+
+/**
+ * Yukarıdaki iki fonksiyonun (genel + mesaj sayacı) TEK DB isteğinde
+ * birleşmiş hali — AppShell'in sürekli poll döngüsü artık bunu çağırıyor,
+ * her tik için iki ayrı server action/DB isteği yerine bir tane atılıyor.
+ */
+export async function safeFetchUnreadSummary(userId) {
+  try {
+    const result = await fetchUnreadSummary(repositories, userId);
+    return result.data;
+  } catch (error) {
+    console.error("[notifications] unread summary okunamadı, muhtemelen migration 0003 eksik:", error);
+    return { general: 0, message: 0 };
   }
 }
 

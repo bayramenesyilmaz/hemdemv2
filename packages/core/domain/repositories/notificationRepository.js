@@ -10,6 +10,7 @@
  * @property {(notification: Partial<import("../entities/notification.js").Notification>) => Promise<import("../entities/notification.js").Notification>} create
  * @property {(userId: string, limit?: number) => Promise<import("../entities/notification.js").Notification[]>} findByUser
  * @property {(userId: string, filter?: NotificationTypeFilter) => Promise<number>} countUnread
+ * @property {(userId: string) => Promise<{ general: number, message: number }>} countUnreadSummary - genel + mesaj sayaçlarını TEK sorguda döndürür (bkz. usecases/notifications/fetchUnreadSummary.js — sürekli polling'in DB isteği sayısını yarıya indirmek için)
  * @property {(userId: string, filter?: NotificationTypeFilter) => Promise<void>} markAllRead
  */
 

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  AppState,
   FlatList,
   KeyboardAvoidingView,
   Platform,
@@ -49,11 +50,20 @@ export default function ChatThreadScreen() {
 
     load();
     // Web'deki ChatThread.js ile aynı desen: gerçek zamanlı altyapı
-    // (Supabase Realtime/WebSocket) yerine kısa aralıklı polling.
-    const interval = setInterval(load, POLL_INTERVAL_MS);
+    // (Supabase Realtime/WebSocket) yerine kısa aralıklı polling. App
+    // arka plandayken (AppState !== "active") tik atlanır — kilit ekranında
+    // duran bir cihaz sonsuza kadar 3sn'de bir istek atmasın diye. Öne
+    // dönünce hemen bir kez tazelenir.
+    const interval = setInterval(() => {
+      if (AppState.currentState === "active") load();
+    }, POLL_INTERVAL_MS);
+    const subscription = AppState.addEventListener("change", (nextState) => {
+      if (nextState === "active") load();
+    });
     return () => {
       cancelled = true;
       clearInterval(interval);
+      subscription.remove();
     };
   }, [userId, chatId]);
 

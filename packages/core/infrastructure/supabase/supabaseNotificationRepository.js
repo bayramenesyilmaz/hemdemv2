@@ -58,6 +58,18 @@ export function createSupabaseNotificationRepository(client) {
       return count ?? 0;
     },
 
+    async countUnreadSummary(userId) {
+      const { data, error } = await client
+        .from("notifications")
+        .select("type")
+        .eq("user_id", userId)
+        .eq("is_read", false);
+      if (error) throw error;
+      const rows = data ?? [];
+      const message = rows.filter((row) => row.type === "message").length;
+      return { general: rows.length - message, message };
+    },
+
     async markAllRead(userId, filter = {}) {
       let query = client.from("notifications").update({ is_read: true }).eq("user_id", userId).eq("is_read", false);
       if (filter.type) query = query.eq("type", filter.type);
