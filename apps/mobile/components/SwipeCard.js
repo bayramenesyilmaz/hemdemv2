@@ -1,4 +1,5 @@
 import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
 import Animated, {
@@ -23,6 +24,7 @@ const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.3;
  * gesture-handler + reanimated ile aynı ürün mantığı.
  */
 export function SwipeCard({ candidate, onSwiped, isTop }) {
+  const router = useRouter();
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
 
@@ -37,6 +39,10 @@ export function SwipeCard({ candidate, onSwiped, isTop }) {
 
   function handleSwiped(action) {
     onSwiped(candidate.id, action);
+  }
+
+  function handleTap() {
+    router.push(`/u/${candidate.id}`);
   }
 
   const pan = Gesture.Pan()
@@ -58,6 +64,18 @@ export function SwipeCard({ candidate, onSwiped, isTop }) {
       translateY.value = withSpring(0);
     });
 
+  // Sürüklemeyle aynı anda çalışabilmesi için Race: kart neredeyse hiç
+  // hareket etmeden bırakılırsa "tıklama" sayılır ve profile gidilir,
+  // aksi halde Pan devreye girer.
+  const tap = Gesture.Tap()
+    .enabled(isTop)
+    .maxDistance(10)
+    .onEnd(() => {
+      runOnJS(handleTap)();
+    });
+
+  const gesture = Gesture.Race(pan, tap);
+
   const cardStyle = useAnimatedStyle(() => {
     const rotate = `${(translateX.value / SCREEN_WIDTH) * 20}deg`;
     return {
@@ -73,7 +91,7 @@ export function SwipeCard({ candidate, onSwiped, isTop }) {
   }));
 
   return (
-    <GestureDetector gesture={pan}>
+    <GestureDetector gesture={gesture}>
       <Animated.View style={[styles.card, cardStyle]}>
         <LinearGradient colors={gradients.primary} start={{ x: 0.1, y: 0 }} end={{ x: 0.9, y: 1 }} style={styles.photo}>
           <Text style={styles.initials}>{initials}</Text>

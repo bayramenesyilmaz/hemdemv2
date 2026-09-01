@@ -74,6 +74,9 @@ export default function TestsScreen() {
               <Button variant="outline" style={styles.linkChip} onPress={() => router.push("/tests/history")}>
                 Geçmiş
               </Button>
+              <Button variant="outline" style={styles.linkChip} onPress={() => router.push("/leaderboard")}>
+                🏆 Liderlik
+              </Button>
             </View>
           </>
         }
@@ -118,8 +121,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "800",
+    fontSize: 20,
+    fontWeight: "700",
     color: colors.foreground,
   },
   linkRow: {

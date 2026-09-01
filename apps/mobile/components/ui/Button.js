@@ -7,6 +7,11 @@ import { colors, gradients, radii, spacing } from "../../lib/theme";
  * ghost, delete) RN karşılığı — tek bileşen, tutarlı dokunma geri
  * bildirimi (basılınca hafif küçülme, web'deki active:scale-[0.97]'nin
  * karşılığı).
+ *
+ * Devre dışıyken gradyan düz `cardAlt`'a düşüyordu — kart yüzeyiyle
+ * neredeyse aynı tonda olduğu için buton sanki hiç yokmuş gibi
+ * görünüyordu (ör. boş gönderi kutusunda "Paylaş" butonu). Devre
+ * dışı durumda artık her zaman görünür bir kenarlık var.
  */
 const VARIANT_STYLES = {
   outline: { borderWidth: 1, borderColor: colors.border, backgroundColor: colors.card },
@@ -32,12 +37,14 @@ export function Button({
   ...props
 }) {
   const isDisabled = Boolean(disabled) || loading;
-  const textColor = TEXT_COLORS[variant] ?? colors.foreground;
+  const textColor = isDisabled && variant === "primary" ? colors.mutedForeground : TEXT_COLORS[variant] ?? colors.foreground;
 
   const inner = loading ? (
-    <ActivityIndicator color={textColor} />
+    <ActivityIndicator color={textColor} size="small" />
   ) : typeof children === "string" ? (
-    <Text style={[styles.label, { color: textColor }, textStyle]}>{children}</Text>
+    <Text style={[styles.label, { color: textColor }, textStyle]} numberOfLines={1}>
+      {children}
+    </Text>
   ) : (
     children
   );
@@ -54,7 +61,7 @@ export function Button({
           colors={isDisabled ? [colors.cardAlt, colors.cardAlt] : gradients.primary}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={styles.content}
+          style={[styles.content, isDisabled && styles.contentDisabledPrimary]}
         >
           {inner}
         </LinearGradient>
@@ -87,16 +94,20 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   content: {
-    minHeight: 48,
+    minHeight: 42,
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
-    gap: spacing.sm,
-    paddingHorizontal: spacing.lg,
+    gap: spacing.xs,
+    paddingHorizontal: spacing.md,
+  },
+  contentDisabledPrimary: {
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   label: {
-    fontSize: 15,
-    fontWeight: "700",
+    fontSize: 14,
+    fontWeight: "600",
   },
   pressed: {
     opacity: 0.85,

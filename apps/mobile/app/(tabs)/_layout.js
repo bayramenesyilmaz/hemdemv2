@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Tabs, useRouter } from "expo-router";
+import { Tabs, router, useRouter } from "expo-router";
 import { Text } from "react-native";
 import { countUnreadMessageNotifications } from "@hemdem/core/usecases/notifications/countUnreadMessageNotifications";
 import { repositories } from "../../lib/repositories";
@@ -16,14 +16,32 @@ import { useSession } from "../../lib/session";
  * sekme (bkz. messages/index.js); Profil, Bildirimler, Coin, Liderlik
  * Tablosu gibi geri kalan her şey "Diğer" (menu) altında veya üst bar
  * avatarından erişiliyor — 6+ sekme alt barı web'de de sıkıştırıyordu.
+ *
+ * "Testler"/"Mesajlar" kendi içlerinde bir Stack barındırıyor (liste ->
+ * detay). Zaten aktif olan bir sekmeye tekrar dokununca o Stack'in en
+ * köküne dönülür — `@react-navigation/native`'i doğrudan import etmek bu
+ * projede çalışmıyor (pnpm'in sıkı çözümlemesi, transitive bir bağımlılık),
+ * o yüzden `navigation.isFocused()` (temel navigasyon prop'u, her
+ * navigatörde var) + expo-router'ın kendi `router.navigate` (zaten
+ * stack'te olan bir rotaya gidince köküne döner) kombinasyonu kullanılıyor.
  */
+function resetOnDoublePress(path) {
+  return ({ navigation }) => ({
+    tabPress: () => {
+      if (navigation.isFocused()) {
+        router.navigate(path);
+      }
+    },
+  });
+}
+
 export default function TabsLayout() {
-  const router = useRouter();
+  const routerInstance = useRouter();
   const { userId } = useSession();
   const [unreadMessages, setUnreadMessages] = useState(0);
 
   useEffect(() => {
-    if (!userId) router.replace("/");
+    if (!userId) routerInstance.replace("/");
   }, [userId]);
 
   useEffect(() => {
@@ -55,6 +73,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="tests"
         options={{ title: "Testler", tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>📋</Text> }}
+        listeners={resetOnDoublePress("/tests")}
       />
       <Tabs.Screen
         name="posts"
@@ -67,6 +86,7 @@ export default function TabsLayout() {
           tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>💬</Text>,
           tabBarBadge: unreadMessages > 0 ? unreadMessages : undefined,
         }}
+        listeners={resetOnDoublePress("/messages")}
       />
       <Tabs.Screen
         name="menu"
@@ -75,12 +95,15 @@ export default function TabsLayout() {
 
       {/* Alt çubukta göstermek yerine üst bardan (AppTopBar) veya "Diğer"
           menüsünden erişilen rotalar — çubukta görünmesinler diye
-          href: null, navigasyona kapalı değiller. */}
+          href: null, navigasyona kapalı değiller. "u" bir klasör (kendi
+          _layout.js'i var) olduğu için burada "u/[id]" değil "u" adı
+          kullanılmalı — yanlış adla eşleşmediği için daha önce alt barda
+          "u" diye kendiliğinden bir sekme beliriyordu. */}
       <Tabs.Screen name="profile" options={{ href: null }} />
       <Tabs.Screen name="notifications" options={{ href: null }} />
       <Tabs.Screen name="coins" options={{ href: null }} />
       <Tabs.Screen name="leaderboard" options={{ href: null }} />
-      <Tabs.Screen name="u/[id]" options={{ href: null }} />
+      <Tabs.Screen name="u" options={{ href: null }} />
     </Tabs>
   );
 }

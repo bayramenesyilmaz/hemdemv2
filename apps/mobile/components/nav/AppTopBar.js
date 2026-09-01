@@ -23,8 +23,11 @@ const NOTE_MAX_LENGTH = 120;
  * kullanıcının isteği üzerine notlar ayrı bir sayfa/bölüm yerine burada.
  * Ana sekme köklerinde (discover/tests/posts/messages/menu) render
  * edilir; alt rotalarda (detay ekranları) kendi ScreenHeader'ları var.
+ *
+ * Not şeridi sadece `showNotes` verilen ekranda (Gönderiler) açılır —
+ * Keşfet gibi tüm ekranı kullanan sayfalarda yer kaplamaması için.
  */
-export function AppTopBar() {
+export function AppTopBar({ showNotes = false }) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { userId } = useSession();
@@ -53,8 +56,8 @@ export function AppTopBar() {
         repositories.user.findById(userId),
         repositories.coin.getBalance(userId),
         countUnreadNotifications(repositories, userId),
-        fetchLatestNotesByUsers(repositories, [userId]),
-        fetchRecentNotes(repositories, 20),
+        showNotes ? fetchLatestNotesByUsers(repositories, [userId]) : Promise.resolve({ data: {} }),
+        showNotes ? fetchRecentNotes(repositories, 20) : Promise.resolve({ data: [] }),
       ]);
       if (cancelled) return;
 
@@ -64,7 +67,9 @@ export function AppTopBar() {
       }
 
       const authorIds = Object.keys(combined).filter((id) => id !== userId);
-      const authorProfiles = await Promise.all(authorIds.map((id) => repositories.user.findById(id)));
+      const authorProfiles = showNotes
+        ? await Promise.all(authorIds.map((id) => repositories.user.findById(id)))
+        : [];
       if (cancelled) return;
 
       setProfile(foundProfile);
@@ -78,7 +83,7 @@ export function AppTopBar() {
     return () => {
       cancelled = true;
     };
-  }, [userId]);
+  }, [userId, showNotes]);
 
   function openCompose() {
     setComposeError(null);
@@ -176,7 +181,7 @@ export function AppTopBar() {
         </Pressable>
       </View>
 
-      {rail.length > 0 && (
+      {showNotes && rail.length > 0 && (
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}

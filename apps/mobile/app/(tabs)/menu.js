@@ -5,21 +5,19 @@ import { colors, radii, spacing } from "../../lib/theme";
 import { Button } from "../../components/ui/Button";
 import { useScreenInsets } from "../../components/ui/Screen";
 
+// Profil/Bildirimler/Coin zaten üst bardan (avatar/zil/coin rozeti)
+// erişiliyor, Liderlik Tablosu Testler ekranına taşındı — burada
+// tekrarlanmıyorlar. Profili Düzenle/Profilimi Görüntüleyenler kendi
+// bağlamı (profil) içinde daha anlamlı olduğu için Profil sayfasında.
 const ITEMS = [
-  { href: "/profile", label: "Profil", icon: "👤" },
-  { href: "/profile/edit", label: "Profili Düzenle", icon: "✏️" },
-  { href: "/profile/viewers", label: "Profilimi Görüntüleyenler", icon: "👁️" },
-  { href: "/notifications", label: "Bildirimler", icon: "🔔" },
-  { href: "/coins", label: "Coin Kazan", icon: "🪙" },
   { href: "/tests/mine", label: "Testlerim", icon: "📋" },
   { href: "/tests/history", label: "Test Geçmişim", icon: "🕓" },
-  { href: "/leaderboard", label: "Liderlik Tablosu", icon: "🏆" },
 ];
 
 /**
  * Web'deki tam ekran "Menü" sayfasının mobil karşılığı — alt bar sadece
  * 5 sekmeye sığdığı için (Keşfet/Testler/Gönderiler/Mesajlar/Diğer),
- * geri kalan tüm rotalar burada listelenir.
+ * üst bar veya profil sayfasında olmayan rotalar burada listelenir.
  */
 export default function MenuScreen() {
   const insets = useScreenInsets();
