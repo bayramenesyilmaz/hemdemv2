@@ -8,6 +8,7 @@ const STATIC_PATHS = [
   "/posts",
   "/help",
   "/support",
+  "/privacy",
   "/login",
   "/register",
   "/forgot-password",

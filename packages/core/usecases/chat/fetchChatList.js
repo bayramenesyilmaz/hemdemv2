@@ -6,11 +6,16 @@
  * @param {string} userId
  */
 export async function fetchChatList(repositories, userId) {
-  const chats = await repositories.chat.findByUser(userId);
+  const [chats, relatedBlockIds] = await Promise.all([
+    repositories.chat.findByUser(userId),
+    repositories.block.findRelatedIds(userId),
+  ]);
+  const blockedSet = new Set(relatedBlockIds);
 
   const enriched = await Promise.all(
     chats.map(async (chat) => {
       const otherUserId = chat.userA === userId ? chat.userB : chat.userA;
+      if (blockedSet.has(otherUserId)) return null;
       const [otherUser, lastMessages] = await Promise.all([
         repositories.user.findById(otherUserId),
         repositories.chat.findMessages(chat.id, 1),
@@ -19,5 +24,5 @@ export async function fetchChatList(repositories, userId) {
     })
   );
 
-  return { status: "success", data: enriched.filter((entry) => entry.otherUser) };
+  return { status: "success", data: enriched.filter((entry) => entry && entry.otherUser) };
 }

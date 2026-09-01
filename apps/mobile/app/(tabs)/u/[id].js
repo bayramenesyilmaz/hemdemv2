@@ -10,6 +10,7 @@ import { useSession } from "../../../lib/session";
 import { colors, gradients, radii, spacing } from "../../../lib/theme";
 import { Badge } from "../../../components/ui/Badge";
 import { Button } from "../../../components/ui/Button";
+import { SafetyMenu } from "../../../components/SafetyMenu";
 
 const SOLVED_TESTS_LIMIT = 5;
 
@@ -190,6 +191,14 @@ export default function PublicProfileScreen() {
 
           {likeStatus === "liked" && <Text style={styles.statusText}>Beğenin gönderildi.</Text>}
           {likeStatus && likeStatus !== "liked" && <Text style={styles.errorText}>{likeStatus}</Text>}
+
+          {!isOwnProfile && (
+            <SafetyMenu
+              targetUserId={profile.id}
+              targetName={profile.name}
+              onBlocked={() => router.back()}
+            />
+          )}
 
           {solvedTests.length > 0 && (
             <View style={styles.solvedSection}>

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { setStaticParamsLocale } from "next-international/server";
 import { getI18n } from "@/locales/server";
 import { buildMetadata } from "@/lib/seo";
@@ -58,6 +59,13 @@ export default async function HelpPage({ params }) {
           {t("help.contactLink")}
         </Button>
       </SectionCard>
+
+      <Link
+        href={`/${locale}/privacy`}
+        className="self-start text-sm text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+      >
+        {t("privacy.title")}
+      </Link>
     </main>
   );
 }

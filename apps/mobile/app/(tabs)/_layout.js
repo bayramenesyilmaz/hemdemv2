@@ -37,12 +37,12 @@ function resetOnDoublePress(path) {
 
 export default function TabsLayout() {
   const routerInstance = useRouter();
-  const { userId } = useSession();
+  const { userId, hydrated } = useSession();
   const [unreadMessages, setUnreadMessages] = useState(0);
 
   useEffect(() => {
-    if (!userId) routerInstance.replace("/");
-  }, [userId]);
+    if (hydrated && !userId) routerInstance.replace("/");
+  }, [hydrated, userId]);
 
   useEffect(() => {
     if (!userId) return;
@@ -55,7 +55,10 @@ export default function TabsLayout() {
     };
   }, [userId]);
 
-  if (!userId) return null;
+  // Kalıcı oturum hidrasyonu bitene kadar (kısa bir an) hiçbir şey
+  // gösterme — aksi halde saklanmış bir oturum varken bile ekran anlık
+  // olarak login'e sıçrar (bkz. lib/session.js).
+  if (!hydrated || !userId) return null;
 
   return (
     <Tabs
@@ -103,6 +106,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="notifications" options={{ href: null }} />
       <Tabs.Screen name="coins" options={{ href: null }} />
       <Tabs.Screen name="leaderboard" options={{ href: null }} />
+      <Tabs.Screen name="privacy" options={{ href: null }} />
       <Tabs.Screen name="u" options={{ href: null }} />
     </Tabs>
   );

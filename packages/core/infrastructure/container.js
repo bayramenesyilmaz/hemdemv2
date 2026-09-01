@@ -14,6 +14,7 @@ import { createSupabaseAuthAdminRepository } from "./supabase/supabaseAuthAdminR
 import { createSupabaseNotificationRepository } from "./supabase/supabaseNotificationRepository.js";
 import { createSupabaseLeaderboardRewardRepository } from "./supabase/supabaseLeaderboardRewardRepository.js";
 import { createSupabaseStorageRepository } from "./supabase/supabaseStorageRepository.js";
+import { createSupabaseBlockRepository } from "./supabase/supabaseBlockRepository.js";
 
 /**
  * Composition root. `usecases/*` bu nesneyi parametre olarak alır ve
@@ -41,5 +42,6 @@ export function createRepositories(supabaseConfig) {
     notification: createSupabaseNotificationRepository(client),
     authAdmin: createSupabaseAuthAdminRepository(client),
     storage: createSupabaseStorageRepository(client),
+    block: createSupabaseBlockRepository(client),
   };
 }

@@ -31,6 +31,14 @@ export async function sendMessage(repositories, senderId, recipientId, content) 
     return { status: "error", message: "recipient_not_found" };
   }
 
+  const [blockedByMe, blockedByRecipient] = await Promise.all([
+    repositories.block.exists(senderId, recipientId),
+    repositories.block.exists(recipientId, senderId),
+  ]);
+  if (blockedByMe || blockedByRecipient) {
+    return { status: "error", message: "user_blocked" };
+  }
+
   let chat = await repositories.chat.findByPair(senderId, recipientId);
 
   if (!chat) {

@@ -3,12 +3,23 @@
     "name": "Hemdem",
     "slug": "hemdem",
     "scheme": "hemdem",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "plugins": ["expo-router"],
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#121014"
+        }
+      ]
+    ],
     "ios": {
       "bundleIdentifier": "com.hemdem.mobile",
       "supportsTablet": true

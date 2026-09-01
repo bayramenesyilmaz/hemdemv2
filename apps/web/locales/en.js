@@ -282,6 +282,7 @@ const en = {
       cannot_message_self: "You can't message yourself.",
       recipient_not_found: "This person could not be found.",
       not_authorized: "You don't have access to this conversation.",
+      user_blocked: "You can't message this user.",
     },
   },
   posts: {
@@ -411,6 +412,65 @@ const en = {
         answer: "Use the 'Delete My Account' button at the bottom of your profile page. This cannot be undone.",
       },
     },
+  },
+  safety: {
+    menuTrigger: "Safety",
+    block: "Block",
+    blockConfirmTitle: "Block {name}",
+    blockConfirmBody:
+      "If you block them, you won't see each other in discover, messages, or likes. You can undo this from profile settings.",
+    blockConfirmAction: "Block",
+    blockSuccess: "User blocked.",
+    report: "Report",
+    reportTitle: "Report {name}",
+    reportSubjectLabel: "Subject",
+    reportDescriptionLabel: "What happened, briefly",
+    reportSubmit: "Submit Report",
+    reportSuccess: "Your report was received and will be reviewed.",
+    cancel: "Cancel",
+    errors: {
+      subject_required: "Subject is required.",
+      description_required: "Description is required.",
+      cannot_block_self: "You can't block yourself.",
+      user_not_found: "User not found.",
+      target_user_required: "Target user is required.",
+    },
+  },
+  privacy: {
+    title: "Privacy Policy",
+    intro:
+      "Hemdem is a personality-test matchmaking platform. This page explains what data we collect, why we collect it, and how to exercise your rights.",
+    sections: {
+      collected: {
+        title: "What we collect",
+        body: "Your account info (email), profile info (name, birthdate, gender, country, bio, social links), any profile photo you upload, your test answers, messages you send/receive, posts, and coin/point activity.",
+      },
+      use: {
+        title: "How we use your data",
+        body: "To compute compatibility/matches, build your discover feed, enable messaging, send notifications, and manage your account. We don't share your data with ad networks; the in-app 'earn coins' flow is a simulated ad experience and doesn't use a third-party ad SDK.",
+      },
+      sharing: {
+        title: "Who we share it with",
+        body: "Your profile is visible to other users on the platform (discover, public profile page). We don't share or sell your data to any third party other than our hosting provider (Supabase).",
+      },
+      retention: {
+        title: "How long we keep it",
+        body: "We keep your data while your account is active. Use 'Delete My Account' on the profile edit page to permanently and irreversibly delete your account and all associated data (including tests, messages, and posts).",
+      },
+      security: {
+        title: "Security",
+        body: "Database access happens only server-side, over a connection protected by row-level security (RLS) — no database credentials are ever sent to the browser.",
+      },
+      rights: {
+        title: "Your rights",
+        body: "You have the right to access, correct, and delete your data. You can edit your profile anytime, permanently delete your account, or reach us with a request/complaint.",
+      },
+      contact: {
+        title: "Contact us",
+        body: "For privacy questions, use the Request/Complaint form.",
+      },
+    },
+    contactLink: "Submit a Request",
   },
   admin: {
     title: "Admin Panel",

@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/Button";
 import { MessagesIcon } from "@/components/icons";
 import { SendMessageDialog } from "./SendMessageDialog";
 import { ProfileActions } from "./ProfileActions";
+import { SafetyMenu } from "./SafetyMenu";
 
 export async function generateMetadata({ params }) {
   const { locale, id } = await params;
@@ -112,37 +113,40 @@ export default async function PublicProfilePage({ params }) {
           </div>
         )}
 
-        {viewerId &&
-          viewerId !== profile.id &&
-          (existingChat ? (
-            <Button href={`/${locale}/messages/${existingChat.id}`} variant="send">
-              <MessagesIcon className="size-4" />
-              {t("messages.goToChat")}
-            </Button>
-          ) : (
-            // İki aksiyon da aynı paylaşılan Button bileşeniyle, eşit
-            // genişlikte render edilir — önceden biri dairesel ikon-only
-            // (48px), diğeri Button'ın kendi ölçüsünde (40px) tam genişlik
-            // bir metin butonuydu ve boyutça tutarsız duruyordu.
-            <div className="flex gap-3">
-              <ProfileActions
-                locale={locale}
-                profileId={profile.id}
-                profileName={profile.name}
-                gateTestId={profile.gateTestId}
-              />
-              <SendMessageDialog
-                locale={locale}
-                recipientId={profile.id}
-                recipientName={profile.name}
-                trigger={
-                  <Button type="button" variant="outline" className="min-w-0 flex-1">
-                    {t("messages.sendMessageButton")}
-                  </Button>
-                }
-              />
-            </div>
-          ))}
+        {viewerId && viewerId !== profile.id && (
+          <>
+            {existingChat ? (
+              <Button href={`/${locale}/messages/${existingChat.id}`} variant="send">
+                <MessagesIcon className="size-4" />
+                {t("messages.goToChat")}
+              </Button>
+            ) : (
+              // İki aksiyon da aynı paylaşılan Button bileşeniyle, eşit
+              // genişlikte render edilir — önceden biri dairesel ikon-only
+              // (48px), diğeri Button'ın kendi ölçüsünde (40px) tam genişlik
+              // bir metin butonuydu ve boyutça tutarsız duruyordu.
+              <div className="flex gap-3">
+                <ProfileActions
+                  locale={locale}
+                  profileId={profile.id}
+                  profileName={profile.name}
+                  gateTestId={profile.gateTestId}
+                />
+                <SendMessageDialog
+                  locale={locale}
+                  recipientId={profile.id}
+                  recipientName={profile.name}
+                  trigger={
+                    <Button type="button" variant="outline" className="min-w-0 flex-1">
+                      {t("messages.sendMessageButton")}
+                    </Button>
+                  }
+                />
+              </div>
+            )}
+            <SafetyMenu targetUserId={profile.id} targetName={profile.name} />
+          </>
+        )}
       </SectionCard>
 
       {solvedTests.length > 0 && (

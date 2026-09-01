@@ -32,5 +32,10 @@ export function createMockSwipeRepository(store) {
     async delete(fromUser, toUser) {
       store.swipes.delete(`${fromUser}:${toUser}`);
     },
+
+    async findManyByFromAndToUsers(fromUser, toUsers) {
+      const toUserSet = new Set(toUsers);
+      return [...store.swipes.values()].filter((s) => s.fromUser === fromUser && toUserSet.has(s.toUser));
+    },
   };
 }

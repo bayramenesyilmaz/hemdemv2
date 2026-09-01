@@ -6,6 +6,7 @@ import { getAuthUserId } from "@/lib/session";
 import { repositories } from "@/lib/repositories";
 import { Avatar } from "@/components/Avatar";
 import { ChatThread } from "./ChatThread";
+import { SafetyMenu } from "../../u/[id]/SafetyMenu";
 
 export async function generateMetadata() {
   return { robots: { index: false } };
@@ -32,10 +33,13 @@ export default async function ChatPage({ params }) {
   // navigasyon olmadığı için sadece dikey boşluk düşülür.
   return (
     <main className="mx-auto flex h-[calc(100dvh-7.5rem-env(safe-area-inset-bottom))] max-w-2xl flex-col gap-4 px-4 py-4 lg:h-[calc(100dvh-4rem)] lg:px-6">
-      <Link href={`/${locale}/u/${otherUser.id}`} className="flex items-center gap-3">
-        <Avatar src={otherUser.avatarUrl} name={otherUser.name} size="sm" />
-        <h1 className="text-lg font-semibold text-foreground lg:text-xl">{otherUser.name}</h1>
-      </Link>
+      <div className="flex items-center justify-between gap-3">
+        <Link href={`/${locale}/u/${otherUser.id}`} className="flex min-w-0 items-center gap-3">
+          <Avatar src={otherUser.avatarUrl} name={otherUser.name} size="sm" />
+          <h1 className="truncate text-lg font-semibold text-foreground lg:text-xl">{otherUser.name}</h1>
+        </Link>
+        <SafetyMenu targetUserId={otherUser.id} targetName={otherUser.name} />
+      </div>
       <ChatThread
         chatId={Number(chatId)}
         recipientId={otherUser.id}

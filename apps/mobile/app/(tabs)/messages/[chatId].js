@@ -10,7 +10,7 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { fetchChatMessages } from "@hemdem/core/usecases/chat/fetchChatMessages";
 import { sendMessage } from "@hemdem/core/usecases/chat/sendMessage";
@@ -19,11 +19,13 @@ import { useSession } from "../../../lib/session";
 import { colors, gradients, radii, spacing } from "../../../lib/theme";
 import { ScreenHeader } from "../../../components/ui/ScreenHeader";
 import { useScreenInsets } from "../../../components/ui/Screen";
+import { SafetyMenu } from "../../../components/SafetyMenu";
 
 const POLL_INTERVAL_MS = 3000;
 
 export default function ChatThreadScreen() {
   const insets = useScreenInsets();
+  const router = useRouter();
   const { chatId } = useLocalSearchParams();
   const { userId } = useSession();
   const [otherUser, setOtherUser] = useState(null);
@@ -82,7 +84,19 @@ export default function ChatThreadScreen() {
       keyboardVerticalOffset={60}
     >
       <View style={[insets, styles.headerWrap]}>
-        <ScreenHeader title={otherUser?.name ?? ""} back />
+        <ScreenHeader
+          title={otherUser?.name ?? ""}
+          back
+          action={
+            otherUser && (
+              <SafetyMenu
+                targetUserId={otherUser.id}
+                targetName={otherUser.name}
+                onBlocked={() => router.replace("/messages")}
+              />
+            )
+          }
+        />
       </View>
 
       <FlatList

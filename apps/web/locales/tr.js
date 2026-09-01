@@ -284,6 +284,7 @@ const tr = {
       cannot_message_self: "Kendine mesaj gönderemezsin.",
       recipient_not_found: "Bu kişi bulunamadı.",
       not_authorized: "Bu sohbete erişim yetkin yok.",
+      user_blocked: "Bu kullanıcıyla mesajlaşamazsın.",
     },
   },
   posts: {
@@ -414,6 +415,65 @@ const tr = {
         answer: "Profilim sayfasının altındaki 'Hesabımı Sil' butonunu kullanabilirsin. Bu işlem geri alınamaz.",
       },
     },
+  },
+  safety: {
+    menuTrigger: "Güvenlik",
+    block: "Engelle",
+    blockConfirmTitle: "{name} kullanıcısını engelle",
+    blockConfirmBody:
+      "Engellersen birbirinizi keşfette, mesajlarda ve beğenilerde göremezsiniz. Bu işlemi profil ayarlarından geri alabilirsin.",
+    blockConfirmAction: "Engelle",
+    blockSuccess: "Kullanıcı engellendi.",
+    report: "Şikayet Et",
+    reportTitle: "{name} kullanıcısını şikayet et",
+    reportSubjectLabel: "Konu",
+    reportDescriptionLabel: "Ne oldu, kısaca anlat",
+    reportSubmit: "Şikayeti Gönder",
+    reportSuccess: "Şikayetin alındı, incelenecek.",
+    cancel: "Vazgeç",
+    errors: {
+      subject_required: "Konu gerekli.",
+      description_required: "Açıklama gerekli.",
+      cannot_block_self: "Kendini engelleyemezsin.",
+      user_not_found: "Kullanıcı bulunamadı.",
+      target_user_required: "Hedef kullanıcı gerekli.",
+    },
+  },
+  privacy: {
+    title: "Gizlilik Politikası",
+    intro:
+      "Hemdem, kişilik testleriyle tanışma sağlayan bir platformdur. Bu sayfa hangi verileri topladığımızı, neden topladığımızı ve haklarını nasıl kullanacağını anlatır.",
+    sections: {
+      collected: {
+        title: "Hangi verileri topluyoruz",
+        body: "Hesap bilgilerin (e-posta), profil bilgilerin (ad, doğum tarihi, cinsiyet, ülke, biyografi, sosyal medya bağlantıları), yüklediğin profil fotoğrafı, test cevapların, gönderdiğin/aldığın mesajlar, gönderiler ve coin/puan aktivitendir.",
+      },
+      use: {
+        title: "Verilerini ne için kullanıyoruz",
+        body: "Uyum/eşleşme hesaplamak, keşfet listesini oluşturmak, mesajlaşmayı sağlamak, bildirim göndermek ve hesabını yönetmek için kullanıyoruz. Verilerin reklam ağlarıyla paylaşılmaz; uygulama içi 'coin kazan' akışı simüle edilmiş bir reklam deneyimidir, üçüncü taraf bir reklam SDK'sı kullanmaz.",
+      },
+      sharing: {
+        title: "Kimlerle paylaşıyoruz",
+        body: "Profilin, aynı platformdaki diğer kullanıcılara (keşfet, herkese açık profil sayfası) görünür. Verilerin, barındırma sağlayıcımız (Supabase) dışında hiçbir üçüncü tarafla paylaşılmaz veya satılmaz.",
+      },
+      retention: {
+        title: "Verilerini ne kadar süre saklıyoruz",
+        body: "Hesabın aktif olduğu sürece verilerini saklarız. Profil düzenleme sayfasındaki 'Hesabımı Sil' ile hesabını ve tüm ilişkili verilerini (testler, mesajlar, gönderiler dahil) kalıcı ve geri alınamaz şekilde silebilirsin.",
+      },
+      security: {
+        title: "Güvenlik",
+        body: "Veritabanı erişimi yalnızca sunucu tarafında, satır düzeyi güvenlik (RLS) korumalı bir bağlantıyla yapılır — tarayıcıya hiçbir veritabanı kimlik bilgisi gönderilmez.",
+      },
+      rights: {
+        title: "Hakların",
+        body: "Verilerine erişme, düzeltme ve silme hakkına sahipsin. Profil bilgilerini istediğin zaman düzenleyebilir, hesabını kalıcı olarak silebilir veya bir talep/şikayet ile bize ulaşabilirsin.",
+      },
+      contact: {
+        title: "Bize ulaş",
+        body: "Gizlilikle ilgili sorular için Talep/Şikayet formunu kullanabilirsin.",
+      },
+    },
+    contactLink: "Talep Gönder",
   },
   admin: {
     title: "Yönetim Paneli",

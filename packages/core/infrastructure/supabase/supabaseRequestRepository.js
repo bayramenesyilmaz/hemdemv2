@@ -8,6 +8,7 @@ function toRequest(row) {
     subject: row.subject,
     description: row.description,
     email: row.email,
+    targetUserId: row.target_user_id,
   };
 }
 
@@ -26,6 +27,7 @@ export function createSupabaseRequestRepository(client) {
           subject: request.subject,
           description: request.description,
           email: request.email ?? null,
+          target_user_id: request.targetUserId ?? null,
         })
         .select("*")
         .single();

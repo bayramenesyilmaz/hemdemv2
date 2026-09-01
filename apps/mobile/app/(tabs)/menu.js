@@ -12,6 +12,7 @@ import { useScreenInsets } from "../../components/ui/Screen";
 const ITEMS = [
   { href: "/tests/mine", label: "Testlerim", icon: "📋" },
   { href: "/tests/history", label: "Test Geçmişim", icon: "🕓" },
+  { href: "/privacy", label: "Gizlilik Politikası", icon: "🔒" },
 ];
 
 /**

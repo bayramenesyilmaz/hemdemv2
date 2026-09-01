@@ -24,6 +24,17 @@ export async function likeUser(repositories, fromUserId, toUserId, action = "lik
     return { status: "error", message: "target_not_found" };
   }
 
+  // Keşfet listesi zaten engellenenleri filtreler, ama bu usecase doğrudan
+  // bir profilden de (keşfet destesi dışında) çağrılabildiği için burada
+  // da savunma amaçlı kontrol ediliyor.
+  const [blockedByMe, blockedByTarget] = await Promise.all([
+    repositories.block.exists(fromUserId, toUserId),
+    repositories.block.exists(toUserId, fromUserId),
+  ]);
+  if (blockedByMe || blockedByTarget) {
+    return { status: "error", message: "user_blocked" };
+  }
+
   if (action !== "dislike" && targetProfile.gateTestId) {
     const senderAnswer = await repositories.test.findAnswer(fromUserId, targetProfile.gateTestId);
     if (!senderAnswer) {

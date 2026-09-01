@@ -9,6 +9,7 @@
  * @property {string} subject
  * @property {string} description
  * @property {string|null} email
+ * @property {string|null} targetUserId - hedefli "kullanıcıyı şikayet et" akışında dolu, genel destek talebinde null
  *
  * @typedef {object} RequestRepository
  * @property {(request: Partial<SupportRequest>) => Promise<SupportRequest>} create

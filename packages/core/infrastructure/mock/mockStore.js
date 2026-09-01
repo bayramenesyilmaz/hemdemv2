@@ -625,6 +625,7 @@ function createSeededStore() {
   const leaderboardRewardGrants = new Set();
 
   const requests = [];
+  const blocks = new Map();
 
   // email -> { id, password } — Supabase Auth'un yerini tutan minimal eşleme.
   const authUsers = new Map([
@@ -649,6 +650,7 @@ function createSeededStore() {
     pointEvents,
     leaderboardRewardGrants,
     requests,
+    blocks,
     authUsers,
     nextId: {
       swipe: 8,
@@ -659,6 +661,7 @@ function createSeededStore() {
       profileView: 5,
       request: 1,
       notification: 5,
+      block: 1,
     },
   };
 }

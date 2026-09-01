@@ -16,8 +16,11 @@ export async function fetchDiscoverCandidates(repositories, userId, filters = {}
 
   const { minBirthdate, maxBirthdate } = ageRangeToBirthdateRange(filters.minAge, filters.maxAge);
 
-  const alreadySwiped = await repositories.swipe.findByFromUser(userId);
-  const excludeIds = alreadySwiped.map((s) => s.toUser);
+  const [alreadySwiped, relatedBlockIds] = await Promise.all([
+    repositories.swipe.findByFromUser(userId),
+    repositories.block.findRelatedIds(userId),
+  ]);
+  const excludeIds = [...new Set([...alreadySwiped.map((s) => s.toUser), ...relatedBlockIds])];
 
   const candidates = await repositories.user.findDiscoverCandidates(
     { gender, country: filters.country, minBirthdate, maxBirthdate, excludeIds, limit: filters.limit },

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, Modal, StyleSheet, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
 import { updateProfile } from "@hemdem/core/usecases/profile/updateProfile";
+import { deleteAccount } from "@hemdem/core/usecases/auth/deleteAccount";
 import { repositories } from "../../../lib/repositories";
 import { useSession } from "../../../lib/session";
 import { colors, radii, spacing } from "../../../lib/theme";
@@ -17,12 +18,16 @@ import { Screen } from "../../../components/ui/Screen";
  */
 export default function EditProfileScreen() {
   const router = useRouter();
-  const { userId } = useSession();
+  const { userId, setUserId } = useSession();
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
 
   useEffect(() => {
     if (!userId) return;
@@ -48,6 +53,20 @@ export default function EditProfileScreen() {
       return;
     }
     router.back();
+  }
+
+  async function handleDeleteAccount() {
+    setDeleting(true);
+    setDeleteError(null);
+    const result = await deleteAccount(repositories, userId);
+    setDeleting(false);
+    if (result.status === "error") {
+      setDeleteError(result.message);
+      return;
+    }
+    setDeleteOpen(false);
+    setUserId(null);
+    router.replace("/");
   }
 
   if (loading) {
@@ -84,6 +103,35 @@ export default function EditProfileScreen() {
       <Button variant="primary" onPress={handleSave} loading={saving}>
         Kaydet
       </Button>
+
+      <Button variant="delete" onPress={() => setDeleteOpen(true)}>
+        Hesabımı Sil
+      </Button>
+
+      <Modal visible={deleteOpen} transparent animationType="fade" onRequestClose={() => setDeleteOpen(false)}>
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Hesabını silmek istediğine emin misin?</Text>
+            <Text style={styles.modalBody}>
+              Bu işlem geri alınamaz — profilin, testlerin, mesajların ve tüm verilerin kalıcı olarak silinir.
+            </Text>
+            {deleteError && <Text style={styles.error}>{deleteError}</Text>}
+            <View style={styles.modalActions}>
+              <Button variant="outline" style={styles.modalActionButton} onPress={() => setDeleteOpen(false)}>
+                Vazgeç
+              </Button>
+              <Button
+                variant="delete"
+                style={styles.modalActionButton}
+                onPress={handleDeleteAccount}
+                loading={deleting}
+              >
+                Hesabımı Sil
+              </Button>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </Screen>
   );
 }
@@ -119,5 +167,39 @@ const styles = StyleSheet.create({
   },
   error: {
     color: colors.danger,
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: spacing.xl,
+  },
+  modalCard: {
+    width: "100%",
+    maxWidth: 340,
+    backgroundColor: colors.card,
+    borderRadius: radii.xl,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.xl,
+    gap: spacing.sm,
+  },
+  modalTitle: {
+    color: colors.foreground,
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  modalBody: {
+    color: colors.mutedForeground,
+    fontSize: 14,
+  },
+  modalActions: {
+    flexDirection: "row",
+    gap: spacing.sm,
+    marginTop: spacing.xs,
+  },
+  modalActionButton: {
+    flex: 1,
   },
 });

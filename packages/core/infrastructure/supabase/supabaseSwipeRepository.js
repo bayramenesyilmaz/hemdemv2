@@ -68,5 +68,16 @@ export function createSupabaseSwipeRepository(client) {
         .eq("to_user", toUser);
       if (error) throw error;
     },
+
+    async findManyByFromAndToUsers(fromUser, toUsers) {
+      if (toUsers.length === 0) return [];
+      const { data, error } = await client
+        .from("swipes")
+        .select("*")
+        .eq("from_user", fromUser)
+        .in("to_user", toUsers);
+      if (error) throw error;
+      return (data ?? []).map(toSwipe);
+    },
   };
 }

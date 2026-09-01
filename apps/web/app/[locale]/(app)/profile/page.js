@@ -119,6 +119,13 @@ export default async function ProfilePage({ params }) {
           </div>
         )}
       </SectionCard>
+
+      <Link
+        href={`/${locale}/privacy`}
+        className="self-start text-sm text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+      >
+        {t("privacy.title")}
+      </Link>
     </main>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -20,11 +20,17 @@ const ERROR_MESSAGES = {
  */
 export default function LoginScreen() {
   const router = useRouter();
-  const { setUserId } = useSession();
+  const { userId, hydrated, setUserId } = useSession();
   const [email, setEmail] = useState("demo@hemdem.test");
   const [password, setPassword] = useState("demo1234");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Saklanmış (expo-secure-store) bir oturum varsa login ekranını hiç
+    // göstermeden doğrudan içeri geç.
+    if (hydrated && userId) router.replace("/discover");
+  }, [hydrated, userId]);
 
   async function handleLogin() {
     setError(null);
