@@ -4,20 +4,23 @@ import { colors, radii, spacing } from "../../../lib/theme";
 import { AppTopBar } from "../../../components/nav/AppTopBar";
 import { ChatsList } from "../../../components/messages/ChatsList";
 import { LikesList } from "../../../components/messages/LikesList";
+import { ViewersList } from "../../../components/messages/ViewersList";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
-const TABS = ["Sohbetler", "İstekler"];
+const TABS = ["Sohbetler", "İstekler", "Görüntüleyenler"];
 
 /**
- * Mesajlar artık kaydırmalı iki alt sekme içeriyor: Sohbetler ve
- * İstekler (eskiden ayrı bir "Beğenenler" alt bar sekmesiydi — hem
- * anlamsal olarak mesajlaşma öncesi bir adım olduğu hem de alt barı 5
- * sekmeye indirmek için buraya taşındı).
+ * Mesajlar artık kaydırmalı üç alt sekme içeriyor: Sohbetler, İstekler ve
+ * Profiline Bakanlar (Beğenenler ve Profil Görüntüleyenler eskiden ayrı alt
+ * bar sekmeleriydi/menü kısayoluydu — mesajlaşma öncesi adımlar oldukları
+ * ve alt barı 5 sekmeye indirmek için buraya taşındı/eklendi). Profil
+ * menüsündeki "Profilimi Görüntüleyenler" kısayolu da ayrıca duruyor.
  */
 export default function MessagesScreen() {
   const scrollRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [likesCount, setLikesCount] = useState(0);
+  const [viewersCount, setViewersCount] = useState(0);
 
   function goToTab(index) {
     setActiveIndex(index);
@@ -40,12 +43,21 @@ export default function MessagesScreen() {
             style={[styles.segment, activeIndex === index && styles.segmentActive]}
             onPress={() => goToTab(index)}
           >
-            <Text style={[styles.segmentText, activeIndex === index && styles.segmentTextActive]}>
+            <Text
+              style={[styles.segmentText, activeIndex === index && styles.segmentTextActive]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+            >
               {label}
             </Text>
             {index === 1 && likesCount > 0 && (
               <View style={styles.segmentBadge}>
                 <Text style={styles.segmentBadgeText}>{likesCount > 9 ? "9+" : likesCount}</Text>
+              </View>
+            )}
+            {index === 2 && viewersCount > 0 && (
+              <View style={styles.segmentBadge}>
+                <Text style={styles.segmentBadgeText}>{viewersCount > 9 ? "9+" : viewersCount}</Text>
               </View>
             )}
           </Pressable>
@@ -65,6 +77,9 @@ export default function MessagesScreen() {
         </View>
         <View style={{ width: SCREEN_WIDTH }}>
           <LikesList onCountChange={setLikesCount} />
+        </View>
+        <View style={{ width: SCREEN_WIDTH }}>
+          <ViewersList onCountChange={setViewersCount} />
         </View>
       </Animated.ScrollView>
     </View>
