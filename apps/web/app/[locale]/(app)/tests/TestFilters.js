@@ -22,7 +22,11 @@ export function TestFilters({ locale, initialCategory, initialLanguage, initialS
   function applyFilters() {
     const params = new URLSearchParams();
     if (category !== ALL) params.set("category", category);
-    if (language !== ALL) params.set("language", language);
+    // Dil her zaman set edilir (ALL dahil) — böylece sayfa "hiç
+    // dokunulmadı" (varsayılan olarak kullanıcının dilini göster) ile
+    // "kullanıcı bilinçli olarak Tüm dilleri seçti" durumunu ayırt
+    // edebiliyor, bkz. page.js'teki selectedLanguage hesabı.
+    params.set("language", language);
     if (search) params.set("search", search);
 
     const query = params.toString();

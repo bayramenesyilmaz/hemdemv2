@@ -2,6 +2,7 @@ import Link from "next/link";
 import { setStaticParamsLocale } from "next-international/server";
 import { TEST_CATEGORIES } from "@hemdem/core/domain/entities/test";
 import { getI18n } from "@/locales/server";
+import { getAuthUserId } from "@/lib/session";
 import { repositories } from "@/lib/repositories";
 import { buildMetadata } from "@/lib/seo";
 import { PageTitle } from "@/components/PageTitle";
@@ -39,10 +40,18 @@ export default async function TestsPage({ params, searchParams }) {
   const sp = await searchParams;
 
   const categoryId = sp.category ? Number(sp.category) : undefined;
-  const language = sp.language || undefined;
   const search = sp.search || undefined;
   const page = sp.page ? Math.max(1, Number(sp.page)) : 1;
   const offset = (page - 1) * PAGE_SIZE;
+
+  const userId = await getAuthUserId();
+  const viewerLanguage = userId ? (await repositories.user.findById(userId))?.language : undefined;
+  // sp.language hiç yoksa (filtre diyaloğuna hiç dokunulmadıysa) profilin
+  // dilini varsayılan göster; "all" ise kullanıcı bilinçli olarak Tüm
+  // dilleri seçmiştir (TestFilters.js artık ALL için de parametreyi
+  // set ediyor) — ikisi asla karıştırılmaz.
+  const selectedLanguage = sp.language ?? viewerLanguage ?? "all";
+  const language = selectedLanguage === "all" ? undefined : selectedLanguage;
 
   // Ayrı bir count sorgusu yerine bir fazla satır istenip fazlalık
   // atılıyor: sonraki sayfa olup olmadığını (hasNextPage) tek sorguyla
@@ -76,7 +85,7 @@ export default async function TestsPage({ params, searchParams }) {
             <TestFilters
               locale={locale}
               initialCategory={sp.category}
-              initialLanguage={sp.language}
+              initialLanguage={selectedLanguage}
               initialSearch={sp.search}
             />
             <Button href={`/${locale}/tests/create`} variant="add">
