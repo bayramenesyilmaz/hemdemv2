@@ -24,6 +24,7 @@ export default function PublicProfileScreen() {
   const [viewCount, setViewCount] = useState(0);
   const [existingChat, setExistingChat] = useState(null);
   const [solvedTests, setSolvedTests] = useState([]);
+  const [viewerAnsweredTestIds, setViewerAnsweredTestIds] = useState(new Set());
   const [loading, setLoading] = useState(true);
 
   const [likeStatus, setLikeStatus] = useState(null);
@@ -47,10 +48,12 @@ export default function PublicProfileScreen() {
         await repositories.profileView.recordView(userId, found.id);
       }
 
-      const [count, chat, answers] = await Promise.all([
+      const isOwn = userId === found.id;
+      const [count, chat, answers, viewerAnswers] = await Promise.all([
         repositories.profileView.countViews(found.id),
-        userId && userId !== found.id ? repositories.chat.findByPair(userId, found.id) : Promise.resolve(null),
+        userId && !isOwn ? repositories.chat.findByPair(userId, found.id) : Promise.resolve(null),
         repositories.test.findAnswersByUser(found.id),
+        userId && !isOwn ? repositories.test.findAnswersByUser(userId) : Promise.resolve([]),
       ]);
       if (cancelled) return;
 
@@ -62,6 +65,7 @@ export default function PublicProfileScreen() {
       setViewCount(count);
       setExistingChat(chat);
       setSolvedTests(tests);
+      setViewerAnsweredTestIds(new Set(viewerAnswers.map((a) => a.testId)));
       setLoading(false);
     }
 
@@ -102,9 +106,13 @@ export default function PublicProfileScreen() {
     router.push(`/messages/${result.data.chat.id}`);
   }
 
+  // Karşılaştırma sayfası sadece ziyaretçi o testi KENDİSİ de çözmüşse
+  // anlamlı — aksi halde fetchTestResults "not_answered_yet" hatası verir.
+  // Çözmemişse önce testin kendisine gönderilir, çözünce zaten kendi sonuç
+  // ekranına düşer.
   function solvedTestHref(test) {
     if (userId === profile.id) return `/tests/${test.id}/result`;
-    if (userId) return `/tests/${test.id}/compare/${profile.id}`;
+    if (userId && viewerAnsweredTestIds.has(test.id)) return `/tests/${test.id}/compare/${profile.id}`;
     return `/tests/${test.id}`;
   }
 

@@ -91,7 +91,7 @@ export default function ChatThreadScreen() {
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
-      keyboardVerticalOffset={60}
+      keyboardVerticalOffset={0}
     >
       <View style={[insets, styles.headerWrap]}>
         <ScreenHeader

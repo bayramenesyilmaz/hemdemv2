@@ -36,6 +36,7 @@
     "android": {
       "package": "com.hemdem.mobile",
       "permissions": ["READ_MEDIA_IMAGES"],
+      "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",

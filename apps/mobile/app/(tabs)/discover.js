@@ -23,14 +23,34 @@ export default function DiscoverScreen() {
   const [error, setError] = useState(null);
   const [matchName, setMatchName] = useState(null);
   const [filters, setFilters] = useState({});
+  // Filtreler henüz kullanıcının kendi ülkesiyle tohumlanmadan bir kez
+  // filtresiz sorgu atılmasın diye — bkz. aşağıdaki iki useEffect.
+  const [filtersReady, setFiltersReady] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [messageTarget, setMessageTarget] = useState(null);
   const [messageDraft, setMessageDraft] = useState("");
   const [messageSending, setMessageSending] = useState(false);
   const [messageError, setMessageError] = useState(null);
 
+  // Kullanıcının ülkesini varsayılan filtre olarak tohumlar — "yakınındaki
+  // kişileri gör" beklentisi web'deki DiscoverFilterRedirect ile aynı
+  // mantık. Bir kez çalışır; sonrasında kullanıcı filtre modalından
+  // istediği gibi değiştirip "Herhangi"ye genişletebilir.
   useEffect(() => {
     if (!userId) return;
+    let cancelled = false;
+    repositories.user.findById(userId).then((profile) => {
+      if (cancelled) return;
+      setFilters((prev) => (profile?.country ? { ...prev, country: profile.country } : prev));
+      setFiltersReady(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
+
+  useEffect(() => {
+    if (!userId || !filtersReady) return;
     let cancelled = false;
     async function load() {
       setLoading(true);
@@ -47,7 +67,7 @@ export default function DiscoverScreen() {
     return () => {
       cancelled = true;
     };
-  }, [userId, filters]);
+  }, [userId, filtersReady, filters]);
 
   async function handleSwiped(candidateId, action) {
     // Kartın kendisi hemen kaldırılır (akıcı his için) — beğeni isteği
@@ -121,7 +141,7 @@ export default function DiscoverScreen() {
 
       <View style={styles.filterRow}>
         <Pressable style={styles.filterButton} onPress={() => setFiltersOpen(true)}>
-          <Text style={styles.filterButtonText}>⚙️ Filtrele</Text>
+          <Text style={styles.filterButtonText}>⚙️</Text>
           {hasActiveFilter && <View style={styles.filterDot} />}
         </Pressable>
       </View>
@@ -212,29 +232,29 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
     paddingHorizontal: spacing.xl,
-    paddingTop: spacing.sm,
+    paddingTop: spacing.xs,
   },
+  // AppTopBar'daki çıplak 34x34 ikon-buton (bell/coin) ile aynı ölçü ve
+  // dokunma hedefi — üstündeki bardan görsel olarak kopmasın diye.
   filterButton: {
-    flexDirection: "row",
+    width: 34,
+    height: 34,
     alignItems: "center",
-    gap: spacing.xs,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.full,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 6,
-    backgroundColor: colors.card,
+    justifyContent: "center",
   },
   filterButtonText: {
-    color: colors.foreground,
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: 18,
   },
   filterDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    position: "absolute",
+    top: 2,
+    right: 2,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
     backgroundColor: colors.primary,
+    borderWidth: 1,
+    borderColor: colors.background,
   },
   deck: {
     flex: 1,

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { AD_WATCH_TIERS } from "@hemdem/core/domain/entities/coin";
 import { grantAdWatchReward } from "@hemdem/core/usecases/coins/grantAdWatchReward";
@@ -9,9 +9,10 @@ import { colors, gradients, radii, spacing } from "../../lib/theme";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { ScreenHeader } from "../../components/ui/ScreenHeader";
-import { Screen } from "../../components/ui/Screen";
+import { useScreenInsets } from "../../components/ui/Screen";
 
 export default function CoinsScreen() {
+  const insets = useScreenInsets();
   const { userId } = useSession();
   const [balance, setBalance] = useState(null);
   const [claimingTier, setClaimingTier] = useState(null);
@@ -34,7 +35,7 @@ export default function CoinsScreen() {
   }
 
   return (
-    <Screen contentStyle={styles.content}>
+    <ScrollView style={styles.container} contentContainerStyle={[insets, styles.content]}>
       <ScreenHeader title="Coin Kazan" back />
 
       <LinearGradient colors={gradients.surface} style={styles.balanceCard}>
@@ -61,13 +62,18 @@ export default function CoinsScreen() {
           </Card>
         ))}
       </View>
-    </Screen>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
   content: {
     gap: spacing.lg,
+    paddingBottom: 40,
   },
   balanceCard: {
     borderRadius: radii.lg,

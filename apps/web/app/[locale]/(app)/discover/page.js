@@ -35,12 +35,14 @@ export default async function DiscoverPage({ params, searchParams }) {
 
   let candidates;
   let isGuest = true;
+  let viewerCountry;
 
   if (userId) {
     const profile = await repositories.user.findById(userId);
     if (!isProfileComplete(profile)) {
       redirect(`/${locale}/onboarding`);
     }
+    viewerCountry = profile.country;
     const result = await fetchDiscoverCandidates(repositories, userId, filters);
     candidates = result.data;
     isGuest = false;
@@ -60,6 +62,7 @@ export default async function DiscoverPage({ params, searchParams }) {
       <DiscoverFilterRedirect
         locale={locale}
         hasQuery={Boolean(sp.gender || sp.country || sp.minAge || sp.maxAge)}
+        viewerCountry={viewerCountry}
       />
       <div className="px-4 pb-4 pt-4 lg:px-0 lg:pt-0">
         <PageTitle

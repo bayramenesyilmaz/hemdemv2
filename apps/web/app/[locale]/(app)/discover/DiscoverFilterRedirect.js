@@ -9,8 +9,16 @@ import { DISCOVER_FILTERS_STORAGE_KEY } from "./DiscoverFilters";
  * localStorage'a yazdığı sorgu dizesi), filtresiz bir sayfa yüklemesinde
  * (örn. sekmeyi kapatıp tekrar açınca) o filtreleri otomatik geri
  * getirir — her seferinde yeniden girmesin diye.
+ *
+ * `localStorage`'da hiç kayıt yoksa (`saved === null`) kullanıcı hiç
+ * filtre uygulamamış/temizlememiş demektir — ilk kez keşfete giriyor
+ * kabul edilir ve varsa kendi ülkesi varsayılan filtre olarak enjekte
+ * edilir ("yakınındaki kişileri gör"). Kullanıcı bilinçli olarak
+ * filtreleri temizlediğinde `saved === ""` olur (boş dize de saklanır,
+ * bkz. DiscoverFilters.js) — bu durumda hiçbir şey enjekte edilmez,
+ * tercihine saygı gösterilir.
  */
-export function DiscoverFilterRedirect({ locale, hasQuery }) {
+export function DiscoverFilterRedirect({ locale, hasQuery, viewerCountry }) {
   const router = useRouter();
 
   useEffect(() => {
@@ -23,8 +31,12 @@ export function DiscoverFilterRedirect({ locale, hasQuery }) {
     }
     if (saved) {
       router.replace(`/${locale}/discover?${saved}`);
+      return;
     }
-  }, [hasQuery, locale, router]);
+    if (saved === null && viewerCountry) {
+      router.replace(`/${locale}/discover?country=${encodeURIComponent(viewerCountry)}`);
+    }
+  }, [hasQuery, locale, router, viewerCountry]);
 
   return null;
 }
