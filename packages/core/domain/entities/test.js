@@ -32,6 +32,8 @@
  * @property {AnswerChoice[]} userAnswers
  */
 
+import { containsProfanity } from "./moderation.js";
+
 /**
  * Sabit kategori listesi — `key` alanı apps/web'de çeviri anahtarı olarak
  * kullanılır (ör. `testCategories.love`), etiketin kendisi burada
@@ -79,6 +81,8 @@ export function validateTest(input) {
 
   if (!input.title || input.title.trim().length === 0) {
     errors.push("title_required");
+  } else if (containsProfanity(input.title)) {
+    errors.push("inappropriate_content");
   }
   if (input.categoryId == null) {
     errors.push("category_required");
@@ -97,6 +101,10 @@ export function validateTest(input) {
         errors.push("invalid_question");
         break;
       }
+      if (containsProfanity(question.text)) {
+        errors.push("inappropriate_content");
+        break;
+      }
       if (!Array.isArray(options) || options.length < TEST_LIMITS.minOptions) {
         errors.push("invalid_question");
         break;
@@ -107,6 +115,10 @@ export function validateTest(input) {
       }
       if (options.some((option) => !option?.text || !option.text.trim())) {
         errors.push("invalid_option");
+        break;
+      }
+      if (options.some((option) => containsProfanity(option.text))) {
+        errors.push("inappropriate_content");
         break;
       }
     }
