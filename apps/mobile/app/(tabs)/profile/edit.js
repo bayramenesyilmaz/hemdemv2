@@ -28,7 +28,7 @@ import { CountryPickerModal } from "../../../components/CountryPickerModal";
 import { TestPickerModal } from "../../../components/TestPickerModal";
 import { isRenderableImageUri } from "../../../lib/avatar";
 
-const AVATAR_SIZE = 88;
+const PHOTO_SIZE = 88;
 const GENDER_OPTIONS = [
   { value: "male", label: "Erkek" },
   { value: "female", label: "Kadın" },
@@ -81,8 +81,8 @@ export default function EditProfileScreen() {
   const [instagram, setInstagram] = useState("");
   const [twitter, setTwitter] = useState("");
   const [tiktok, setTiktok] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState(null);
-  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [photos, setPhotos] = useState([null, null, null]);
+  const [photoUploading, setPhotoUploading] = useState([false, false, false]);
   const [avatarError, setAvatarError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -112,7 +112,8 @@ export default function EditProfileScreen() {
       setInstagram(profile.socialLinks?.instagram ?? "");
       setTwitter(profile.socialLinks?.twitter ?? "");
       setTiktok(profile.socialLinks?.tiktok ?? "");
-      setAvatarUrl(profile.avatarUrl ?? null);
+      const initialPhotos = profile.photos?.length ? profile.photos : profile.avatarUrl ? [profile.avatarUrl] : [];
+      setPhotos([initialPhotos[0] ?? null, initialPhotos[1] ?? null, initialPhotos[2] ?? null]);
       if (profile.gateTestId) {
         const test = await repositories.test.findById(profile.gateTestId);
         if (!cancelled) setGateTest(test ?? null);
@@ -124,7 +125,11 @@ export default function EditProfileScreen() {
     };
   }, [userId]);
 
-  async function handlePickAvatar() {
+  // Her slot, tekli avatar yüklemesiyle birebir aynı `uploadAvatar`
+  // usecase'ini bağımsız olarak çağırır — storage repository'si zaten
+  // `${userId}/${timestamp}.${ext}` yoluyla çoklu dosyayı destekliyor,
+  // sadece hangi slotun state'i güncelleneceği değişiyor.
+  async function handlePickPhoto(index) {
     setAvatarError(null);
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
@@ -149,19 +154,39 @@ export default function EditProfileScreen() {
     const extension = "jpg";
     const dataUri = `data:${mimeType};base64,${asset.base64}`;
 
-    setAvatarUploading(true);
+    setPhotoUploading((prev) => {
+      const next = [...prev];
+      next[index] = true;
+      return next;
+    });
     const uploadResult = await uploadAvatar(repositories, userId, dataUri, {
       type: mimeType,
       size: asset.fileSize ?? dataUri.length,
       extension,
     });
-    setAvatarUploading(false);
+    setPhotoUploading((prev) => {
+      const next = [...prev];
+      next[index] = false;
+      return next;
+    });
 
     if (uploadResult.status === "error") {
       setAvatarError(uploadResult.message);
       return;
     }
-    setAvatarUrl(uploadResult.data.avatarUrl);
+    setPhotos((prev) => {
+      const next = [...prev];
+      next[index] = uploadResult.data.avatarUrl;
+      return next;
+    });
+  }
+
+  function handleRemovePhoto(index) {
+    setPhotos((prev) => {
+      const next = [...prev];
+      next[index] = null;
+      return next;
+    });
   }
 
   async function handleSave() {
@@ -183,6 +208,8 @@ export default function EditProfileScreen() {
     if (twitter) socialLinks.twitter = twitter;
     if (tiktok) socialLinks.tiktok = tiktok;
 
+    const densePhotos = photos.filter(Boolean);
+
     setSaving(true);
     const result = await updateProfile(repositories, userId, {
       name,
@@ -192,6 +219,8 @@ export default function EditProfileScreen() {
       country,
       birthdate,
       language,
+      avatarUrl: densePhotos[0] ?? null,
+      photos: densePhotos,
       gateTestId: gateTest?.id ?? null,
       gateTestThreshold: gateTest ? Number(gateTestThreshold) || 0 : null,
       allowGuestLikes,
@@ -233,20 +262,42 @@ export default function EditProfileScreen() {
     <ScrollView style={styles.container} contentContainerStyle={[insets, styles.content]}>
       <ScreenHeader title="Profili Düzenle" back />
 
-      <Pressable style={styles.avatarRow} onPress={handlePickAvatar} disabled={avatarUploading}>
-        {isRenderableImageUri(avatarUrl) ? (
-          <Image source={{ uri: avatarUrl }} style={styles.avatarImage} />
-        ) : (
-          <InitialsAvatar name={name} size={AVATAR_SIZE} />
-        )}
-        <View style={styles.avatarOverlay}>
-          {avatarUploading ? (
-            <ActivityIndicator color="#fff" size="small" />
-          ) : (
-            <Text style={styles.avatarOverlayText}>Değiştir</Text>
-          )}
+      <View style={styles.field}>
+        <Text style={styles.label}>Fotoğraflar (en fazla 3)</Text>
+        <View style={styles.photoRow}>
+          {photos.map((photo, index) => (
+            <Pressable
+              key={index}
+              style={styles.photoSlot}
+              onPress={() => handlePickPhoto(index)}
+              disabled={photoUploading[index]}
+            >
+              {isRenderableImageUri(photo) ? (
+                <Image source={{ uri: photo }} style={styles.photoImage} />
+              ) : index === 0 ? (
+                <InitialsAvatar name={name} size={PHOTO_SIZE} />
+              ) : (
+                <View style={styles.photoEmpty}>
+                  <Text style={styles.photoEmptyText}>+</Text>
+                </View>
+              )}
+              {photoUploading[index] ? (
+                <View style={styles.photoOverlay}>
+                  <ActivityIndicator color="#fff" size="small" />
+                </View>
+              ) : photo ? (
+                <Pressable
+                  style={styles.photoRemove}
+                  onPress={() => handleRemovePhoto(index)}
+                  hitSlop={8}
+                >
+                  <Text style={styles.photoRemoveText}>✕</Text>
+                </Pressable>
+              ) : null}
+            </Pressable>
+          ))}
         </View>
-      </Pressable>
+      </View>
       {avatarError && <Text style={styles.error}>{avatarError}</Text>}
 
       <View style={styles.field}>
@@ -479,26 +530,54 @@ const styles = StyleSheet.create({
     gap: spacing.lg,
     paddingBottom: 40,
   },
-  avatarRow: {
-    alignSelf: "center",
-    width: AVATAR_SIZE,
-    height: AVATAR_SIZE,
-    borderRadius: AVATAR_SIZE / 2,
+  photoRow: {
+    flexDirection: "row",
+    gap: spacing.sm,
+  },
+  photoSlot: {
+    width: PHOTO_SIZE,
+    height: PHOTO_SIZE,
+    borderRadius: radii.lg,
     overflow: "hidden",
   },
-  avatarImage: {
-    width: AVATAR_SIZE,
-    height: AVATAR_SIZE,
+  photoImage: {
+    width: PHOTO_SIZE,
+    height: PHOTO_SIZE,
   },
-  avatarOverlay: {
+  photoEmpty: {
+    width: PHOTO_SIZE,
+    height: PHOTO_SIZE,
+    borderRadius: radii.lg,
+    borderWidth: 2,
+    borderStyle: "dashed",
+    borderColor: colors.border,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  photoEmptyText: {
+    color: colors.mutedForeground,
+    fontSize: 24,
+  },
+  photoOverlay: {
     ...StyleSheet.absoluteFillObject,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "rgba(18,16,20,0.45)",
   },
-  avatarOverlayText: {
+  photoRemove: {
+    position: "absolute",
+    top: 4,
+    right: 4,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: "rgba(18,16,20,0.75)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  photoRemoveText: {
     color: "#fff",
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "700",
   },
   row: {

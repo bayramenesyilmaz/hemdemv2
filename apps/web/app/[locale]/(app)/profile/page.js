@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import { setStaticParamsLocale } from "next-international/server";
 import { calculateAge } from "@hemdem/core/domain/entities/user";
@@ -73,6 +74,23 @@ export default async function ProfilePage({ params }) {
           </div>
         </div>
       </SectionCard>
+
+      {profile.photos?.length > 1 && (
+        <div className="flex gap-2 overflow-x-auto">
+          {profile.photos.slice(1).map((photo) => (
+            <div key={photo} className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-muted">
+              <Image
+                src={photo}
+                alt=""
+                fill
+                unoptimized={photo.startsWith("data:")}
+                className="object-cover"
+                sizes="96px"
+              />
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="grid grid-cols-3 gap-2">
         {quickLinks.map(({ href, label, Icon }) => (

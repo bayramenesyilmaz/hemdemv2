@@ -81,6 +81,14 @@ export default function ProfileScreen() {
         {profile.bio && <Text style={styles.bio}>{profile.bio}</Text>}
       </View>
 
+      {profile.photos?.length > 1 && (
+        <View style={styles.photoRow}>
+          {profile.photos.slice(1).map((photo) => (
+            <Image key={photo} source={{ uri: photo }} style={styles.photoThumb} />
+          ))}
+        </View>
+      )}
+
       <Pressable onPress={() => router.push("/coins")}>
         <LinearGradient colors={gradients.surface} style={styles.coinCard}>
           <View>
@@ -141,6 +149,16 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
+  },
+  photoRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: spacing.sm,
+  },
+  photoThumb: {
+    width: 72,
+    height: 72,
+    borderRadius: radii.lg,
   },
   name: {
     color: colors.foreground,

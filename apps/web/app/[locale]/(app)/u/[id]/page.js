@@ -90,6 +90,23 @@ export default async function PublicProfilePage({ params }) {
         </div>
       </div>
 
+      {profile.photos?.length > 1 && (
+        <div className="mx-4 flex gap-2 overflow-x-auto lg:mx-0">
+          {profile.photos.slice(1).map((photo) => (
+            <div key={photo} className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-muted">
+              <Image
+                src={photo}
+                alt=""
+                fill
+                unoptimized={photo.startsWith("data:")}
+                className="object-cover"
+                sizes="96px"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
       <SectionCard className="mx-4 flex animate-fade-in flex-col gap-4 lg:mx-0">
         <p className="text-sm text-muted-foreground">{t("viewers.viewCount", { count: viewCount })}</p>
 

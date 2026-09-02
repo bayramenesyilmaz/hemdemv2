@@ -127,6 +127,8 @@ const tr = {
     avatarInvalidType: "Sadece JPEG, PNG, WEBP veya GIF yükleyebilirsiniz.",
     avatarTooLarge: "Dosya boyutu en fazla 5MB olabilir.",
     avatarUploadFailed: "Fotoğraf yüklenemedi, tekrar deneyin.",
+    photosLabel: "Fotoğraflar (en fazla 3)",
+    removePhoto: "Fotoğrafı kaldır",
     online: "Çevrimiçi",
     genderLabel: "Cinsiyet",
     interestedInLabel: "İlgilendiği cinsiyet",

@@ -32,8 +32,11 @@ export function ProfileEditForm({ locale, profile, initialGateTest }) {
   const [birthdate, setBirthdate] = useState(profile.birthdate ?? "");
   const [interestedIn, setInterestedIn] = useState(profile.interestedIn ?? "both");
   const [country, setCountry] = useState(profile.country ?? "");
-  const [avatarUrl, setAvatarUrl] = useState(profile.avatarUrl ?? "");
-  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [photos, setPhotos] = useState(() => {
+    const initial = profile.photos?.length ? profile.photos : profile.avatarUrl ? [profile.avatarUrl] : [];
+    return [initial[0] ?? null, initial[1] ?? null, initial[2] ?? null];
+  });
+  const [photoUploading, setPhotoUploading] = useState([false, false, false]);
   const [gateTestId, setGateTestId] = useState(profile.gateTestId ?? NO_GATE_TEST);
   const [gateTestThreshold, setGateTestThreshold] = useState(profile.gateTestThreshold ?? 50);
   const [allowGuestLikes, setAllowGuestLikes] = useState(profile.allowGuestLikes ?? false);
@@ -45,13 +48,24 @@ export function ProfileEditForm({ locale, profile, initialGateTest }) {
   const [error, setError] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
-  async function handleAvatarChange(event) {
+  // Üç foto slotunun her biri, mevcut tekli avatar yüklemesiyle birebir
+  // aynı `uploadAvatarAction`/storage akışını bağımsız olarak çağırır —
+  // storage repository'si zaten `${userId}/${timestamp}.${ext}` yoluyla
+  // çoklu dosyayı destekliyor, sadece hangi slotun state'i güncelleneceği
+  // değişiyor.
+  async function handlePhotoChange(index, event) {
     const file = event.target.files?.[0];
     if (!file) return;
 
     if (USE_MOCK_DATA) {
       const reader = new FileReader();
-      reader.onload = () => setAvatarUrl(reader.result);
+      reader.onload = () => {
+        setPhotos((prev) => {
+          const next = [...prev];
+          next[index] = reader.result;
+          return next;
+        });
+      };
       reader.readAsDataURL(file);
       return;
     }
@@ -72,7 +86,11 @@ export function ProfileEditForm({ locale, profile, initialGateTest }) {
     }
 
     setError(null);
-    setAvatarUploading(true);
+    setPhotoUploading((prev) => {
+      const next = [...prev];
+      next[index] = true;
+      return next;
+    });
     try {
       const formData = new FormData();
       formData.set("avatar", file);
@@ -83,12 +101,28 @@ export function ProfileEditForm({ locale, profile, initialGateTest }) {
         );
         return;
       }
-      setAvatarUrl(result.data.avatarUrl);
+      setPhotos((prev) => {
+        const next = [...prev];
+        next[index] = result.data.avatarUrl;
+        return next;
+      });
     } catch {
       setError(t("profile.avatarUploadFailed"));
     } finally {
-      setAvatarUploading(false);
+      setPhotoUploading((prev) => {
+        const next = [...prev];
+        next[index] = false;
+        return next;
+      });
     }
+  }
+
+  function handleRemovePhoto(index) {
+    setPhotos((prev) => {
+      const next = [...prev];
+      next[index] = null;
+      return next;
+    });
   }
 
   async function handleSubmit(event) {
@@ -101,6 +135,7 @@ export function ProfileEditForm({ locale, profile, initialGateTest }) {
     if (twitter) socialLinks.twitter = twitter;
     if (tiktok) socialLinks.tiktok = tiktok;
 
+    const densePhotos = photos.filter(Boolean);
     const result = await updateProfileAction({
       name,
       bio,
@@ -108,7 +143,8 @@ export function ProfileEditForm({ locale, profile, initialGateTest }) {
       birthdate,
       interestedIn,
       country,
-      avatarUrl,
+      avatarUrl: densePhotos[0] ?? null,
+      photos: densePhotos,
       gateTestId: gateTestId === NO_GATE_TEST ? null : gateTestId,
       gateTestThreshold: gateTestId === NO_GATE_TEST ? null : Number(gateTestThreshold),
       allowGuestLikes,
@@ -137,16 +173,45 @@ export function ProfileEditForm({ locale, profile, initialGateTest }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-      <div className="flex items-center gap-4">
-        <div className="relative h-20 w-20 overflow-hidden rounded-full bg-muted">
-          {avatarUrl && <Image src={avatarUrl} alt="" fill unoptimized={avatarUrl.startsWith("data:")} className="object-cover" />}
-        </div>
-        <div className="flex flex-col gap-1">
-          <label htmlFor="avatar" className="text-sm text-muted-foreground">
-            {t("profile.avatarLabel")}
-          </label>
-          <input id="avatar" type="file" accept="image/*" onChange={handleAvatarChange} />
-          {avatarUploading && <p className="text-xs text-muted-foreground">{t("profile.avatarUploading")}</p>}
+      <div className="flex flex-col gap-2">
+        <label className="text-sm text-muted-foreground">{t("profile.photosLabel")}</label>
+        <div className="flex gap-3">
+          {photos.map((photo, index) => (
+            <div key={index} className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-muted">
+              {photo ? (
+                <>
+                  <Image src={photo} alt="" fill unoptimized={photo.startsWith("data:")} className="object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => handleRemovePhoto(index)}
+                    aria-label={t("profile.removePhoto")}
+                    className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-background/80 text-xs font-bold text-foreground"
+                  >
+                    ✕
+                  </button>
+                </>
+              ) : (
+                <label
+                  htmlFor={`photo-${index}`}
+                  className="flex h-full w-full cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-border text-2xl text-muted-foreground"
+                >
+                  +
+                  <input
+                    id={`photo-${index}`}
+                    type="file"
+                    accept="image/*"
+                    className="sr-only"
+                    onChange={(e) => handlePhotoChange(index, e)}
+                  />
+                </label>
+              )}
+              {photoUploading[index] && (
+                <div className="absolute inset-0 flex items-center justify-center bg-background/60 text-xs text-muted-foreground">
+                  {t("profile.avatarUploading")}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
 

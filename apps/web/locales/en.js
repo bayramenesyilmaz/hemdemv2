@@ -125,6 +125,8 @@ const en = {
     avatarInvalidType: "Only JPEG, PNG, WEBP, or GIF files are allowed.",
     avatarTooLarge: "File size must be 5MB or less.",
     avatarUploadFailed: "Failed to upload photo, please try again.",
+    photosLabel: "Photos (up to 3)",
+    removePhoto: "Remove photo",
     online: "Online",
     genderLabel: "Gender",
     interestedInLabel: "Interested in",

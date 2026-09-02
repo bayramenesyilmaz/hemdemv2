@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Image, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { calculateAge } from "@hemdem/core/domain/entities/user";
 import { likeUser } from "@hemdem/core/usecases/discover/likeUser";
@@ -133,6 +133,14 @@ export default function PublicProfileScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <ProfileHero profile={profile} age={age} onBack={() => router.back()} />
 
+        {profile.photos?.length > 1 && (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.photoStrip}>
+            {profile.photos.slice(1).map((photo) => (
+              <Image key={photo} source={{ uri: photo }} style={styles.photoThumb} />
+            ))}
+          </ScrollView>
+        )}
+
         <View style={styles.body}>
           <Text style={styles.viewCount}>{viewCount} kişi bu profili görüntüledi</Text>
 
@@ -224,6 +232,16 @@ const styles = StyleSheet.create({
   center: {
     alignItems: "center",
     justifyContent: "center",
+  },
+  photoStrip: {
+    gap: spacing.sm,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.sm,
+  },
+  photoThumb: {
+    width: 88,
+    height: 88,
+    borderRadius: radii.lg,
   },
   scrollContent: {
     paddingBottom: 40,
