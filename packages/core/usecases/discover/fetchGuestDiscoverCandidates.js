@@ -1,4 +1,4 @@
-import { ageRangeToBirthdateRange } from "../../domain/entities/user.js";
+import { ageRangeToBirthdateRange, sortByBoost } from "../../domain/entities/user.js";
 
 /**
  * Misafir modu: hesabı olmayan bir ziyaretçi için keşfet kartlarını
@@ -20,5 +20,5 @@ export async function fetchGuestDiscoverCandidates(repositories, filters = {}) {
     limit: filters.limit,
   });
 
-  return { status: "success", data: candidates };
+  return { status: "success", data: sortByBoost(candidates) };
 }

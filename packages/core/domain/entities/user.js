@@ -103,6 +103,23 @@ export function isOnline(lastSeenAt) {
 }
 
 /**
+ * Boost'u aktif olan profiller (`boostedUntil` gelecekte) listenin önüne
+ * alınır, göreli sıra korunur. Repository sorgusuna `order by
+ * boosted_until` eklemek yerine burada yapılır — süresi geçmiş ama hâlâ
+ * dolu bir `boostedUntil` değerini DB seviyesinde "aktif değil" olarak
+ * sıralamak `now()` karşılaştırması gerektirir, JS'teki tek satırlık
+ * filtreden daha kırılgan olurdu.
+ *
+ * @param {Partial<Profile>[]} profiles
+ * @returns {Partial<Profile>[]}
+ */
+export function sortByBoost(profiles) {
+  const now = Date.now();
+  const isActive = (profile) => profile.boostedUntil && new Date(profile.boostedUntil).getTime() > now;
+  return [...profiles.filter(isActive), ...profiles.filter((profile) => !isActive(profile))];
+}
+
+/**
  * İlk-giriş profil tamamlama akışının hangi kullanıcılara gösterileceğini
  * belirler: kayıt sırasında sadece isim alınır, geri kalan zorunlu alanlar
  * (cinsiyet, doğum tarihi, ilgi tercihi) onboarding'de tamamlanır.

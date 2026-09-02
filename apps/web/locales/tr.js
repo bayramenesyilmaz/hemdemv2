@@ -130,6 +130,8 @@ const tr = {
     photosLabel: "Fotoğraflar (en fazla 3)",
     removePhoto: "Fotoğrafı kaldır",
     online: "Çevrimiçi",
+    boostButton: "Boost'la ({cost} coin)",
+    boostActive: "Boost aktif: {minutes} dk kaldı",
     genderLabel: "Cinsiyet",
     interestedInLabel: "İlgilendiği cinsiyet",
     gateTestLabel: "Kapı testi",

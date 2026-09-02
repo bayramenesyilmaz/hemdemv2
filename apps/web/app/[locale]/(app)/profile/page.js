@@ -3,6 +3,7 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { setStaticParamsLocale } from "next-international/server";
 import { calculateAge } from "@hemdem/core/domain/entities/user";
+import { COIN_COSTS } from "@hemdem/core/domain/entities/coin";
 import { getI18n } from "@/locales/server";
 import { getAuthUserId } from "@/lib/session";
 import { repositories } from "@/lib/repositories";
@@ -11,6 +12,7 @@ import { SectionCard } from "@/components/SectionCard";
 import { Button } from "@/components/ui/Button";
 import { Avatar } from "@/components/Avatar";
 import { ShareButton } from "@/components/ShareButton";
+import { BoostButton } from "./BoostButton";
 import { CoinIcon, UserIcon, SupportIcon } from "@/components/icons";
 
 export async function generateMetadata() {
@@ -57,6 +59,8 @@ export default async function ProfilePage({ params }) {
         copiedLabel={t("share.copied")}
         className="self-start"
       />
+
+      <BoostButton cost={COIN_COSTS.boostProfile} initialBoostedUntil={profile.boostedUntil} />
 
       <SectionCard className="flex animate-fade-in flex-col gap-4 bg-gradient-surface">
         <div className="flex items-center gap-4">

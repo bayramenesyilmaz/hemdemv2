@@ -1,4 +1,4 @@
-import { ageRangeToBirthdateRange } from "../../domain/entities/user.js";
+import { ageRangeToBirthdateRange, sortByBoost } from "../../domain/entities/user.js";
 import { safeFindRelatedBlockIds } from "../safety/safeBlockQueries.js";
 
 /**
@@ -28,5 +28,5 @@ export async function fetchDiscoverCandidates(repositories, userId, filters = {}
     userId
   );
 
-  return { status: "success", data: candidates };
+  return { status: "success", data: sortByBoost(candidates) };
 }

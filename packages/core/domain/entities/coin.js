@@ -28,7 +28,11 @@ export const COIN_COSTS = {
   createTest: 40,
   superMessage: 10,
   unlockProfileViewers: 15,
+  boostProfile: 30,
 };
+
+/** Boost'un keşfette öne çıkarma süresi. */
+export const BOOST_DURATION_MINUTES = 30;
 
 /** Yeni kayıt olan her kullanıcıya bir kerelik hoş geldin hediyesi. */
 export const SIGNUP_BONUS_COINS = 100;

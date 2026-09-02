@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
+import { COIN_COSTS } from "@hemdem/core/domain/entities/coin";
+import { activateBoost } from "@hemdem/core/usecases/profile/activateBoost";
 import { repositories } from "../../../lib/repositories";
 import { useSession } from "../../../lib/session";
 import { colors, gradients, radii, spacing } from "../../../lib/theme";
@@ -19,11 +21,21 @@ const LINKS = [
   { href: "/profile/viewers", label: "Profilimi Görüntüleyenler", icon: "👁️" },
 ];
 
+function minutesLeft(boostedUntil) {
+  if (!boostedUntil) return 0;
+  const diffMs = new Date(boostedUntil).getTime() - Date.now();
+  return Math.max(0, Math.ceil(diffMs / 60000));
+}
+
 export default function ProfileScreen() {
   const router = useRouter();
   const { userId, setUserId } = useSession();
   const [profile, setProfile] = useState(null);
   const [coins, setCoins] = useState(0);
+  const [boostedUntil, setBoostedUntil] = useState(null);
+  const [boostRemaining, setBoostRemaining] = useState(0);
+  const [boosting, setBoosting] = useState(false);
+  const [boostError, setBoostError] = useState(null);
 
   useEffect(() => {
     if (!userId) return;
@@ -36,12 +48,34 @@ export default function ProfileScreen() {
       if (cancelled) return;
       setProfile(found);
       setCoins(balance);
+      setBoostedUntil(found?.boostedUntil ?? null);
+      setBoostRemaining(minutesLeft(found?.boostedUntil));
     }
     load();
     return () => {
       cancelled = true;
     };
   }, [userId]);
+
+  useEffect(() => {
+    if (!boostedUntil) return;
+    const interval = setInterval(() => setBoostRemaining(minutesLeft(boostedUntil)), 30000);
+    return () => clearInterval(interval);
+  }, [boostedUntil]);
+
+  async function handleBoost() {
+    setBoostError(null);
+    setBoosting(true);
+    const result = await activateBoost(repositories, userId);
+    setBoosting(false);
+    if (result.status === "error") {
+      setBoostError(result.message === "insufficient_coins" ? "Yeterli coin'in yok." : result.message);
+      return;
+    }
+    setCoins(result.data.newBalance);
+    setBoostedUntil(result.data.boostedUntil);
+    setBoostRemaining(minutesLeft(result.data.boostedUntil));
+  }
 
   function handleLogout() {
     setUserId(null);
@@ -98,6 +132,19 @@ export default function ProfileScreen() {
           <Text style={styles.coinChevron}>›</Text>
         </LinearGradient>
       </Pressable>
+
+      {boostRemaining > 0 ? (
+        <View style={styles.boostActiveRow}>
+          <Text style={styles.boostActiveText}>Boost aktif: {boostRemaining} dk kaldı</Text>
+        </View>
+      ) : (
+        <View style={styles.boostRow}>
+          {boostError && <Text style={styles.boostError}>{boostError}</Text>}
+          <Button variant="primary" onPress={handleBoost} loading={boosting}>
+            {`Boost'la (${COIN_COSTS.boostProfile} coin)`}
+          </Button>
+        </View>
+      )}
 
       <View style={styles.linkList}>
         {LINKS.map((link) => (
@@ -193,6 +240,22 @@ const styles = StyleSheet.create({
   coinChevron: {
     color: colors.primary,
     fontSize: 22,
+    fontWeight: "700",
+  },
+  boostRow: {
+    gap: spacing.xs,
+  },
+  boostError: {
+    color: colors.danger,
+    fontSize: 12,
+  },
+  boostActiveRow: {
+    alignItems: "center",
+    paddingVertical: spacing.xs,
+  },
+  boostActiveText: {
+    color: colors.primary,
+    fontSize: 14,
     fontWeight: "700",
   },
   linkList: {

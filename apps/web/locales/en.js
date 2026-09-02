@@ -128,6 +128,8 @@ const en = {
     photosLabel: "Photos (up to 3)",
     removePhoto: "Remove photo",
     online: "Online",
+    boostButton: "Boost ({cost} coins)",
+    boostActive: "Boost active: {minutes} min left",
     genderLabel: "Gender",
     interestedInLabel: "Interested in",
     gateTestLabel: "Gate test",

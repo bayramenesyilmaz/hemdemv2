@@ -4,6 +4,7 @@ import { updateProfile } from "@hemdem/core/usecases/profile/updateProfile";
 import { unlockProfileViewers } from "@hemdem/core/usecases/profile/unlockProfileViewers";
 import { uploadAvatar } from "@hemdem/core/usecases/profile/uploadAvatar";
 import { touchLastSeen } from "@hemdem/core/usecases/profile/touchLastSeen";
+import { activateBoost } from "@hemdem/core/usecases/profile/activateBoost";
 import { repositories } from "@/lib/repositories";
 import { getAuthUserId } from "@/lib/session";
 
@@ -52,4 +53,12 @@ export async function touchLastSeenAction() {
   const userId = await getAuthUserId();
   if (!userId) return;
   await touchLastSeen(repositories, userId);
+}
+
+export async function activateBoostAction() {
+  const userId = await getAuthUserId();
+  if (!userId) {
+    return { status: "error", message: "not_authenticated" };
+  }
+  return activateBoost(repositories, userId);
 }
