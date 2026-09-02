@@ -2,6 +2,7 @@ import { validateMessageContent } from "../../domain/entities/chat.js";
 import { COIN_COSTS } from "../../domain/entities/coin.js";
 import { hasPerfectTestMatch } from "../tests/hasPerfectTestMatch.js";
 import { safeCreateNotification } from "../notifications/safeCreateNotification.js";
+import { safeIsBlocked } from "../safety/safeBlockQueries.js";
 
 /**
  * Mesaj gönderir. Sohbet açılma sırası:
@@ -32,8 +33,8 @@ export async function sendMessage(repositories, senderId, recipientId, content) 
   }
 
   const [blockedByMe, blockedByRecipient] = await Promise.all([
-    repositories.block.exists(senderId, recipientId),
-    repositories.block.exists(recipientId, senderId),
+    safeIsBlocked(repositories, senderId, recipientId),
+    safeIsBlocked(repositories, recipientId, senderId),
   ]);
   if (blockedByMe || blockedByRecipient) {
     return { status: "error", message: "user_blocked" };

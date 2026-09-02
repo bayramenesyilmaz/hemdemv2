@@ -1,4 +1,5 @@
 import { ageRangeToBirthdateRange } from "../../domain/entities/user.js";
+import { safeFindRelatedBlockIds } from "../safety/safeBlockQueries.js";
 
 /**
  * @param {object} repositories
@@ -18,7 +19,7 @@ export async function fetchDiscoverCandidates(repositories, userId, filters = {}
 
   const [alreadySwiped, relatedBlockIds] = await Promise.all([
     repositories.swipe.findByFromUser(userId),
-    repositories.block.findRelatedIds(userId),
+    safeFindRelatedBlockIds(repositories, userId),
   ]);
   const excludeIds = [...new Set([...alreadySwiped.map((s) => s.toUser), ...relatedBlockIds])];
 

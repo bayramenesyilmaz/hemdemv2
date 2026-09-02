@@ -1,3 +1,5 @@
+import { safeFindRelatedBlockIds } from "../safety/safeBlockQueries.js";
+
 /**
  * Kullanıcının tüm sohbetlerini, karşı tarafın profili ve son mesaj
  * önizlemesiyle zenginleştirilmiş şekilde döndürür.
@@ -8,7 +10,7 @@
 export async function fetchChatList(repositories, userId) {
   const [chats, relatedBlockIds] = await Promise.all([
     repositories.chat.findByUser(userId),
-    repositories.block.findRelatedIds(userId),
+    safeFindRelatedBlockIds(repositories, userId),
   ]);
   const blockedSet = new Set(relatedBlockIds);
 

@@ -1,3 +1,5 @@
+import { safeFindRelatedBlockIds } from "../safety/safeBlockQueries.js";
+
 /**
  * "Beğenenler" ekranı için: kullanıcıya gelen ama henüz kabul/reddet
  * (karşılık verilmemiş) beğenileri döndürür. Kabul edilen (karşılıklı
@@ -12,7 +14,7 @@
 export async function fetchIncomingLikes(repositories, userId) {
   const [incoming, relatedBlockIds] = await Promise.all([
     repositories.swipe.findIncomingLikes(userId),
-    repositories.block.findRelatedIds(userId),
+    safeFindRelatedBlockIds(repositories, userId),
   ]);
 
   const blockedSet = new Set(relatedBlockIds);

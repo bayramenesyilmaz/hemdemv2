@@ -1,6 +1,7 @@
 import { validateSwipe } from "../../domain/entities/swipe.js";
 import { calculateAnswerSimilarity } from "../../domain/entities/test.js";
 import { safeCreateNotification } from "../notifications/safeCreateNotification.js";
+import { safeIsBlocked } from "../safety/safeBlockQueries.js";
 
 /**
  * Beğeni/geçme gönderir. Hedef kullanıcının bir "kapı testi" (gate test)
@@ -28,8 +29,8 @@ export async function likeUser(repositories, fromUserId, toUserId, action = "lik
   // bir profilden de (keşfet destesi dışında) çağrılabildiği için burada
   // da savunma amaçlı kontrol ediliyor.
   const [blockedByMe, blockedByTarget] = await Promise.all([
-    repositories.block.exists(fromUserId, toUserId),
-    repositories.block.exists(toUserId, fromUserId),
+    safeIsBlocked(repositories, fromUserId, toUserId),
+    safeIsBlocked(repositories, toUserId, fromUserId),
   ]);
   if (blockedByMe || blockedByTarget) {
     return { status: "error", message: "user_blocked" };
