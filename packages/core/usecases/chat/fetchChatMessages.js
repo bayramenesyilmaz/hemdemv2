@@ -18,10 +18,14 @@ export async function fetchChatMessages(repositories, userId, chatId, options = 
   }
 
   const otherUserId = chat.userA === userId ? chat.userB : chat.userA;
-  const [otherUser, messages] = await Promise.all([
+  const [otherUser, messages, readStates] = await Promise.all([
     repositories.user.findById(otherUserId),
     repositories.chat.findMessages(chatId, options.limit ?? 50, options.before),
+    repositories.chat.getReadStates(chatId),
   ]);
 
-  return { status: "success", data: { chat, otherUser, messages: messages.slice().reverse() } };
+  return {
+    status: "success",
+    data: { chat, otherUser, messages: messages.slice().reverse(), readStates },
+  };
 }

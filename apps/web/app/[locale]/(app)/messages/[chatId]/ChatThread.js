@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/locales/client";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
-import { sendMessageAction, fetchChatMessagesAction } from "@/lib/actions/chatActions";
+import { sendMessageAction, fetchChatMessagesAction, markChatReadAction } from "@/lib/actions/chatActions";
 
 const POLL_INTERVAL_MS = 2500;
 
@@ -16,9 +16,10 @@ const POLL_INTERVAL_MS = 2500;
  * polling ile yeni mesajlar kontrol edilir; hem mock hem gerçek modda
  * aynı şekilde çalışır.
  */
-export function ChatThread({ chatId, currentUserId, initialMessages, recipientId }) {
+export function ChatThread({ chatId, currentUserId, initialMessages, initialReadStates, recipientId }) {
   const t = useI18n();
   const [messages, setMessages] = useState(initialMessages);
+  const [readStates, setReadStates] = useState(initialReadStates ?? []);
   const [content, setContent] = useState("");
   const [error, setError] = useState(null);
   const [sending, setSending] = useState(false);
@@ -31,14 +32,18 @@ export function ChatThread({ chatId, currentUserId, initialMessages, recipientId
 
   useEffect(() => {
     // Sekme arka plandayken bu ekrandan uzaklaşılmış demektir — istek
-    // atlanır, öne dönünce hemen bir kez tazelenir.
+    // atlanır, öne dönünce hemen bir kez tazelenir. Thread açıkken her
+    // tick'te "okundu" da tazelenir (bkz. markChatReadAction).
     async function tick() {
       if (document.hidden) return;
+      markChatReadAction(chatId);
       const result = await fetchChatMessagesAction(chatId);
       if (result.status === "success") {
         setMessages(result.data.messages);
+        setReadStates(result.data.readStates);
       }
     }
+    tick();
     const interval = setInterval(tick, POLL_INTERVAL_MS);
     function handleVisibilityChange() {
       if (!document.hidden) tick();
@@ -49,6 +54,21 @@ export function ChatThread({ chatId, currentUserId, initialMessages, recipientId
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [chatId]);
+
+  // Sadece kendi gönderdiğim SON mesajın altında "Görüldü" gösterilir
+  // (mesaj başına çentik yerine minimal bir gösterge) — karşı tarafın bu
+  // sohbetteki son okuma zamanı, o mesajın gönderim zamanından sonraysa.
+  const otherUserReadAt = readStates.find((r) => r.userId !== currentUserId)?.lastReadAt;
+  let lastOwnMessageId = null;
+  for (let i = messages.length - 1; i >= 0; i -= 1) {
+    if (messages[i].senderId === currentUserId) {
+      lastOwnMessageId = messages[i].id;
+      break;
+    }
+  }
+  const lastOwnMessage = messages.find((m) => m.id === lastOwnMessageId);
+  const lastOwnMessageSeen =
+    lastOwnMessage && otherUserReadAt && new Date(otherUserReadAt) >= new Date(lastOwnMessage.createdAt);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -83,15 +103,19 @@ export function ChatThread({ chatId, currentUserId, initialMessages, recipientId
             // yuvarlak — konuşmanın yönü rengi ayırt edemeyenler için de
             // biçimden okunabilsin.
             return (
-              <div
-                key={message.id}
-                className={`max-w-[78%] animate-list-in px-4 py-2.5 text-[15px] leading-snug shadow-soft ${
-                  isMine
-                    ? "self-end rounded-2xl rounded-br-md bg-gradient-primary text-primary-foreground"
-                    : "self-start rounded-2xl rounded-bl-md bg-card text-foreground"
-                }`}
-              >
-                {message.content}
+              <div key={message.id} className={`flex flex-col ${isMine ? "items-end" : "items-start"}`}>
+                <div
+                  className={`max-w-[78%] animate-list-in px-4 py-2.5 text-[15px] leading-snug shadow-soft ${
+                    isMine
+                      ? "rounded-2xl rounded-br-md bg-gradient-primary text-primary-foreground"
+                      : "rounded-2xl rounded-bl-md bg-card text-foreground"
+                  }`}
+                >
+                  {message.content}
+                </div>
+                {message.id === lastOwnMessageId && lastOwnMessageSeen && (
+                  <span className="mt-0.5 text-xs text-muted-foreground">{t("messages.seen")}</span>
+                )}
               </div>
             );
           })

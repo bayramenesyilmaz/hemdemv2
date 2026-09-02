@@ -27,7 +27,7 @@ export default async function ChatPage({ params }) {
     notFound();
   }
 
-  const { otherUser, messages } = result.data;
+  const { otherUser, messages, readStates } = result.data;
 
   // Sohbet ekranı kalan dikey alanı tam doldurur: mobilde 100dvh eksi üst
   // header (3.5rem) ve alt navigasyon (4rem + safe-area); masaüstünde alt
@@ -50,6 +50,7 @@ export default async function ChatPage({ params }) {
         chatId={Number(chatId)}
         recipientId={otherUser.id}
         initialMessages={messages}
+        initialReadStates={readStates}
         currentUserId={userId}
       />
     </main>

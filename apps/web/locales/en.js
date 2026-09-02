@@ -275,6 +275,7 @@ const en = {
     noMessagesYet: "No messages yet",
     startConversation: "Say hello to start the conversation.",
     placeholder: "Type a message…",
+    seen: "Seen",
     send: "Send",
     sendMessageButton: "Send Message",
     goToChat: "Go to Chat",

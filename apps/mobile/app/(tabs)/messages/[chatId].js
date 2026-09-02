@@ -15,6 +15,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { fetchChatMessages } from "@hemdem/core/usecases/chat/fetchChatMessages";
 import { sendMessage } from "@hemdem/core/usecases/chat/sendMessage";
+import { markChatRead } from "@hemdem/core/usecases/chat/markChatRead";
 import { isOnline } from "@hemdem/core/domain/entities/user";
 import { repositories } from "../../../lib/repositories";
 import { useSession } from "../../../lib/session";
@@ -32,6 +33,7 @@ export default function ChatThreadScreen() {
   const { userId } = useSession();
   const [otherUser, setOtherUser] = useState(null);
   const [messages, setMessages] = useState([]);
+  const [readStates, setReadStates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
@@ -42,10 +44,12 @@ export default function ChatThreadScreen() {
     let cancelled = false;
 
     async function load() {
+      markChatRead(repositories, userId, Number(chatId));
       const result = await fetchChatMessages(repositories, userId, Number(chatId));
       if (cancelled || result.status !== "success") return;
       setOtherUser(result.data.otherUser);
       setMessages(result.data.messages);
+      setReadStates(result.data.readStates);
       setLoading(false);
     }
 
@@ -79,6 +83,20 @@ export default function ChatThreadScreen() {
       setMessages((prev) => [...prev, result.data.message]);
     }
   }
+
+  // Sadece kendi gönderdiğim SON mesajın altında "Görüldü" gösterilir —
+  // web'deki ChatThread.js ile aynı desen.
+  const otherUserReadAt = readStates.find((r) => r.userId !== userId)?.lastReadAt;
+  let lastOwnMessageId = null;
+  for (let i = messages.length - 1; i >= 0; i -= 1) {
+    if (messages[i].senderId === userId) {
+      lastOwnMessageId = messages[i].id;
+      break;
+    }
+  }
+  const lastOwnMessage = messages.find((m) => m.id === lastOwnMessageId);
+  const lastOwnMessageSeen =
+    lastOwnMessage && otherUserReadAt && new Date(otherUserReadAt) >= new Date(lastOwnMessage.createdAt);
 
   if (loading) {
     return (
@@ -119,11 +137,15 @@ export default function ChatThreadScreen() {
         onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: false })}
         renderItem={({ item }) => {
           const mine = item.senderId === userId;
+          const showSeen = mine && item.id === lastOwnMessageId && lastOwnMessageSeen;
           if (mine) {
             return (
-              <LinearGradient colors={gradients.primary} style={[styles.bubble, styles.bubbleMine]}>
-                <Text style={styles.bubbleTextMine}>{item.content}</Text>
-              </LinearGradient>
+              <View style={styles.bubbleColMine}>
+                <LinearGradient colors={gradients.primary} style={[styles.bubble, styles.bubbleMine]}>
+                  <Text style={styles.bubbleTextMine}>{item.content}</Text>
+                </LinearGradient>
+                {showSeen && <Text style={styles.seenText}>Görüldü</Text>}
+              </View>
             );
           }
           return (
@@ -182,9 +204,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
+  bubbleColMine: {
+    alignSelf: "flex-end",
+    alignItems: "flex-end",
+    maxWidth: "80%",
+  },
   bubbleMine: {
     alignSelf: "flex-end",
     borderBottomRightRadius: 4,
+    maxWidth: "100%",
+  },
+  seenText: {
+    color: colors.mutedForeground,
+    fontSize: 11,
+    marginTop: 2,
   },
   bubbleTheirs: {
     alignSelf: "flex-start",

@@ -277,6 +277,7 @@ const tr = {
     noMessagesYet: "Henüz mesaj yok",
     startConversation: "Merhaba diyerek sohbeti başlat.",
     placeholder: "Mesaj yaz…",
+    seen: "Görüldü",
     send: "Gönder",
     sendMessageButton: "Mesaj Gönder",
     goToChat: "Sohbete Git",
