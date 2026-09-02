@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Tabs, router, useRouter } from "expo-router";
-import { Text } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { countUnreadMessageNotifications } from "@hemdem/core/usecases/notifications/countUnreadMessageNotifications";
 import { repositories } from "../../lib/repositories";
-import { colors } from "../../lib/theme";
+import { useTheme } from "../../lib/ThemeContext";
 import { useSession } from "../../lib/session";
 
 /**
@@ -38,6 +38,7 @@ function resetOnDoublePress(path) {
 export default function TabsLayout() {
   const routerInstance = useRouter();
   const { userId, hydrated } = useSession();
+  const { colors } = useTheme();
   const [unreadMessages, setUnreadMessages] = useState(0);
 
   useEffect(() => {
@@ -71,29 +72,38 @@ export default function TabsLayout() {
     >
       <Tabs.Screen
         name="discover"
-        options={{ title: "Keşfet", tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>🔥</Text> }}
+        options={{ title: "Keşfet", tabBarIcon: ({ color, size }) => <Ionicons name="flame-outline" color={color} size={size} /> }}
       />
       <Tabs.Screen
         name="tests"
-        options={{ title: "Testler", tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>📋</Text> }}
+        options={{
+          title: "Testler",
+          tabBarIcon: ({ color, size }) => <Ionicons name="clipboard-outline" color={color} size={size} />,
+        }}
         listeners={resetOnDoublePress("/tests")}
       />
       <Tabs.Screen
         name="posts"
-        options={{ title: "Gönderiler", tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>📝</Text> }}
+        options={{
+          title: "Gönderiler",
+          tabBarIcon: ({ color, size }) => <Ionicons name="grid-outline" color={color} size={size} />,
+        }}
       />
       <Tabs.Screen
         name="messages"
         options={{
           title: "Mesajlar",
-          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>💬</Text>,
+          tabBarIcon: ({ color, size }) => <Ionicons name="chatbubble-ellipses-outline" color={color} size={size} />,
           tabBarBadge: unreadMessages > 0 ? unreadMessages : undefined,
         }}
         listeners={resetOnDoublePress("/messages")}
       />
       <Tabs.Screen
         name="menu"
-        options={{ title: "Diğer", tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>⋯</Text> }}
+        options={{
+          title: "Diğer",
+          tabBarIcon: ({ color, size }) => <Ionicons name="ellipsis-horizontal-circle-outline" color={color} size={size} />,
+        }}
       />
 
       {/* Alt çubukta göstermek yerine üst bardan (AppTopBar) veya "Diğer"

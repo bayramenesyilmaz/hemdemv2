@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Alert, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons } from "@expo/vector-icons";
 import { countUnreadNotifications } from "@hemdem/core/usecases/notifications/countUnreadNotifications";
 import { fetchRecentNotes } from "@hemdem/core/usecases/notes/fetchRecentNotes";
 import { fetchLatestNotesByUsers } from "@hemdem/core/usecases/notes/fetchLatestNotesByUsers";
@@ -11,7 +12,8 @@ import { updateNote } from "@hemdem/core/usecases/notes/updateNote";
 import { deleteNote } from "@hemdem/core/usecases/notes/deleteNote";
 import { repositories } from "../../lib/repositories";
 import { useSession } from "../../lib/session";
-import { colors, gradients, radii, spacing } from "../../lib/theme";
+import { fontFamily, radii, spacing } from "../../lib/theme";
+import { useTheme } from "../../lib/ThemeContext";
 import { InitialsAvatar } from "../InitialsAvatar";
 import { Button } from "../ui/Button";
 
@@ -31,6 +33,8 @@ export function AppTopBar({ showNotes = false }) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { userId } = useSession();
+  const { colors, gradients } = useTheme();
+  const styles = useMemo(() => buildStyles(colors), [colors]);
   const [profile, setProfile] = useState(null);
   const [coins, setCoins] = useState(0);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -164,11 +168,12 @@ export function AppTopBar({ showNotes = false }) {
         <View style={styles.spacer} />
 
         <Pressable style={styles.coinPill} onPress={() => router.push("/coins")}>
-          <Text style={styles.coinText}>🪙 {coins}</Text>
+          <Ionicons name="cash-outline" size={14} color={colors.foreground} />
+          <Text style={styles.coinText}>{coins}</Text>
         </Pressable>
 
         <Pressable style={styles.iconButton} onPress={() => router.push("/notifications")}>
-          <Text style={styles.iconText}>🔔</Text>
+          <Ionicons name="notifications-outline" size={20} color={colors.foreground} />
           {unreadCount > 0 && (
             <View style={styles.badge}>
               <Text style={styles.badgeText}>{unreadCount > 9 ? "9+" : unreadCount}</Text>
@@ -341,197 +346,199 @@ export function AppTopBar({ showNotes = false }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    backgroundColor: colors.background,
-    paddingBottom: spacing.sm,
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: spacing.xl,
-    height: 52,
-    gap: spacing.sm,
-  },
-  logo: {
-    color: colors.foreground,
-    fontSize: 20,
-    fontWeight: "800",
-  },
-  spacer: {
-    flex: 1,
-  },
-  coinPill: {
-    backgroundColor: colors.cardAlt,
-    borderRadius: radii.full,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 6,
-  },
-  coinText: {
-    color: colors.foreground,
-    fontWeight: "700",
-    fontSize: 13,
-  },
-  iconButton: {
-    width: 34,
-    height: 34,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  iconText: {
-    fontSize: 18,
-  },
-  badge: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    minWidth: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: colors.primary,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 3,
-  },
-  badgeText: {
-    color: "#fff",
-    fontSize: 9,
-    fontWeight: "800",
-  },
-  rail: {
-    paddingHorizontal: spacing.xl,
-    gap: spacing.md,
-    paddingTop: spacing.xs,
-  },
-  railItem: {
-    width: 68,
-    alignItems: "center",
-    gap: spacing.xs,
-  },
-  bubbleSlot: {
-    height: 30,
-    justifyContent: "flex-end",
-  },
-  noteBubble: {
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    borderBottomRightRadius: 4,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    maxWidth: 88,
-  },
-  noteBubbleText: {
-    color: colors.foreground,
-    fontSize: 10,
-    lineHeight: 12,
-  },
-  avatarWrap: {
-    position: "relative",
-  },
-  avatarRing: {
-    borderRadius: 27,
-  },
-  avatarRingFill: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  avatarInner: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    overflow: "hidden",
-    borderWidth: 2,
-    borderColor: colors.background,
-  },
-  plusBadge: {
-    position: "absolute",
-    bottom: -2,
-    right: -2,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: colors.primary,
-    borderWidth: 2,
-    borderColor: colors.background,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  plusBadgeText: {
-    color: "#fff",
-    fontSize: 12,
-    fontWeight: "800",
-    marginTop: -1,
-  },
-  railName: {
-    color: colors.mutedForeground,
-    fontSize: 11,
-    maxWidth: 68,
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.6)",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: spacing.xl,
-  },
-  modalCard: {
-    width: "100%",
-    maxWidth: 360,
-    backgroundColor: colors.card,
-    borderRadius: radii.xl,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.xl,
-    gap: spacing.sm,
-  },
-  modalTitle: {
-    color: colors.foreground,
-    fontSize: 17,
-    fontWeight: "800",
-  },
-  detailHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.sm,
-    marginBottom: spacing.xs,
-  },
-  modalInput: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 10,
-    color: colors.foreground,
-    minHeight: 70,
-    textAlignVertical: "top",
-  },
-  charCount: {
-    color: colors.mutedDark,
-    fontSize: 11,
-    textAlign: "right",
-  },
-  noteFullText: {
-    color: colors.foreground,
-    fontSize: 15,
-    lineHeight: 21,
-  },
-  error: {
-    color: colors.danger,
-    fontSize: 13,
-  },
-  modalActions: {
-    flexDirection: "row",
-    gap: spacing.sm,
-    marginTop: spacing.xs,
-  },
-  modalActionButton: {
-    flex: 1,
-  },
-});
+function buildStyles(colors) {
+  return StyleSheet.create({
+    container: {
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      backgroundColor: colors.background,
+      paddingBottom: spacing.sm,
+    },
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: spacing.xl,
+      height: 52,
+      gap: spacing.sm,
+    },
+    logo: {
+      color: colors.foreground,
+      fontSize: 20,
+      fontFamily: fontFamily.extraBold,
+    },
+    spacer: {
+      flex: 1,
+    },
+    coinPill: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+      backgroundColor: colors.cardAlt,
+      borderRadius: radii.full,
+      paddingHorizontal: spacing.md,
+      paddingVertical: 6,
+    },
+    coinText: {
+      color: colors.foreground,
+      fontFamily: fontFamily.bold,
+      fontSize: 13,
+    },
+    iconButton: {
+      width: 34,
+      height: 34,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    badge: {
+      position: "absolute",
+      top: 0,
+      right: 0,
+      minWidth: 16,
+      height: 16,
+      borderRadius: 8,
+      backgroundColor: colors.primary,
+      alignItems: "center",
+      justifyContent: "center",
+      paddingHorizontal: 3,
+    },
+    badgeText: {
+      color: "#fff",
+      fontSize: 9,
+      fontFamily: fontFamily.extraBold,
+    },
+    rail: {
+      paddingHorizontal: spacing.xl,
+      gap: spacing.md,
+      paddingTop: spacing.xs,
+    },
+    railItem: {
+      width: 68,
+      alignItems: "center",
+      gap: spacing.xs,
+    },
+    bubbleSlot: {
+      height: 30,
+      justifyContent: "flex-end",
+    },
+    noteBubble: {
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: radii.md,
+      borderBottomRightRadius: 4,
+      paddingHorizontal: spacing.sm,
+      paddingVertical: 4,
+      maxWidth: 88,
+    },
+    noteBubbleText: {
+      color: colors.foreground,
+      fontSize: 10,
+      lineHeight: 12,
+    },
+    avatarWrap: {
+      position: "relative",
+    },
+    avatarRing: {
+      borderRadius: 27,
+    },
+    avatarRingFill: {
+      width: 54,
+      height: 54,
+      borderRadius: 27,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    avatarInner: {
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      overflow: "hidden",
+      borderWidth: 2,
+      borderColor: colors.background,
+    },
+    plusBadge: {
+      position: "absolute",
+      bottom: -2,
+      right: -2,
+      width: 20,
+      height: 20,
+      borderRadius: 10,
+      backgroundColor: colors.primary,
+      borderWidth: 2,
+      borderColor: colors.background,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    plusBadgeText: {
+      color: "#fff",
+      fontSize: 12,
+      fontFamily: fontFamily.extraBold,
+      marginTop: -1,
+    },
+    railName: {
+      color: colors.mutedForeground,
+      fontSize: 11,
+      maxWidth: 68,
+    },
+    modalBackdrop: {
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.6)",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: spacing.xl,
+    },
+    modalCard: {
+      width: "100%",
+      maxWidth: 360,
+      backgroundColor: colors.card,
+      borderRadius: radii.xl,
+      borderWidth: 1,
+      borderColor: colors.border,
+      padding: spacing.xl,
+      gap: spacing.sm,
+    },
+    modalTitle: {
+      color: colors.foreground,
+      fontSize: 17,
+      fontFamily: fontFamily.extraBold,
+    },
+    detailHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing.sm,
+      marginBottom: spacing.xs,
+    },
+    modalInput: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: radii.md,
+      paddingHorizontal: spacing.md,
+      paddingVertical: 10,
+      color: colors.foreground,
+      minHeight: 70,
+      textAlignVertical: "top",
+    },
+    charCount: {
+      color: colors.mutedDark,
+      fontSize: 11,
+      textAlign: "right",
+    },
+    noteFullText: {
+      color: colors.foreground,
+      fontSize: 15,
+      lineHeight: 21,
+    },
+    error: {
+      color: colors.danger,
+      fontSize: 13,
+    },
+    modalActions: {
+      flexDirection: "row",
+      gap: spacing.sm,
+      marginTop: spacing.xs,
+    },
+    modalActionButton: {
+      flex: 1,
+    },
+  });
+}

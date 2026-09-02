@@ -1,6 +1,7 @@
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { colors, spacing } from "../../lib/theme";
+import { spacing } from "../../lib/theme";
+import { useTheme } from "../../lib/ThemeContext";
 
 /**
  * Tüm ekranların ortak dış çerçevesi: arka plan rengi + gerçek güvenli
@@ -11,12 +12,17 @@ import { colors, spacing } from "../../lib/theme";
  * kullanan ekranlar `useScreenInsets()` ile aynı boşluğu kendi
  * `contentContainerStyle`'ına uygular (children/data çakışmasını önlemek
  * için FlatList burada sarmalanmıyor).
+ *
+ * Arka plan rengi `useTheme()`'den geliyor (açık/koyu tema arasında canlı
+ * geçiş) — geri kalan ekranlar hâlâ `lib/theme.js`'in sabit koyu paletini
+ * kullanıyor, bu bileşen bu turun "önce kabuk" kapsamında.
  */
 export function Screen({ children, contentStyle, style, ...props }) {
   const insets = useScreenInsets();
+  const { colors } = useTheme();
 
   return (
-    <View style={[styles.container, insets, contentStyle, style]} {...props}>
+    <View style={[styles.container, { backgroundColor: colors.background }, insets, contentStyle, style]} {...props}>
       {children}
     </View>
   );
@@ -30,6 +36,5 @@ export function useScreenInsets() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
 });

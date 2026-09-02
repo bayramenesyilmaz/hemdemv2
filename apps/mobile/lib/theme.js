@@ -31,6 +31,47 @@ export const gradients = {
   surface: ["rgba(217,72,97,0.12)", "rgba(217,72,97,0.05)"],
 };
 
+/**
+ * Açık (light) kırmızı-beyaz tema paleti — web'deki
+ * :root[data-theme="light"] ile aynı ton değerleri. Koyu tema (yukarıdaki
+ * `colors`) varsayılan kalıyor; bu sadece ThemeContext.js üzerinden
+ * kullanıcının bilinçli seçimiyle açılıyor.
+ */
+export const lightColors = {
+  background: "#ffffff",
+  card: "#fafafa",
+  cardAlt: "#f1f1f3",
+  border: "#e2e1e5",
+  primary: "#c81e3f",
+  primaryDark: "#a01732",
+  primarySoft: "rgba(200,30,63,0.1)",
+  foreground: "#1c1a1f",
+  muted: "#6b6870",
+  mutedForeground: "#6b6870",
+  mutedDark: "#8f8c93",
+  danger: "#c8283f",
+  success: "#1f9d6c",
+};
+
+export const lightGradients = {
+  primary: [lightColors.primary, lightColors.primaryDark],
+  surface: ["rgba(200,30,63,0.08)", "rgba(200,30,63,0.03)"],
+};
+
+/**
+ * Manrope (expo-google-fonts/manrope ile yüklenir, bkz. app/_layout.js) —
+ * sistem fontu yerine daha geometrik/modern bir görünüm. Bu turda sadece
+ * en çok kullanılan kabuk bileşenlerine (AppTopBar, alt sekme çubuğu,
+ * Button, Card, Screen) uygulanıyor; ekran ekran tam kapsama ayrı bir tur.
+ */
+export const fontFamily = {
+  regular: "Manrope_400Regular",
+  medium: "Manrope_500Medium",
+  semiBold: "Manrope_600SemiBold",
+  bold: "Manrope_700Bold",
+  extraBold: "Manrope_800ExtraBold",
+};
+
 export const radii = {
   sm: 8,
   md: 12,

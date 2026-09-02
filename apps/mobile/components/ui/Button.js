@@ -1,6 +1,8 @@
+import { useMemo } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { colors, gradients, radii, spacing } from "../../lib/theme";
+import { fontFamily, radii, spacing } from "../../lib/theme";
+import { useTheme } from "../../lib/ThemeContext";
 
 /**
  * Web'deki Button varyantlarının (confirm/add/send → gradyan, outline,
@@ -12,20 +14,11 @@ import { colors, gradients, radii, spacing } from "../../lib/theme";
  * neredeyse aynı tonda olduğu için buton sanki hiç yokmuş gibi
  * görünüyordu (ör. boş gönderi kutusunda "Paylaş" butonu). Devre
  * dışı durumda artık her zaman görünür bir kenarlık var.
+ *
+ * Renkler artık `useTheme()`'den geliyor (açık/koyu tema) — bu yüzden
+ * varyant stilleri modül kapsamında sabit değil, render sırasında
+ * `colors`'a göre kuruluyor.
  */
-const VARIANT_STYLES = {
-  outline: { borderWidth: 1, borderColor: colors.border, backgroundColor: colors.card },
-  ghost: { backgroundColor: "transparent" },
-  delete: { borderWidth: 1, borderColor: "rgba(221,85,85,0.4)", backgroundColor: "rgba(221,85,85,0.12)" },
-};
-
-const TEXT_COLORS = {
-  primary: "#fff",
-  outline: colors.foreground,
-  ghost: colors.mutedForeground,
-  delete: colors.danger,
-};
-
 export function Button({
   variant = "primary",
   children,
@@ -36,8 +29,12 @@ export function Button({
   textStyle,
   ...props
 }) {
+  const { colors, gradients } = useTheme();
+  const { styles, variantStyles, textColors } = useMemo(() => buildTheme(colors), [colors]);
+
   const isDisabled = Boolean(disabled) || loading;
-  const textColor = isDisabled && variant === "primary" ? colors.mutedForeground : TEXT_COLORS[variant] ?? colors.foreground;
+  const textColor =
+    isDisabled && variant === "primary" ? colors.mutedForeground : textColors[variant] ?? colors.foreground;
 
   const inner = loading ? (
     <ActivityIndicator color={textColor} size="small" />
@@ -76,7 +73,7 @@ export function Button({
       style={({ pressed }) => [
         styles.wrap,
         styles.content,
-        VARIANT_STYLES[variant],
+        variantStyles[variant],
         pressed && !isDisabled && styles.pressed,
         isDisabled && styles.disabled,
         style,
@@ -88,32 +85,49 @@ export function Button({
   );
 }
 
-const styles = StyleSheet.create({
-  wrap: {
-    borderRadius: radii.md,
-    overflow: "hidden",
-  },
-  content: {
-    minHeight: 42,
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    gap: spacing.xs,
-    paddingHorizontal: spacing.md,
-  },
-  contentDisabledPrimary: {
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  pressed: {
-    opacity: 0.85,
-    transform: [{ scale: 0.98 }],
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-});
+function buildTheme(colors) {
+  const variantStyles = {
+    outline: { borderWidth: 1, borderColor: colors.border, backgroundColor: colors.card },
+    ghost: { backgroundColor: "transparent" },
+    delete: { borderWidth: 1, borderColor: "rgba(221,85,85,0.4)", backgroundColor: "rgba(221,85,85,0.12)" },
+  };
+
+  const textColors = {
+    primary: "#fff",
+    outline: colors.foreground,
+    ghost: colors.mutedForeground,
+    delete: colors.danger,
+  };
+
+  const styles = StyleSheet.create({
+    wrap: {
+      borderRadius: radii.md,
+      overflow: "hidden",
+    },
+    content: {
+      minHeight: 42,
+      alignItems: "center",
+      justifyContent: "center",
+      flexDirection: "row",
+      gap: spacing.xs,
+      paddingHorizontal: spacing.md,
+    },
+    contentDisabledPrimary: {
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    label: {
+      fontSize: 14,
+      fontFamily: fontFamily.semiBold,
+    },
+    pressed: {
+      opacity: 0.85,
+      transform: [{ scale: 0.98 }],
+    },
+    disabled: {
+      opacity: 0.5,
+    },
+  });
+
+  return { styles, variantStyles, textColors };
+}

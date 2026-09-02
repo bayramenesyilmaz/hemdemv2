@@ -1,7 +1,9 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import { useSession } from "../../lib/session";
 import { colors, radii, spacing } from "../../lib/theme";
+import { useTheme } from "../../lib/ThemeContext";
 import { Button } from "../../components/ui/Button";
 import { useScreenInsets } from "../../components/ui/Screen";
 
@@ -10,20 +12,24 @@ import { useScreenInsets } from "../../components/ui/Screen";
 // tekrarlanmıyorlar. Profili Düzenle/Profilimi Görüntüleyenler kendi
 // bağlamı (profil) içinde daha anlamlı olduğu için Profil sayfasında.
 const ITEMS = [
-  { href: "/tests/mine", label: "Testlerim", icon: "📋" },
-  { href: "/tests/history", label: "Test Geçmişim", icon: "🕓" },
-  { href: "/privacy", label: "Gizlilik Politikası", icon: "🔒" },
+  { href: "/tests/mine", label: "Testlerim", icon: "clipboard-outline" },
+  { href: "/tests/history", label: "Test Geçmişim", icon: "time-outline" },
+  { href: "/privacy", label: "Gizlilik Politikası", icon: "lock-closed-outline" },
 ];
 
 /**
  * Web'deki tam ekran "Menü" sayfasının mobil karşılığı — alt bar sadece
  * 5 sekmeye sığdığı için (Keşfet/Testler/Gönderiler/Mesajlar/Diğer),
  * üst bar veya profil sayfasında olmayan rotalar burada listelenir.
+ *
+ * Tema anahtarı da burada — web'deki Menü sayfasındaki ThemeSwitcher'ın
+ * mobil karşılığı (bkz. lib/ThemeContext.js).
  */
 export default function MenuScreen() {
   const insets = useScreenInsets();
   const router = useRouter();
   const { setUserId } = useSession();
+  const { isLight, setTheme } = useTheme();
 
   function handleLogout() {
     setUserId(null);
@@ -41,11 +47,22 @@ export default function MenuScreen() {
             style={({ pressed }) => [styles.item, pressed && styles.itemPressed]}
             onPress={() => router.push(item.href)}
           >
-            <Text style={styles.itemIcon}>{item.icon}</Text>
+            <Ionicons name={item.icon} size={18} color={colors.primary} />
             <Text style={styles.itemLabel}>{item.label}</Text>
             <Text style={styles.itemChevron}>›</Text>
           </Pressable>
         ))}
+
+        <View style={styles.item}>
+          <Ionicons name="color-palette-outline" size={18} color={colors.primary} />
+          <Text style={styles.itemLabel}>Açık tema</Text>
+          <Switch
+            value={isLight}
+            onValueChange={(next) => setTheme(next ? "light" : "dark")}
+            trackColor={{ false: colors.border, true: colors.primary }}
+            thumbColor="#fff"
+          />
+        </View>
       </View>
 
       <Button variant="delete" onPress={handleLogout}>
@@ -82,9 +99,6 @@ const styles = StyleSheet.create({
   },
   itemPressed: {
     backgroundColor: colors.cardAlt,
-  },
-  itemIcon: {
-    fontSize: 18,
   },
   itemLabel: {
     flex: 1,
