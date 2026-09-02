@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Modal, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { COUNTRIES } from "../../lib/countries";
 import { colors, radii, spacing } from "../../lib/theme";
 import { Button } from "../ui/Button";
+import { CountryPickerModal } from "../CountryPickerModal";
 
 const GENDER_OPTIONS = [
   { value: undefined, label: "Herkes" },
@@ -21,13 +22,9 @@ export function DiscoverFiltersModal({ visible, onClose, filters, onApply }) {
   const [country, setCountry] = useState(filters.country);
   const [minAge, setMinAge] = useState(String(filters.minAge ?? 18));
   const [maxAge, setMaxAge] = useState(String(filters.maxAge ?? 80));
-  const [countryQuery, setCountryQuery] = useState("");
   const [countryPickerOpen, setCountryPickerOpen] = useState(false);
 
   const selectedCountryName = COUNTRIES.find((c) => c.code === country)?.tr;
-  const filteredCountries = countryQuery
-    ? COUNTRIES.filter((c) => c.tr.toLowerCase().includes(countryQuery.toLowerCase()))
-    : COUNTRIES;
 
   function handleApply() {
     const min = Number(minAge) || 18;
@@ -110,51 +107,11 @@ export function DiscoverFiltersModal({ visible, onClose, filters, onApply }) {
         </View>
       </View>
 
-      <Modal
+      <CountryPickerModal
         visible={countryPickerOpen}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setCountryPickerOpen(false)}
-      >
-        <View style={styles.backdrop}>
-          <View style={[styles.card, styles.countryCard]}>
-            <Text style={styles.title}>Ülke seç</Text>
-            <TextInput
-              style={styles.countrySearchInput}
-              value={countryQuery}
-              onChangeText={setCountryQuery}
-              placeholder="Ara..."
-              placeholderTextColor={colors.mutedDark}
-            />
-            <Pressable
-              style={styles.countryOption}
-              onPress={() => {
-                setCountry(undefined);
-                setCountryPickerOpen(false);
-              }}
-            >
-              <Text style={styles.countryOptionText}>Herhangi</Text>
-            </Pressable>
-            <ScrollView style={styles.countryList}>
-              {filteredCountries.map((c) => (
-                <Pressable
-                  key={c.code}
-                  style={styles.countryOption}
-                  onPress={() => {
-                    setCountry(c.code);
-                    setCountryPickerOpen(false);
-                  }}
-                >
-                  <Text style={styles.countryOptionText}>{c.tr}</Text>
-                </Pressable>
-              ))}
-            </ScrollView>
-            <Button variant="outline" onPress={() => setCountryPickerOpen(false)}>
-              Kapat
-            </Button>
-          </View>
-        </View>
-      </Modal>
+        onClose={() => setCountryPickerOpen(false)}
+        onSelect={setCountry}
+      />
     </Modal>
   );
 }
@@ -176,9 +133,6 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     padding: spacing.xl,
     gap: spacing.sm,
-  },
-  countryCard: {
-    maxHeight: "75%",
   },
   title: {
     color: colors.foreground,
@@ -257,25 +211,5 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
-  },
-  countrySearchInput: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 10,
-    color: colors.foreground,
-  },
-  countryList: {
-    maxHeight: 300,
-  },
-  countryOption: {
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  countryOptionText: {
-    color: colors.foreground,
-    fontSize: 14,
   },
 });

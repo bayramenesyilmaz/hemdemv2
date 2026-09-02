@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Modal, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
 import { fetchFeed } from "@hemdem/core/usecases/posts/fetchFeed";
 import { createPost } from "@hemdem/core/usecases/posts/createPost";
@@ -12,6 +12,7 @@ import { Button } from "../../components/ui/Button";
 import { Badge } from "../../components/ui/Badge";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { AppTopBar } from "../../components/nav/AppTopBar";
+import { TestPickerModal } from "../../components/TestPickerModal";
 
 export default function PostsScreen() {
   const router = useRouter();
@@ -22,8 +23,6 @@ export default function PostsScreen() {
   const [posting, setPosting] = useState(false);
   const [taggedTest, setTaggedTest] = useState(null);
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [pickerTests, setPickerTests] = useState([]);
-  const [pickerQuery, setPickerQuery] = useState("");
 
   useEffect(() => {
     load();
@@ -46,18 +45,6 @@ export default function PostsScreen() {
       setTaggedTest(null);
       load();
     }
-  }
-
-  async function openPicker() {
-    setPickerOpen(true);
-    const result = await repositories.test.findMany({ search: pickerQuery || undefined, limit: 30 });
-    setPickerTests(result);
-  }
-
-  async function handlePickerSearch(query) {
-    setPickerQuery(query);
-    const result = await repositories.test.findMany({ search: query || undefined, limit: 30 });
-    setPickerTests(result);
   }
 
   if (loading) {
@@ -99,7 +86,7 @@ export default function PostsScreen() {
                   <Text style={styles.taggedChipRemove}>✕</Text>
                 </Pressable>
               ) : (
-                <Pressable style={styles.tagLink} onPress={openPicker}>
+                <Pressable style={styles.tagLink} onPress={() => setPickerOpen(true)}>
                   <Text style={styles.tagLinkText}>📋 Test etiketle</Text>
                 </Pressable>
               )}
@@ -135,42 +122,12 @@ export default function PostsScreen() {
         )}
       />
 
-      <Modal visible={pickerOpen} transparent animationType="fade" onRequestClose={() => setPickerOpen(false)}>
-        <View style={styles.modalBackdrop}>
-          <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>Test etiketle</Text>
-            <TextInput
-              style={styles.modalInput}
-              value={pickerQuery}
-              onChangeText={handlePickerSearch}
-              placeholder="Test ara..."
-              placeholderTextColor={colors.mutedDark}
-            />
-            <FlatList
-              data={pickerTests}
-              keyExtractor={(item) => item.id}
-              style={styles.pickerList}
-              ListEmptyComponent={<Text style={styles.pickerEmpty}>Sonuç yok.</Text>}
-              renderItem={({ item }) => (
-                <Pressable
-                  style={styles.pickerRow}
-                  onPress={() => {
-                    setTaggedTest(item);
-                    setPickerOpen(false);
-                  }}
-                >
-                  <Text style={styles.pickerRowText} numberOfLines={1}>
-                    {item.title}
-                  </Text>
-                </Pressable>
-              )}
-            />
-            <Button variant="outline" onPress={() => setPickerOpen(false)}>
-              Vazgeç
-            </Button>
-          </View>
-        </View>
-      </Modal>
+      <TestPickerModal
+        visible={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onSelect={setTaggedTest}
+        title="Test etiketle"
+      />
     </View>
   );
 }
@@ -252,54 +209,5 @@ const styles = StyleSheet.create({
   },
   content: {
     color: colors.foreground,
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.6)",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: spacing.xl,
-  },
-  modalCard: {
-    width: "100%",
-    maxWidth: 360,
-    maxHeight: "70%",
-    backgroundColor: colors.card,
-    borderRadius: radii.xl,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.xl,
-    gap: spacing.sm,
-  },
-  modalTitle: {
-    color: colors.foreground,
-    fontSize: 16,
-    fontWeight: "700",
-  },
-  modalInput: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 10,
-    color: colors.foreground,
-  },
-  pickerList: {
-    maxHeight: 260,
-  },
-  pickerEmpty: {
-    color: colors.mutedForeground,
-    fontSize: 13,
-    paddingVertical: spacing.md,
-    textAlign: "center",
-  },
-  pickerRow: {
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  pickerRowText: {
-    color: colors.foreground,
-    fontSize: 14,
   },
 });
