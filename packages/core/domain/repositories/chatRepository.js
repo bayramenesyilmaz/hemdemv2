@@ -8,6 +8,8 @@
  * @property {(chatId: number, message: Partial<import("../entities/chat.js").Message>) => Promise<import("../entities/chat.js").Message>} createMessage
  * @property {(chatId: number, limit: number, before?: string) => Promise<import("../entities/chat.js").Message[]>} findMessages
  * @property {(cutoffIso: string) => Promise<number>} deleteInactiveChats
+ * @property {(chatId: number, userId: string) => Promise<void>} markRead
+ * @property {(chatId: number) => Promise<{ userId: string, lastReadAt: string }[]>} getReadStates
  */
 
 export {};

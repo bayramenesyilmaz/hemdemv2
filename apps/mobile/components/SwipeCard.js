@@ -11,7 +11,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
-import { calculateAge } from "@hemdem/core/domain/entities/user";
+import { calculateAge, isOnline } from "@hemdem/core/domain/entities/user";
 import { colors, gradients, radii } from "../lib/theme";
 import { Badge } from "./ui/Badge";
 
@@ -101,10 +101,13 @@ export function SwipeCard({ candidate, onSwiped, isTop }) {
           colors={["transparent", "rgba(0,0,0,0.55)", "rgba(0,0,0,0.9)"]}
           style={styles.infoOverlay}
         >
-          <Text style={styles.name} numberOfLines={1}>
-            {candidate.name}
-            {age ? `, ${age}` : ""}
-          </Text>
+          <View style={styles.nameRow}>
+            <Text style={styles.name} numberOfLines={1}>
+              {candidate.name}
+              {age ? `, ${age}` : ""}
+            </Text>
+            {isOnline(candidate.lastSeenAt) && <View style={styles.onlineDot} />}
+          </View>
           {candidate.country && <Text style={styles.country}>{candidate.country}</Text>}
           {candidate.bio && (
             <Text style={styles.bio} numberOfLines={2}>
@@ -164,10 +167,24 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
     gap: 4,
   },
+  nameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
   name: {
     color: "#fff",
     fontSize: 24,
     fontWeight: "800",
+    flexShrink: 1,
+  },
+  onlineDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "#34d399",
+    borderWidth: 2,
+    borderColor: "rgba(0,0,0,0.5)",
   },
   country: {
     color: "rgba(255,255,255,0.8)",

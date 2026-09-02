@@ -16,6 +16,7 @@ import { createMockNotificationRepository } from "./mock/mockNotificationReposit
 import { createMockLeaderboardRewardRepository } from "./mock/mockLeaderboardRewardRepository.js";
 import { createMockBlockRepository } from "./mock/mockBlockRepository.js";
 import { createMockStorageRepository } from "./mock/mockStorageRepository.js";
+import { createMockDailyMatchRepository } from "./mock/mockDailyMatchRepository.js";
 
 /**
  * `createRepositories` (container.js) ile birebir aynı şekli döndürür,
@@ -47,6 +48,7 @@ export function createMockRepositories() {
     authAdmin: createMockAuthAdminRepository(store),
     block: createMockBlockRepository(store),
     storage: createMockStorageRepository(),
+    dailyMatch: createMockDailyMatchRepository(store),
     mockAuth: createMockAuthRepository(store),
   };
 }

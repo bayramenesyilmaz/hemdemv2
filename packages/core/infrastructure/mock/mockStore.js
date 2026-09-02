@@ -16,11 +16,13 @@
 import { avatar, answers, daysAgo, question } from "./mockSeedHelpers.js";
 
 function createProfile(id, name, initials, colors, overrides = {}) {
+  const avatarUrl = avatar(initials, colors[0], colors[1]);
   return {
     id,
     createdAt: daysAgo(60),
     name,
-    avatarUrl: avatar(initials, colors[0], colors[1]),
+    avatarUrl,
+    photos: [avatarUrl],
     bio: null,
     gender: null,
     country: "TR",
@@ -33,6 +35,10 @@ function createProfile(id, name, initials, colors, overrides = {}) {
     gateTestThreshold: null,
     allowGuestLikes: false,
     socialLinks: {},
+    lastSeenAt: null,
+    boostedUntil: null,
+    verificationPhotoUrl: null,
+    verificationStatus: "none",
     ...overrides,
   };
 }
@@ -626,6 +632,10 @@ function createSeededStore() {
 
   const requests = [];
   const blocks = new Map();
+  // key: `${chatId}:${userId}` -> { chatId, userId, lastReadAt }
+  const chatReads = new Map();
+  // key: userId -> { userId, matchedUserId, matchedDate, createdAt }
+  const dailyMatches = new Map();
 
   // email -> { id, password } — Supabase Auth'un yerini tutan minimal eşleme.
   const authUsers = new Map([
@@ -651,6 +661,8 @@ function createSeededStore() {
     leaderboardRewardGrants,
     requests,
     blocks,
+    chatReads,
+    dailyMatches,
     authUsers,
     nextId: {
       swipe: 8,

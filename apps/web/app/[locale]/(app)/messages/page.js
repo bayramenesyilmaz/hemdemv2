@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { setStaticParamsLocale } from "next-international/server";
 import { fetchChatList } from "@hemdem/core/usecases/chat/fetchChatList";
+import { isOnline } from "@hemdem/core/domain/entities/user";
 import { getI18n } from "@/locales/server";
 import { getAuthUserId } from "@/lib/session";
 import { repositories } from "@/lib/repositories";
@@ -45,7 +46,12 @@ export default async function MessagesPage({ params }) {
               style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}
             >
               <SectionCard interactive className="flex items-center gap-3">
-                <Avatar src={otherUser.avatarUrl} name={otherUser.name} size="sm" />
+                <Avatar
+                  src={otherUser.avatarUrl}
+                  name={otherUser.name}
+                  size="sm"
+                  online={isOnline(otherUser.lastSeenAt)}
+                />
                 <div className="flex min-w-0 flex-1 flex-col">
                   <span className="truncate font-semibold text-foreground">{otherUser.name}</span>
                   <span className="line-clamp-1 text-sm text-muted-foreground">

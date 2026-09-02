@@ -114,5 +114,24 @@ export function createSupabaseChatRepository(client) {
       if (error) throw error;
       return (data ?? []).length;
     },
+
+    async markRead(chatId, userId) {
+      const { error } = await client
+        .from("chat_reads")
+        .upsert(
+          { chat_id: chatId, user_id: userId, last_read_at: new Date().toISOString() },
+          { onConflict: "chat_id,user_id" }
+        );
+      if (error) throw error;
+    },
+
+    async getReadStates(chatId) {
+      const { data, error } = await client
+        .from("chat_reads")
+        .select("user_id, last_read_at")
+        .eq("chat_id", chatId);
+      if (error) throw error;
+      return (data ?? []).map((row) => ({ userId: row.user_id, lastReadAt: row.last_read_at }));
+    },
   };
 }

@@ -3,6 +3,7 @@
 import { updateProfile } from "@hemdem/core/usecases/profile/updateProfile";
 import { unlockProfileViewers } from "@hemdem/core/usecases/profile/unlockProfileViewers";
 import { uploadAvatar } from "@hemdem/core/usecases/profile/uploadAvatar";
+import { touchLastSeen } from "@hemdem/core/usecases/profile/touchLastSeen";
 import { repositories } from "@/lib/repositories";
 import { getAuthUserId } from "@/lib/session";
 
@@ -41,4 +42,14 @@ export async function uploadAvatarAction(formData) {
 
   const extension = file.name.split(".").pop();
   return uploadAvatar(repositories, userId, file, { type: file.type, size: file.size, extension });
+}
+
+/**
+ * AppShell'deki heartbeat tarafından düzenli aralıklarla çağrılır —
+ * çevrimiçi durumu buradan türetilir (bkz. `isOnline`).
+ */
+export async function touchLastSeenAction() {
+  const userId = await getAuthUserId();
+  if (!userId) return;
+  await touchLastSeen(repositories, userId);
 }

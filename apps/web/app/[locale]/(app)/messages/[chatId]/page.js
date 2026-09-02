@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { setStaticParamsLocale } from "next-international/server";
 import { fetchChatMessages } from "@hemdem/core/usecases/chat/fetchChatMessages";
+import { isOnline } from "@hemdem/core/domain/entities/user";
 import { getAuthUserId } from "@/lib/session";
 import { repositories } from "@/lib/repositories";
 import { Avatar } from "@/components/Avatar";
@@ -35,7 +36,12 @@ export default async function ChatPage({ params }) {
     <main className="mx-auto flex h-[calc(100dvh-7.5rem-env(safe-area-inset-bottom))] max-w-2xl flex-col gap-4 px-4 py-4 lg:h-[calc(100dvh-4rem)] lg:px-6">
       <div className="flex items-center justify-between gap-3">
         <Link href={`/${locale}/u/${otherUser.id}`} className="flex min-w-0 items-center gap-3">
-          <Avatar src={otherUser.avatarUrl} name={otherUser.name} size="sm" />
+          <Avatar
+            src={otherUser.avatarUrl}
+            name={otherUser.name}
+            size="sm"
+            online={isOnline(otherUser.lastSeenAt)}
+          />
           <h1 className="truncate text-lg font-semibold text-foreground lg:text-xl">{otherUser.name}</h1>
         </Link>
         <SafetyMenu targetUserId={otherUser.id} targetName={otherUser.name} />

@@ -5,6 +5,7 @@ function toProfile(row) {
     createdAt: row.created_at,
     name: row.name,
     avatarUrl: row.avatar_url,
+    photos: row.photos ?? [],
     bio: row.bio,
     gender: row.gender,
     country: row.country,
@@ -17,6 +18,10 @@ function toProfile(row) {
     gateTestThreshold: row.gate_test_threshold,
     allowGuestLikes: row.allow_guest_likes,
     socialLinks: row.social_links ?? {},
+    lastSeenAt: row.last_seen_at,
+    boostedUntil: row.boosted_until,
+    verificationPhotoUrl: row.verification_photo_url,
+    verificationStatus: row.verification_status,
   };
 }
 
@@ -25,6 +30,7 @@ function toRow(profile) {
   if (profile.id !== undefined) row.id = profile.id;
   if (profile.name !== undefined) row.name = profile.name;
   if (profile.avatarUrl !== undefined) row.avatar_url = profile.avatarUrl;
+  if (profile.photos !== undefined) row.photos = profile.photos;
   if (profile.bio !== undefined) row.bio = profile.bio;
   if (profile.gender !== undefined) row.gender = profile.gender;
   if (profile.country !== undefined) row.country = profile.country;
@@ -37,6 +43,10 @@ function toRow(profile) {
   if (profile.gateTestThreshold !== undefined) row.gate_test_threshold = profile.gateTestThreshold;
   if (profile.allowGuestLikes !== undefined) row.allow_guest_likes = profile.allowGuestLikes;
   if (profile.socialLinks !== undefined) row.social_links = profile.socialLinks;
+  if (profile.lastSeenAt !== undefined) row.last_seen_at = profile.lastSeenAt;
+  if (profile.boostedUntil !== undefined) row.boosted_until = profile.boostedUntil;
+  if (profile.verificationPhotoUrl !== undefined) row.verification_photo_url = profile.verificationPhotoUrl;
+  if (profile.verificationStatus !== undefined) row.verification_status = profile.verificationStatus;
   return row;
 }
 
@@ -100,9 +110,18 @@ export function createSupabaseUserRepository(client) {
     async findMany(filters = {}) {
       let query = client.from("profiles").select("*").order("created_at", { ascending: false });
       if (filters.search) query = query.ilike("name", `%${filters.search}%`);
+      if (filters.verificationStatus) query = query.eq("verification_status", filters.verificationStatus);
       const { data, error } = await query;
       if (error) throw error;
       return (data ?? []).map(toProfile);
+    },
+
+    async touchLastSeen(id) {
+      const { error } = await client
+        .from("profiles")
+        .update({ last_seen_at: new Date().toISOString() })
+        .eq("id", id);
+      if (error) throw error;
     },
   };
 }

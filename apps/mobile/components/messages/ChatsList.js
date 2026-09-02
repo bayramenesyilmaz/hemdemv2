@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { fetchChatList } from "@hemdem/core/usecases/chat/fetchChatList";
+import { isOnline } from "@hemdem/core/domain/entities/user";
 import { repositories } from "../../lib/repositories";
 import { useSession } from "../../lib/session";
 import { colors, spacing } from "../../lib/theme";
@@ -51,7 +52,7 @@ export function ChatsList({ contentContainerStyle }) {
           style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
           onPress={() => router.push(`/messages/${item.chat.id}`)}
         >
-          <InitialsAvatar name={item.otherUser.name} size={52} />
+          <InitialsAvatar name={item.otherUser.name} size={52} online={isOnline(item.otherUser.lastSeenAt)} />
           <View style={styles.rowText}>
             <Text style={styles.name}>{item.otherUser.name}</Text>
             <Text style={styles.preview} numberOfLines={1}>

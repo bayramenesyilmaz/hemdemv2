@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react";
+import { AppState } from "react-native";
 import { Tabs, router, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { countUnreadMessageNotifications } from "@hemdem/core/usecases/notifications/countUnreadMessageNotifications";
+import { touchLastSeen } from "@hemdem/core/usecases/profile/touchLastSeen";
 import { repositories } from "../../lib/repositories";
 import { useTheme } from "../../lib/ThemeContext";
 import { useSession } from "../../lib/session";
+
+// Çevrimiçi durumu 3 dakikalık bir eşikle türetildiği için (bkz. isOnline,
+// packages/core/domain/entities/user.js) yazma sıklığı bundan çok daha
+// seyrek tutulabilir — 60sn'de bir yeterli.
+const HEARTBEAT_INTERVAL_MS = 60000;
 
 /**
  * Sekmeler sadece giriş yapmış oturum için anlamlı — burada tek yerden
@@ -53,6 +60,25 @@ export default function TabsLayout() {
     });
     return () => {
       cancelled = true;
+    };
+  }, [userId]);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    function tick() {
+      if (AppState.currentState !== "active") return;
+      touchLastSeen(repositories, userId);
+    }
+
+    tick();
+    const interval = setInterval(tick, HEARTBEAT_INTERVAL_MS);
+    const subscription = AppState.addEventListener("change", (state) => {
+      if (state === "active") tick();
+    });
+    return () => {
+      clearInterval(interval);
+      subscription.remove();
     };
   }, [userId]);
 

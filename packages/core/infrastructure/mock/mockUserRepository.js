@@ -13,6 +13,7 @@ export function createMockUserRepository(store) {
         createdAt: new Date().toISOString(),
         name: null,
         avatarUrl: null,
+        photos: [],
         bio: null,
         gender: null,
         country: null,
@@ -25,6 +26,10 @@ export function createMockUserRepository(store) {
         gateTestThreshold: null,
         allowGuestLikes: false,
         socialLinks: {},
+        lastSeenAt: null,
+        boostedUntil: null,
+        verificationPhotoUrl: null,
+        verificationStatus: "none",
         ...profile,
       };
       store.profiles.set(profile.id, full);
@@ -67,7 +72,16 @@ export function createMockUserRepository(store) {
           (p) => p.name?.toLowerCase().includes(needle) || p.id.toLowerCase().includes(needle)
         );
       }
+      if (filters.verificationStatus) {
+        profiles = profiles.filter((p) => p.verificationStatus === filters.verificationStatus);
+      }
       return profiles.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+    },
+
+    async touchLastSeen(id) {
+      const existing = store.profiles.get(id);
+      if (!existing) return;
+      existing.lastSeenAt = new Date().toISOString();
     },
   };
 }

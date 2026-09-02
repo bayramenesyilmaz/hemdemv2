@@ -70,5 +70,19 @@ export function createMockChatRepository(store) {
       }
       return deleted;
     },
+
+    async markRead(chatId, userId) {
+      store.chatReads.set(`${chatId}:${userId}`, {
+        chatId,
+        userId,
+        lastReadAt: new Date().toISOString(),
+      });
+    },
+
+    async getReadStates(chatId) {
+      return [...store.chatReads.values()]
+        .filter((r) => r.chatId === chatId)
+        .map(({ userId, lastReadAt }) => ({ userId, lastReadAt }));
+    },
   };
 }

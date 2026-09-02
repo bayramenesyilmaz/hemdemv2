@@ -8,7 +8,8 @@
  * @property {(profile: Partial<import("../entities/user.js").Profile> & { id: string }) => Promise<import("../entities/user.js").Profile>} create
  * @property {(id: string) => Promise<void>} delete
  * @property {(filters: { gender?: string, country?: string, minBirthdate?: string, maxBirthdate?: string, excludeIds?: string[], limit?: number }, excludeUserId?: string) => Promise<import("../entities/user.js").Profile[]>} findDiscoverCandidates
- * @property {(filters?: { search?: string }) => Promise<import("../entities/user.js").Profile[]>} findMany
+ * @property {(filters?: { search?: string, verificationStatus?: string }) => Promise<import("../entities/user.js").Profile[]>} findMany
+ * @property {(id: string) => Promise<void>} touchLastSeen
  */
 
 export {};

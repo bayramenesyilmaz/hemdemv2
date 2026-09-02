@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-import { calculateAge } from "@hemdem/core/domain/entities/user";
+import { calculateAge, isOnline } from "@hemdem/core/domain/entities/user";
 import { useI18n } from "@/locales/client";
 
 const SWIPE_THRESHOLD = 120;
@@ -60,9 +60,12 @@ export function SwipeCard({ candidate, locale, isTop, onSwipe }) {
         {/* pb-28: altta kayan sabit like/dislike/süper mesaj çubuğunun
             altına gizlenmesin diye metne fazladan boşluk. */}
         <div className="relative mt-auto flex flex-col gap-1.5 p-5 pb-28 text-white">
-          <p className="text-2xl font-bold drop-shadow-sm">
+          <p className="flex items-center gap-2 text-2xl font-bold drop-shadow-sm">
             {candidate.name}
             {age ? `, ${age}` : ""}
+            {isOnline(candidate.lastSeenAt) && (
+              <span className="h-2.5 w-2.5 shrink-0 rounded-full border-2 border-white bg-emerald-400" />
+            )}
           </p>
           {candidate.country && <p className="text-sm text-white/80">{candidate.country}</p>}
           {candidate.bio && <p className="line-clamp-2 text-sm text-white/90">{candidate.bio}</p>}

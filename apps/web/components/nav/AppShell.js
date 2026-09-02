@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useI18n } from "@/locales/client";
 import { fetchUnreadSummaryAction } from "@/lib/actions/notificationActions";
+import { touchLastSeenAction } from "@/lib/actions/profileActions";
 import { AppHeader } from "./AppHeader";
 import { BottomNav } from "./BottomNav";
 import { Sidebar } from "./Sidebar";
@@ -14,6 +15,11 @@ import { useNavItems } from "./navItems";
 // politikası olmadığından Supabase Realtime'a client'tan abone
 // olunamıyor (bkz. ChatThread.js), sondaj (polling) tek seçenek.
 const UNREAD_POLL_INTERVAL_MS = 5000;
+
+// Çevrimiçi durumu 3 dakikalık bir eşikle türetildiği için (bkz.
+// isOnline, packages/core/domain/entities/user.js) yazma sıklığı bundan
+// çok daha seyrek tutulabilir — 60sn'de bir yeterli.
+const HEARTBEAT_INTERVAL_MS = 60000;
 
 /**
  * Mobil öncelikli uygulama kabuğu (plan bölüm 6 + 7):
@@ -89,6 +95,23 @@ export function AppShell({
       cancelled = true;
       clearInterval(interval);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    function tick() {
+      if (document.hidden) return;
+      touchLastSeenAction();
+    }
+
+    tick();
+    const interval = setInterval(tick, HEARTBEAT_INTERVAL_MS);
+    document.addEventListener("visibilitychange", tick);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", tick);
     };
   }, [isAuthenticated]);
 

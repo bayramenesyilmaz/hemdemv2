@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { isOnline } from "@hemdem/core/domain/entities/user";
 import { colors, gradients, spacing } from "../../lib/theme";
 
 function initialsOf(name) {
@@ -24,10 +25,13 @@ export function ProfileHero({ profile, age, onBack }) {
       </LinearGradient>
 
       <LinearGradient colors={["transparent", "rgba(0,0,0,0.6)", "rgba(0,0,0,0.92)"]} style={styles.heroOverlay}>
-        <Text style={styles.heroName}>
-          {profile.name}
-          {age ? `, ${age}` : ""}
-        </Text>
+        <View style={styles.heroNameRow}>
+          <Text style={styles.heroName}>
+            {profile.name}
+            {age ? `, ${age}` : ""}
+          </Text>
+          {isOnline(profile.lastSeenAt) && <View style={styles.onlineDot} />}
+        </View>
         {profile.country && <Text style={styles.heroCountry}>{profile.country}</Text>}
         {profile.bio && <Text style={styles.heroBio}>{profile.bio}</Text>}
       </LinearGradient>
@@ -65,10 +69,23 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.lg,
     gap: 2,
   },
+  heroNameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
   heroName: {
     color: "#fff",
     fontSize: 24,
     fontWeight: "800",
+  },
+  onlineDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "#34d399",
+    borderWidth: 2,
+    borderColor: "rgba(0,0,0,0.5)",
   },
   heroCountry: {
     color: "rgba(255,255,255,0.8)",

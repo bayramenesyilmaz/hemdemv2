@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { setStaticParamsLocale } from "next-international/server";
-import { calculateAge } from "@hemdem/core/domain/entities/user";
+import { calculateAge, isOnline } from "@hemdem/core/domain/entities/user";
 import { getI18n } from "@/locales/server";
 import { getAuthUserId } from "@/lib/session";
 import { repositories } from "@/lib/repositories";
@@ -75,9 +75,15 @@ export default async function PublicProfilePage({ params }) {
         />
 
         <div className="relative mt-auto flex h-full flex-col justify-end gap-1.5 p-5 text-white">
-          <h1 className="text-2xl font-bold drop-shadow-sm">
+          <h1 className="flex items-center gap-2 text-2xl font-bold drop-shadow-sm">
             {profile.name}
             {age ? `, ${age}` : ""}
+            {isOnline(profile.lastSeenAt) && (
+              <span className="flex items-center gap-1 text-xs font-medium text-emerald-400">
+                <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                {t("profile.online")}
+              </span>
+            )}
           </h1>
           {profile.country && <p className="text-sm text-white/80">{profile.country}</p>}
           {profile.bio && <p className="text-sm text-white/90">{profile.bio}</p>}

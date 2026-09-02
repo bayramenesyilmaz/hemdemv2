@@ -15,6 +15,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { fetchChatMessages } from "@hemdem/core/usecases/chat/fetchChatMessages";
 import { sendMessage } from "@hemdem/core/usecases/chat/sendMessage";
+import { isOnline } from "@hemdem/core/domain/entities/user";
 import { repositories } from "../../../lib/repositories";
 import { useSession } from "../../../lib/session";
 import { colors, gradients, radii, spacing } from "../../../lib/theme";
@@ -96,6 +97,7 @@ export default function ChatThreadScreen() {
       <View style={[insets, styles.headerWrap]}>
         <ScreenHeader
           title={otherUser?.name ?? ""}
+          subtitle={otherUser && isOnline(otherUser.lastSeenAt) ? "Çevrimiçi" : undefined}
           back
           action={
             otherUser && (

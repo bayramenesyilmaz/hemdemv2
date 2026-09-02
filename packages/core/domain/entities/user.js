@@ -7,7 +7,8 @@
  * @property {string} id                       - auth.users.id ile aynı (1:1)
  * @property {string} createdAt
  * @property {string|null} name
- * @property {string|null} avatarUrl
+ * @property {string|null} avatarUrl        - photos[0] ile senkron tutulur, geriye dönük uyumluluk için
+ * @property {string[]} photos              - profil fotoğraf galerisi, en fazla 3
  * @property {string|null} bio
  * @property {Gender|null} gender
  * @property {string|null} country
@@ -20,13 +21,22 @@
  * @property {number|null} gateTestThreshold     - 0-100
  * @property {boolean} allowGuestLikes
  * @property {Record<string, string>} socialLinks - { instagram: "https://..." } gibi
+ * @property {string|null} lastSeenAt              - son aktiflik zamanı, çevrimiçi durumu buradan türetilir
+ * @property {string|null} boostedUntil            - dolana kadar keşfette öne çıkar
+ * @property {string|null} verificationPhotoUrl
+ * @property {"none"|"pending"|"approved"|"rejected"} verificationStatus
  */
 
 const ALLOWED_GENDERS = ["male", "female"];
 const ALLOWED_INTERESTS = ["male", "female", "both"];
 const ALLOWED_LANGUAGES = ["tr", "en"];
 const ALLOWED_ROLES = ["user", "admin"];
+const ALLOWED_VERIFICATION_STATUSES = ["none", "pending", "approved", "rejected"];
 const MAX_SOCIAL_LINKS = 10;
+const MAX_PHOTOS = 3;
+
+/** Bu eşiğin altında son görülme varsa kullanıcı "çevrimiçi" sayılır. */
+export const ONLINE_THRESHOLD_MINUTES = 3;
 
 /**
  * @param {Partial<Profile>} input
@@ -69,8 +79,27 @@ export function validateProfile(input) {
       errors.push("invalid_social_links");
     }
   }
+  if (input.photos != null) {
+    const isValidShape = Array.isArray(input.photos) && input.photos.every((url) => typeof url === "string");
+    if (!isValidShape || input.photos.length > MAX_PHOTOS) {
+      errors.push("invalid_photos");
+    }
+  }
+  if (input.verificationStatus != null && !ALLOWED_VERIFICATION_STATUSES.includes(input.verificationStatus)) {
+    errors.push("invalid_verification_status");
+  }
 
   return { valid: errors.length === 0, errors };
+}
+
+/**
+ * @param {string|null} lastSeenAt
+ * @returns {boolean}
+ */
+export function isOnline(lastSeenAt) {
+  if (!lastSeenAt) return false;
+  const diffMs = Date.now() - new Date(lastSeenAt).getTime();
+  return diffMs < ONLINE_THRESHOLD_MINUTES * 60 * 1000;
 }
 
 /**

@@ -3,6 +3,7 @@ import { validateProfile } from "../../domain/entities/user.js";
 const EDITABLE_FIELDS = [
   "name",
   "avatarUrl",
+  "photos",
   "bio",
   "gender",
   "country",
