@@ -1,5 +1,9 @@
+import { Manrope } from "next/font/google";
 import "./globals.css";
 import { ServiceWorkerRegistrar } from "@/components/ServiceWorkerRegistrar";
+import { ThemeScript } from "@/components/ThemeScript";
+
+const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope" });
 
 export const metadata = {
   metadataBase: process.env.NEXT_PUBLIC_DOMAIN
@@ -32,7 +36,10 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="tr" suppressHydrationWarning>
+    <html lang="tr" suppressHydrationWarning className={manrope.variable}>
+      <head>
+        <ThemeScript />
+      </head>
       <body>
         {children}
         <ServiceWorkerRegistrar />

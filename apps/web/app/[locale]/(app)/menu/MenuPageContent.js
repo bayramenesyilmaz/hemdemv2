@@ -6,6 +6,7 @@ import { useI18n } from "@/locales/client";
 import { PageTitle } from "@/components/PageTitle";
 import { LogoutButton } from "@/components/LogoutButton";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { Button } from "@/components/ui/Button";
 import { CloseIcon } from "@/components/icons";
 import { useNavItems } from "@/components/nav/navItems";
@@ -66,8 +67,9 @@ export function MenuPageContent({ locale, isAuthenticated, isAdmin }) {
             </Button>
           </div>
         )}
-        <div className="flex justify-center">
+        <div className="flex justify-center gap-4">
           <LocaleSwitcher />
+          <ThemeSwitcher />
         </div>
       </div>
     </>
