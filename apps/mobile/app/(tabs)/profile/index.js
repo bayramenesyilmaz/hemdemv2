@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
+import * as ImagePicker from "expo-image-picker";
 import { COIN_COSTS } from "@hemdem/core/domain/entities/coin";
 import { activateBoost } from "@hemdem/core/usecases/profile/activateBoost";
+import { submitVerificationPhoto } from "@hemdem/core/usecases/profile/submitVerificationPhoto";
 import { repositories } from "../../../lib/repositories";
 import { useSession } from "../../../lib/session";
 import { colors, gradients, radii, spacing } from "../../../lib/theme";
@@ -13,6 +15,7 @@ import { shareLink } from "../../../lib/share";
 import { Button } from "../../../components/ui/Button";
 import { ScreenHeader } from "../../../components/ui/ScreenHeader";
 import { Screen } from "../../../components/ui/Screen";
+import { VerificationBadge } from "../../../components/VerificationBadge";
 
 // Bildirimler/Gönderiler/Liderlik artık üst bar veya "Diğer" menüsünden
 // erişiliyor; burada sadece doğrudan profille ilgili kısayollar kalıyor.
@@ -36,6 +39,9 @@ export default function ProfileScreen() {
   const [boostRemaining, setBoostRemaining] = useState(0);
   const [boosting, setBoosting] = useState(false);
   const [boostError, setBoostError] = useState(null);
+  const [verificationStatus, setVerificationStatus] = useState("none");
+  const [verifying, setVerifying] = useState(false);
+  const [verifyError, setVerifyError] = useState(null);
 
   useEffect(() => {
     if (!userId) return;
@@ -50,6 +56,7 @@ export default function ProfileScreen() {
       setCoins(balance);
       setBoostedUntil(found?.boostedUntil ?? null);
       setBoostRemaining(minutesLeft(found?.boostedUntil));
+      setVerificationStatus(found?.verificationStatus ?? "none");
     }
     load();
     return () => {
@@ -75,6 +82,48 @@ export default function ProfileScreen() {
     setCoins(result.data.newBalance);
     setBoostedUntil(result.data.boostedUntil);
     setBoostRemaining(minutesLeft(result.data.boostedUntil));
+  }
+
+  // Web'in aksine mobilde galeri değil, gerçekten o an kamerayla çekim
+  // zorunlu — `launchCameraAsync` (launchImageLibraryAsync değil).
+  async function handleVerify() {
+    setVerifyError(null);
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permission.granted) {
+      setVerifyError("Kamera erişim izni verilmedi.");
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      cameraType: ImagePicker.CameraType.front,
+      quality: 0.6,
+      allowsEditing: true,
+      aspect: [1, 1],
+      base64: true,
+    });
+    if (result.canceled || !result.assets?.[0]) return;
+
+    const asset = result.assets[0];
+    const mimeType = "image/jpeg";
+    const dataUri = `data:${mimeType};base64,${asset.base64}`;
+
+    setVerifying(true);
+    const uploadResult = await submitVerificationPhoto(repositories, userId, dataUri, {
+      type: mimeType,
+      size: asset.fileSize ?? dataUri.length,
+      extension: "jpg",
+    });
+    setVerifying(false);
+
+    if (uploadResult.status === "error") {
+      setVerifyError(
+        uploadResult.message === "verification_already_submitted"
+          ? "Doğrulama isteğin zaten inceleniyor."
+          : uploadResult.message
+      );
+      return;
+    }
+    setVerificationStatus("pending");
   }
 
   function handleLogout() {
@@ -111,7 +160,10 @@ export default function ProfileScreen() {
         ) : (
           <InitialsAvatar name={profile.name} size={80} />
         )}
-        <Text style={styles.name}>{profile.name}</Text>
+        <View style={styles.nameRow}>
+          <Text style={styles.name}>{profile.name}</Text>
+          {verificationStatus === "approved" && <VerificationBadge size={18} />}
+        </View>
         {profile.bio && <Text style={styles.bio}>{profile.bio}</Text>}
       </View>
 
@@ -143,6 +195,27 @@ export default function ProfileScreen() {
           <Button variant="primary" onPress={handleBoost} loading={boosting}>
             {`Boost'la (${COIN_COSTS.boostProfile} coin)`}
           </Button>
+        </View>
+      )}
+
+      {verificationStatus !== "approved" && (
+        <View style={styles.verifyCard}>
+          {verificationStatus === "pending" ? (
+            <Text style={styles.verifyPendingText}>Doğrulama isteğin inceleniyor.</Text>
+          ) : (
+            <>
+              {verificationStatus === "rejected" && (
+                <Text style={styles.verifyPendingText}>Doğrulama isteğin reddedildi. Tekrar deneyebilirsin.</Text>
+              )}
+              <Text style={styles.verifyExplainer}>
+                Profilinin gerçek olduğunu göstermek için kameranla bir selfie çek. Ekibimiz inceleyip onaylayacak.
+              </Text>
+              {verifyError && <Text style={styles.boostError}>{verifyError}</Text>}
+              <Button variant="outline" onPress={handleVerify} loading={verifying}>
+                Profilini Doğrula
+              </Button>
+            </>
+          )}
         </View>
       )}
 
@@ -207,11 +280,16 @@ const styles = StyleSheet.create({
     height: 72,
     borderRadius: radii.lg,
   },
+  nameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginTop: 8,
+  },
   name: {
     color: colors.foreground,
     fontSize: 20,
     fontWeight: "800",
-    marginTop: 8,
   },
   bio: {
     color: colors.mutedForeground,
@@ -257,6 +335,22 @@ const styles = StyleSheet.create({
     color: colors.primary,
     fontSize: 14,
     fontWeight: "700",
+  },
+  verifyCard: {
+    gap: spacing.sm,
+    backgroundColor: colors.card,
+    borderRadius: radii.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.lg,
+  },
+  verifyPendingText: {
+    color: colors.mutedForeground,
+    fontSize: 13,
+  },
+  verifyExplainer: {
+    color: colors.mutedForeground,
+    fontSize: 13,
   },
   linkList: {
     gap: spacing.xs,

@@ -5,6 +5,7 @@ import { unlockProfileViewers } from "@hemdem/core/usecases/profile/unlockProfil
 import { uploadAvatar } from "@hemdem/core/usecases/profile/uploadAvatar";
 import { touchLastSeen } from "@hemdem/core/usecases/profile/touchLastSeen";
 import { activateBoost } from "@hemdem/core/usecases/profile/activateBoost";
+import { submitVerificationPhoto } from "@hemdem/core/usecases/profile/submitVerificationPhoto";
 import { repositories } from "@/lib/repositories";
 import { getAuthUserId } from "@/lib/session";
 
@@ -61,4 +62,26 @@ export async function activateBoostAction() {
     return { status: "error", message: "not_authenticated" };
   }
   return activateBoost(repositories, userId);
+}
+
+/**
+ * @param {FormData} formData - tek bir "photo" alanı (File) içerir.
+ */
+export async function submitVerificationPhotoAction(formData) {
+  const userId = await getAuthUserId();
+  if (!userId) {
+    return { status: "error", message: "not_authenticated" };
+  }
+
+  const file = formData.get("photo");
+  if (!(file instanceof File) || file.size === 0) {
+    return { status: "error", message: "invalid_file_type" };
+  }
+
+  const extension = file.name.split(".").pop();
+  return submitVerificationPhoto(repositories, userId, file, {
+    type: file.type,
+    size: file.size,
+    extension,
+  });
 }

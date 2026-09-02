@@ -12,7 +12,9 @@ import { SectionCard } from "@/components/SectionCard";
 import { Button } from "@/components/ui/Button";
 import { Avatar } from "@/components/Avatar";
 import { ShareButton } from "@/components/ShareButton";
+import { VerificationBadge } from "@/components/VerificationBadge";
 import { BoostButton } from "./BoostButton";
+import { VerificationSection } from "./VerificationSection";
 import { CoinIcon, UserIcon, SupportIcon } from "@/components/icons";
 
 export async function generateMetadata() {
@@ -62,13 +64,18 @@ export default async function ProfilePage({ params }) {
 
       <BoostButton cost={COIN_COSTS.boostProfile} initialBoostedUntil={profile.boostedUntil} />
 
+      <VerificationSection initialStatus={profile.verificationStatus} />
+
       <SectionCard className="flex animate-fade-in flex-col gap-4 bg-gradient-surface">
         <div className="flex items-center gap-4">
           <Avatar src={profile.avatarUrl} name={profile.name} size="lg" className="shadow-card" />
           <div className="min-w-0">
-            <p className="truncate text-base font-semibold text-foreground">
+            <p className="flex items-center gap-1.5 truncate text-base font-semibold text-foreground">
               {profile.name}
               {profile.birthdate ? `, ${calculateAge(profile.birthdate)}` : ""}
+              {profile.verificationStatus === "approved" && (
+                <VerificationBadge label={t("profile.verifiedBadgeLabel")} />
+              )}
             </p>
             {profile.country && <p className="text-sm text-muted-foreground">{profile.country}</p>}
             <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-background px-3 py-1 text-xs font-semibold text-primary shadow-soft">

@@ -8,7 +8,7 @@ import { colors, spacing } from "../../lib/theme";
  * Sabit `paddingTop: 60` yerine SafeAreaView zaten dış Screen bileşeninde
  * uygulandığı için burada ekstra bir üst boşluk gerekmiyor.
  */
-export function ScreenHeader({ title, subtitle, back = false, onBack, action }) {
+export function ScreenHeader({ title, titleExtra, subtitle, back = false, onBack, action }) {
   const router = useRouter();
 
   return (
@@ -21,9 +21,12 @@ export function ScreenHeader({ title, subtitle, back = false, onBack, action }) 
             </Pressable>
           )}
           <View style={styles.textGroup}>
-            <Text style={styles.title} numberOfLines={1}>
-              {title}
-            </Text>
+            <View style={styles.titleRow}>
+              <Text style={styles.title} numberOfLines={1}>
+                {title}
+              </Text>
+              {titleExtra}
+            </View>
             {subtitle && (
               <Text style={styles.subtitle} numberOfLines={2}>
                 {subtitle}
@@ -72,10 +75,16 @@ const styles = StyleSheet.create({
   textGroup: {
     flex: 1,
   },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
   title: {
     color: colors.foreground,
     fontSize: 22,
     fontWeight: "800",
+    flexShrink: 1,
   },
   subtitle: {
     color: colors.mutedForeground,

@@ -9,6 +9,7 @@ import { repositories } from "@/lib/repositories";
 import { buildMetadata } from "@/lib/seo";
 import { SectionCard } from "@/components/SectionCard";
 import { Button } from "@/components/ui/Button";
+import { VerificationBadge } from "@/components/VerificationBadge";
 import { MessagesIcon } from "@/components/icons";
 import { SendMessageDialog } from "./SendMessageDialog";
 import { ProfileActions } from "./ProfileActions";
@@ -78,6 +79,9 @@ export default async function PublicProfilePage({ params }) {
           <h1 className="flex items-center gap-2 text-2xl font-bold drop-shadow-sm">
             {profile.name}
             {age ? `, ${age}` : ""}
+            {profile.verificationStatus === "approved" && (
+              <VerificationBadge label={t("profile.verifiedBadgeLabel")} className="text-white" />
+            )}
             {isOnline(profile.lastSeenAt) && (
               <span className="flex items-center gap-1 text-xs font-medium text-emerald-400">
                 <span className="h-2 w-2 rounded-full bg-emerald-400" />

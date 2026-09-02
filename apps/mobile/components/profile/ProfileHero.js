@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { isOnline } from "@hemdem/core/domain/entities/user";
 import { colors, gradients, spacing } from "../../lib/theme";
+import { VerificationBadge } from "../VerificationBadge";
 
 function initialsOf(name) {
   return (name ?? "")
@@ -30,6 +31,7 @@ export function ProfileHero({ profile, age, onBack }) {
             {profile.name}
             {age ? `, ${age}` : ""}
           </Text>
+          {profile.verificationStatus === "approved" && <VerificationBadge size={18} color="#fff" />}
           {isOnline(profile.lastSeenAt) && <View style={styles.onlineDot} />}
         </View>
         {profile.country && <Text style={styles.heroCountry}>{profile.country}</Text>}

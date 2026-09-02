@@ -3,9 +3,11 @@ import Link from "next/link";
 import { setStaticParamsLocale } from "next-international/server";
 import { fetchChatMessages } from "@hemdem/core/usecases/chat/fetchChatMessages";
 import { isOnline } from "@hemdem/core/domain/entities/user";
+import { getI18n } from "@/locales/server";
 import { getAuthUserId } from "@/lib/session";
 import { repositories } from "@/lib/repositories";
 import { Avatar } from "@/components/Avatar";
+import { VerificationBadge } from "@/components/VerificationBadge";
 import { ChatThread } from "./ChatThread";
 import { SafetyMenu } from "../../u/[id]/SafetyMenu";
 
@@ -28,6 +30,7 @@ export default async function ChatPage({ params }) {
   }
 
   const { otherUser, messages, readStates } = result.data;
+  const t = await getI18n();
 
   // Sohbet ekranı kalan dikey alanı tam doldurur: mobilde 100dvh eksi üst
   // header (3.5rem) ve alt navigasyon (4rem + safe-area); masaüstünde alt
@@ -42,7 +45,12 @@ export default async function ChatPage({ params }) {
             size="sm"
             online={isOnline(otherUser.lastSeenAt)}
           />
-          <h1 className="truncate text-lg font-semibold text-foreground lg:text-xl">{otherUser.name}</h1>
+          <h1 className="flex min-w-0 items-center gap-1.5 truncate text-lg font-semibold text-foreground lg:text-xl">
+            <span className="truncate">{otherUser.name}</span>
+            {otherUser.verificationStatus === "approved" && (
+              <VerificationBadge label={t("profile.verifiedBadgeLabel")} />
+            )}
+          </h1>
         </Link>
         <SafetyMenu targetUserId={otherUser.id} targetName={otherUser.name} />
       </div>

@@ -23,6 +23,7 @@ import { colors, gradients, radii, spacing } from "../../../lib/theme";
 import { ScreenHeader } from "../../../components/ui/ScreenHeader";
 import { useScreenInsets } from "../../../components/ui/Screen";
 import { SafetyMenu } from "../../../components/SafetyMenu";
+import { VerificationBadge } from "../../../components/VerificationBadge";
 
 const POLL_INTERVAL_MS = 3000;
 
@@ -115,6 +116,7 @@ export default function ChatThreadScreen() {
       <View style={[insets, styles.headerWrap]}>
         <ScreenHeader
           title={otherUser?.name ?? ""}
+          titleExtra={otherUser?.verificationStatus === "approved" && <VerificationBadge size={16} />}
           subtitle={otherUser && isOnline(otherUser.lastSeenAt) ? "Çevrimiçi" : undefined}
           back
           action={
