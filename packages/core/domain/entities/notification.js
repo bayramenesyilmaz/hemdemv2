@@ -1,18 +1,18 @@
 /**
- * @typedef {"test_similarity" | "incoming_like" | "match" | "message"} NotificationType
+ * @typedef {"test_similarity" | "incoming_like" | "match" | "message" | "daily_match"} NotificationType
  *
  * @typedef {object} Notification
  * @property {number} id
  * @property {string} createdAt
  * @property {string} userId - bildirimi alan
  * @property {NotificationType} type
- * @property {string|null} actorId - bildirimi tetikleyen kullanıcı
+ * @property {string|null} actorId - bildirimi tetikleyen kullanıcı (daily_match için eşleşen kullanıcı)
  * @property {string|null} testId
  * @property {number|null} similarity - test_similarity için 0-100
  * @property {boolean} isRead
  */
 
-export const NOTIFICATION_TYPES = ["test_similarity", "incoming_like", "match", "message"];
+export const NOTIFICATION_TYPES = ["test_similarity", "incoming_like", "match", "message", "daily_match"];
 
 /**
  * @param {Partial<Notification>} input

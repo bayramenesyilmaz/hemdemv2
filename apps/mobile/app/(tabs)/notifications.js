@@ -20,6 +20,9 @@ function notificationText({ notification, actor, test }) {
   if (notification.type === "match") {
     return `${actor.name} ile eşleştin! Sohbete başla.`;
   }
+  if (notification.type === "daily_match") {
+    return `Günün eşleşmesi: ${actor.name}`;
+  }
   return `${actor.name} seni beğendi.`;
 }
 

@@ -1,24 +1,29 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Image, Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { fetchDiscoverCandidates } from "@hemdem/core/usecases/discover/fetchDiscoverCandidates";
+import { fetchDailyMatch } from "@hemdem/core/usecases/discover/fetchDailyMatch";
 import { likeUser } from "@hemdem/core/usecases/discover/likeUser";
 import { sendMessage } from "@hemdem/core/usecases/chat/sendMessage";
 import { repositories } from "../../lib/repositories";
 import { useSession } from "../../lib/session";
 import { colors, gradients, radii, spacing } from "../../lib/theme";
 import { SwipeCard } from "../../components/SwipeCard";
+import { InitialsAvatar } from "../../components/InitialsAvatar";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { Button } from "../../components/ui/Button";
 import { AppTopBar } from "../../components/nav/AppTopBar";
 import { DiscoverFiltersModal } from "../../components/discover/DiscoverFiltersModal";
 import { MessageComposerModal } from "../../components/MessageComposerModal";
+import { VerificationBadge } from "../../components/VerificationBadge";
+import { isRenderableImageUri } from "../../lib/avatar";
 
 export default function DiscoverScreen() {
   const router = useRouter();
   const { userId } = useSession();
   const [candidates, setCandidates] = useState([]);
+  const [dailyMatch, setDailyMatch] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [matchName, setMatchName] = useState(null);
@@ -43,6 +48,18 @@ export default function DiscoverScreen() {
       if (cancelled) return;
       setFilters((prev) => (profile?.country ? { ...prev, country: profile.country } : prev));
       setFiltersReady(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
+
+  useEffect(() => {
+    if (!userId) return;
+    let cancelled = false;
+    fetchDailyMatch(repositories, userId).then((result) => {
+      if (cancelled || result.status !== "success") return;
+      setDailyMatch(result.data?.profile ?? null);
     });
     return () => {
       cancelled = true;
@@ -145,6 +162,26 @@ export default function DiscoverScreen() {
           {hasActiveFilter && <View style={styles.filterDot} />}
         </Pressable>
       </View>
+
+      {dailyMatch && (
+        <Pressable style={styles.dailyMatchCard} onPress={() => router.push(`/u/${dailyMatch.id}`)}>
+          {isRenderableImageUri(dailyMatch.avatarUrl) ? (
+            <Image source={{ uri: dailyMatch.avatarUrl }} style={styles.dailyMatchAvatar} />
+          ) : (
+            <InitialsAvatar name={dailyMatch.name} size={40} />
+          )}
+          <View style={styles.dailyMatchBody}>
+            <Text style={styles.dailyMatchLabel}>✨ Günün Eşleşmesi</Text>
+            <View style={styles.dailyMatchNameRow}>
+              <Text style={styles.dailyMatchName} numberOfLines={1}>
+                {dailyMatch.name}
+              </Text>
+              {dailyMatch.verificationStatus === "approved" && <VerificationBadge size={14} />}
+            </View>
+          </View>
+          <Text style={styles.dailyMatchCta}>Profiline bak</Text>
+        </Pressable>
+      )}
 
       <View style={styles.deck}>
         {candidates.length === 0 ? (
@@ -255,6 +292,46 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     borderWidth: 1,
     borderColor: colors.background,
+  },
+  dailyMatchCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    marginHorizontal: spacing.xl,
+    marginTop: spacing.xs,
+    padding: spacing.sm,
+    borderRadius: radii.lg,
+    backgroundColor: colors.primarySoft,
+  },
+  dailyMatchAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  dailyMatchBody: {
+    flex: 1,
+    minWidth: 0,
+  },
+  dailyMatchLabel: {
+    color: colors.primary,
+    fontSize: 11,
+    fontWeight: "700",
+  },
+  dailyMatchNameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  dailyMatchName: {
+    color: colors.foreground,
+    fontSize: 14,
+    fontWeight: "600",
+    flexShrink: 1,
+  },
+  dailyMatchCta: {
+    color: colors.primary,
+    fontSize: 12,
+    fontWeight: "600",
   },
   deck: {
     flex: 1,

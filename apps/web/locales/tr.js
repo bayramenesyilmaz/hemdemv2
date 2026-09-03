@@ -107,6 +107,8 @@ const tr = {
     gateTestExplainer:
       "Kapı testi, bir kullanıcının kendisini beğenmeden önce çözmeni istediği bir uyum testidir. Cevapların, o kişinin belirlediği benzerlik oranını geçerse beğenin otomatik olarak gönderilir.",
     likeSent: "Beğenin gönderildi!",
+    dailyMatchLabel: "Günün Eşleşmesi",
+    dailyMatchCta: "Profiline bak",
     errors: {
       gate_test_not_completed: "Bu kişiyi beğenmek için önce kapı testini çözmelisin.",
       gate_test_threshold_not_met: "Kapı testi benzerlik eşiğini karşılamıyorsun.",
@@ -262,6 +264,7 @@ const tr = {
     testSimilarity: "{name}, {test} testinde seninle uyumlu çıktı.",
     incomingLike: "{name} seni beğendi.",
     matched: "{name} ile eşleştin! Sohbete başla.",
+    dailyMatch: "Günün eşleşmesi: {name}. Profiline göz at!",
     newMessage: "{name} sana mesaj gönderdi.",
     loadErrorTitle: "Bildirimler şu an yüklenemedi",
     loadErrorBody: "Bir şeyler ters gitti, birazdan tekrar dene.",

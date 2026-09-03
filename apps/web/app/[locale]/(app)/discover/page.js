@@ -3,12 +3,14 @@ import { setStaticParamsLocale } from "next-international/server";
 import { isProfileComplete } from "@hemdem/core/domain/entities/user";
 import { fetchDiscoverCandidates } from "@hemdem/core/usecases/discover/fetchDiscoverCandidates";
 import { fetchGuestDiscoverCandidates } from "@hemdem/core/usecases/discover/fetchGuestDiscoverCandidates";
+import { fetchDailyMatch } from "@hemdem/core/usecases/discover/fetchDailyMatch";
 import { getI18n } from "@/locales/server";
 import { getAuthUserId } from "@/lib/session";
 import { repositories } from "@/lib/repositories";
 import { PageTitle } from "@/components/PageTitle";
 import { DiscoverFilters } from "./DiscoverFilters";
 import { DiscoverFilterRedirect } from "./DiscoverFilterRedirect";
+import { DailyMatchCard } from "./DailyMatchCard";
 import { SwipeDeck } from "./SwipeDeck";
 
 export async function generateMetadata() {
@@ -36,6 +38,7 @@ export default async function DiscoverPage({ params, searchParams }) {
   let candidates;
   let isGuest = true;
   let viewerCountry;
+  let dailyMatchProfile = null;
 
   if (userId) {
     const profile = await repositories.user.findById(userId);
@@ -43,8 +46,12 @@ export default async function DiscoverPage({ params, searchParams }) {
       redirect(`/${locale}/onboarding`);
     }
     viewerCountry = profile.country;
-    const result = await fetchDiscoverCandidates(repositories, userId, filters);
+    const [result, dailyMatchResult] = await Promise.all([
+      fetchDiscoverCandidates(repositories, userId, filters),
+      fetchDailyMatch(repositories, userId),
+    ]);
     candidates = result.data;
+    dailyMatchProfile = dailyMatchResult.data?.profile ?? null;
     isGuest = false;
   } else {
     const result = await fetchGuestDiscoverCandidates(repositories, filters);
@@ -64,7 +71,7 @@ export default async function DiscoverPage({ params, searchParams }) {
         hasQuery={Boolean(sp.gender || sp.country || sp.minAge || sp.maxAge)}
         viewerCountry={viewerCountry}
       />
-      <div className="px-4 pb-4 pt-4 lg:px-0 lg:pt-0">
+      <div className="flex flex-col gap-3 px-4 pb-4 pt-4 lg:px-0 lg:pt-0">
         <PageTitle
           action={
             <DiscoverFilters
@@ -78,6 +85,7 @@ export default async function DiscoverPage({ params, searchParams }) {
         >
           {t("discover.title")}
         </PageTitle>
+        {dailyMatchProfile && <DailyMatchCard locale={locale} profile={dailyMatchProfile} t={t} />}
       </div>
       <SwipeDeck locale={locale} initialCandidates={candidates} isGuest={isGuest} />
     </main>

@@ -105,6 +105,8 @@ const en = {
     gateTestExplainer:
       "A gate test is a compatibility test someone asks you to take before you can like them. If your answers match their required similarity threshold, your like is sent automatically.",
     likeSent: "Your like was sent!",
+    dailyMatchLabel: "Today's Match",
+    dailyMatchCta: "View profile",
     errors: {
       gate_test_not_completed: "You need to take their gate test before liking them.",
       gate_test_threshold_not_met: "You don't meet their gate test similarity threshold.",
@@ -260,6 +262,7 @@ const en = {
     testSimilarity: "{name} matched with you on {test}.",
     incomingLike: "{name} liked you.",
     matched: "You matched with {name}! Start chatting.",
+    dailyMatch: "Today's match: {name}. Check out their profile!",
     newMessage: "{name} sent you a message.",
     loadErrorTitle: "Notifications couldn't load right now",
     loadErrorBody: "Something went wrong — try again in a bit.",

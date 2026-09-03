@@ -82,7 +82,9 @@ export default async function NotificationsPage({ params }) {
                               })
                             : notification.type === "match"
                               ? t("notifications.matched", { name: actor.name })
-                              : t("notifications.incomingLike", { name: actor.name })}
+                              : notification.type === "daily_match"
+                                ? t("notifications.dailyMatch", { name: actor.name })
+                                : t("notifications.incomingLike", { name: actor.name })}
                         </p>
                       </div>
                       {notification.similarity != null && (
