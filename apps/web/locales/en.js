@@ -33,6 +33,14 @@ const en = {
     emailLabel: "Email",
     passwordLabel: "Password",
     mockModeNotice: "This feature requires sending a real email, so it's unavailable in mock data mode.",
+    consent: {
+      text: "I'm over 18 and I've read and accept the",
+      termsLink: "Terms of Service",
+      and: "and",
+      privacyLink: "Privacy Policy",
+      suffix: ".",
+      required: "You must accept the terms above to continue.",
+    },
     register: {
       title: "Sign Up",
       submit: "Sign Up",
@@ -459,10 +467,14 @@ const en = {
     },
   },
   privacy: {
-    title: "Privacy Policy",
+    title: "Privacy Policy & KVKK Notice",
     intro:
-      "Hemdem is a personality-test matchmaking platform. This page explains what data we collect, why we collect it, and how to exercise your rights.",
+      "Hemdem is a personality-test matchmaking platform. This page serves both as our privacy policy and as our disclosure obligation under Turkey's Law No. 6698 on Protection of Personal Data (\"KVKK\") article 10: it explains what data we collect, why we collect it, and how to exercise your rights.",
     sections: {
+      controller: {
+        title: "Data controller",
+        body: "[Name / Company name] — [email address]. (This field must be filled in by the app owner; KVKK article 10 requires the data controller's identity to be stated explicitly.)",
+      },
       collected: {
         title: "What we collect",
         body: "Your account info (email), profile info (name, birthdate, gender, country, bio, social links), any profile photo you upload, your test answers, messages you send/receive, posts, and coin/point activity.",
@@ -484,15 +496,61 @@ const en = {
         body: "Database access happens only server-side, over a connection protected by row-level security (RLS) — no database credentials are ever sent to the browser.",
       },
       rights: {
-        title: "Your rights",
-        body: "You have the right to access, correct, and delete your data. You can edit your profile anytime, permanently delete your account, or reach us with a request/complaint.",
+        title: "Your rights (KVKK article 11)",
+        body: "You have the right to learn whether your data is processed, request information about it, access it, correct it, request deletion, and object to processing. You can edit your profile anytime, permanently delete your account, or reach us with a request/complaint; we respond within 30 days at the latest.",
       },
       contact: {
         title: "Contact us",
-        body: "For privacy questions, use the Request/Complaint form.",
+        body: "For privacy questions and KVKK requests, use the Request/Complaint form.",
       },
     },
     contactLink: "Submit a Request",
+    termsLink: "Terms of Service",
+  },
+  terms: {
+    title: "Terms of Service",
+    intro:
+      "By using Hemdem you agree to the terms below. This is a legal document but we've tried to keep it plain; reach out if anything is unclear.",
+    sections: {
+      service: {
+        title: "What Hemdem is",
+        body: "Hemdem is a fun, friendship-oriented app that connects like-minded people through personality tests. The tests are not a scientific or clinical assessment tool and do not replace professional psychological advice.",
+      },
+      ageRequirement: {
+        title: "Age requirement",
+        body: "You must be at least 18 years old to use Hemdem. By registering, you confirm that you are over 18.",
+      },
+      account: {
+        title: "Your account and responsibilities",
+        body: "You're responsible for providing accurate information and for the security of your account and password. An account is for your personal use only; you're responsible for activity that happens on it.",
+      },
+      content: {
+        title: "User content and prohibited behavior",
+        body: "Profanity, harassment, hate speech, sexual content, or any unlawful content is prohibited. Posts, tests, and messages pass through an automatic filter; if a blocked word is detected, you're shown which word(s) triggered it and the content is not published. Attempting to evade this filter (character substitution, symbols, etc.) is also a violation.",
+      },
+      moderation: {
+        title: "Moderation and the right to suspend accounts",
+        body: "We may warn, suspend, or permanently close accounts that are reported or found to violate these terms. We reserve the right to delete accounts (and their data) that have been inactive for more than 24 months, without prior notice.",
+      },
+      virtualGoods: {
+        title: "Coins and virtual goods",
+        body: "Coins and points within the app have no real-world monetary value, cannot be cashed out, and carry no market value; they exist solely to use in-app features (boost, unlocking profile viewers, etc.) and are non-refundable. If a paid/premium feature is introduced later, this section will be updated to comply with the relevant store's (App Store/Google Play) purchase rules.",
+      },
+      liability: {
+        title: "Limitation of liability",
+        body: "Test results are for entertainment only and make no claim to accuracy. Hemdem is not responsible for messaging, meetups, or other interactions between users; if you encounter a suspicious account, use the block/report feature.",
+      },
+      changes: {
+        title: "Termination and changes to these terms",
+        body: "You can permanently delete your account at any time from the profile edit page. We may update these terms from time to time; you'll be notified in-app of significant changes.",
+      },
+      contact: {
+        title: "Contact",
+        body: "For questions about these terms, use the Request/Complaint form.",
+      },
+    },
+    contactLink: "Submit a Request",
+    privacyLink: "Privacy Policy",
   },
   share: {
     button: "🔗 Share",

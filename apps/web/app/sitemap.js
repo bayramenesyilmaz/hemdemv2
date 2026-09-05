@@ -9,6 +9,7 @@ const STATIC_PATHS = [
   "/help",
   "/support",
   "/privacy",
+  "/terms",
   "/login",
   "/register",
   "/forgot-password",

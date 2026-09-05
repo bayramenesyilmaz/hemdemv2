@@ -20,6 +20,15 @@
      ödüllerinin tekrar verilmesini engelleyen kayıt tablosu
      (`leaderboard_reward_grants`). Bu çalıştırılmadan
      `/api/cron/leaderboard-rewards` hata verir.
+   - `migrations/0006_blocking.sql` — engelleme/şikayet tabloları
+     (`blocks`, `reports`). Bu çalıştırılmadan engelleme/şikayet
+     özelliği ve admin talepler sayfası hata verir.
+   - `migrations/0007_engagement_features.sql` — çevrimiçi durumu,
+     profil fotoğraf galerisi, boost, profil doğrulama, mesaj
+     "Görüldü" (`chat_reads`) ve Günün Eşleşmesi (`daily_matches`)
+     için gereken tüm kolonlar/tablolar + genişletilmiş bildirim tipi
+     kısıtı. Bu çalıştırılmadan profil sayfası, keşfet ve
+     `/api/cron/daily-match` hata verir.
    - Yeni bir migration eklendiğinde bu listeyi de güncelle; kod
      deploy edilir edilmez migration'ın da aynı anda gerçek projeye
      uygulanması gerekir, ikisi ayrı adımdır ve biri unutulabilir.
@@ -41,18 +50,23 @@
    gönderi/sohbet/bildirim ekler. Detaylar ve alternatif (Node script)
    için bkz. [`../apps/web/scripts/README.md`](../apps/web/scripts/README.md).
 
-## Periyodik liderlik ödülleri (Vercel Cron)
+## Periyodik cron uçları (Vercel Cron)
 
 Bu, yukarıdaki `pg_cron`'dan bağımsız ayrı bir mekanizma — Supabase
-tarafında ekstra bir şey açman gerekmiyor. İlk 3 kullanıcıya
-günlük/3 günlük/haftalık coin ödülü otomatik verilmesi
-`apps/web/app/api/cron/leaderboard-rewards/route.js` ucu ile çalışır;
-tetikleyici `apps/web/vercel.json`'daki cron tanımıdır (Vercel deploy
-sırasında bunu otomatik kaydeder, elle bir şey yapman gerekmez — proje
-Hobby planındaysa günde 1 cron sınırı bu tek girişe zaten uyuyor).
+tarafında ekstra bir şey açman gerekmiyor. İki uç var:
+- `apps/web/app/api/cron/leaderboard-rewards/route.js` — ilk 3
+  kullanıcıya günlük/3 günlük/haftalık coin ödülü.
+- `apps/web/app/api/cron/daily-match/route.js` — her kullanıcı için
+  günün eşleşmesini hesaplar (TR saatiyle sabah 07:00).
+
+Tetikleyici her ikisi için de `apps/web/vercel.json`'daki cron
+tanımlarıdır (Vercel deploy sırasında bunları otomatik kaydeder, elle
+bir şey yapman gerekmez — proje Hobby planındaysa günde en fazla iki
+cron sınırı bu iki girişe zaten uyuyor).
 
 Tek yapman gereken: Vercel proje ayarlarına rastgele, uzun bir
-`CRON_SECRET` ortam değişkeni eklemek. Vercel cron istekleri bu değeri
+`CRON_SECRET` ortam değişkeni eklemek (her iki uç da aynı değişkeni
+okur). Vercel cron istekleri bu değeri
 `Authorization: Bearer <CRON_SECRET>` header'ı olarak otomatik gönderir;
 uç bu header'ı kontrol ederek isteğin gerçekten Vercel'den geldiğini
 doğrular. `CRON_SECRET` tanımlı değilse uç doğrulamayı atlar (yerel

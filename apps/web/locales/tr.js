@@ -34,6 +34,14 @@ const tr = {
     passwordLabel: "Şifre",
     mockModeNotice:
       "Bu özellik gerçek e-posta gönderimi gerektirdiği için sahte veri modunda kullanılamıyor.",
+    consent: {
+      text: "18 yaşından büyüğüm ve",
+      termsLink: "Kullanım Şartları'nı",
+      and: "ile",
+      privacyLink: "Gizlilik Politikası'nı",
+      suffix: "okudum, kabul ediyorum.",
+      required: "Devam etmek için yukarıdaki şartları kabul etmelisin.",
+    },
     register: {
       title: "Kayıt Ol",
       submit: "Kayıt Ol",
@@ -462,10 +470,14 @@ const tr = {
     },
   },
   privacy: {
-    title: "Gizlilik Politikası",
+    title: "Gizlilik Politikası ve KVKK Aydınlatma Metni",
     intro:
-      "Hemdem, kişilik testleriyle tanışma sağlayan bir platformdur. Bu sayfa hangi verileri topladığımızı, neden topladığımızı ve haklarını nasıl kullanacağını anlatır.",
+      "Hemdem, kişilik testleriyle tanışma sağlayan bir platformdur. Bu sayfa hem gizlilik politikamızı hem de 6698 sayılı Kişisel Verilerin Korunması Kanunu (\"KVKK\") madde 10 kapsamındaki aydınlatma yükümlülüğümüzü karşılar: hangi verileri topladığımızı, neden topladığımızı ve haklarını nasıl kullanacağını anlatır.",
     sections: {
+      controller: {
+        title: "Veri sorumlusu",
+        body: "[Ad Soyad / Şirket Unvanı] — [e-posta adresi]. (Bu alan işletme sahibi tarafından doldurulmalıdır; KVKK madde 10 uyarınca veri sorumlusunun kimliği açıkça belirtilmek zorundadır.)",
+      },
       collected: {
         title: "Hangi verileri topluyoruz",
         body: "Hesap bilgilerin (e-posta), profil bilgilerin (ad, doğum tarihi, cinsiyet, ülke, biyografi, sosyal medya bağlantıları), yüklediğin profil fotoğrafı, test cevapların, gönderdiğin/aldığın mesajlar, gönderiler ve coin/puan aktivitendir.",
@@ -487,15 +499,61 @@ const tr = {
         body: "Veritabanı erişimi yalnızca sunucu tarafında, satır düzeyi güvenlik (RLS) korumalı bir bağlantıyla yapılır — tarayıcıya hiçbir veritabanı kimlik bilgisi gönderilmez.",
       },
       rights: {
-        title: "Hakların",
-        body: "Verilerine erişme, düzeltme ve silme hakkına sahipsin. Profil bilgilerini istediğin zaman düzenleyebilir, hesabını kalıcı olarak silebilir veya bir talep/şikayet ile bize ulaşabilirsin.",
+        title: "Hakların (KVKK madde 11)",
+        body: "Verilerinin işlenip işlenmediğini öğrenme, işleniyorsa buna ilişkin bilgi talep etme, verilerine erişme, düzeltme, silinmesini isteme ve işlemeye itiraz etme hakkına sahipsin. Profil bilgilerini istediğin zaman düzenleyebilir, hesabını kalıcı olarak silebilir veya bir talep/şikayet ile bize ulaşabilirsin; başvurun en geç 30 gün içinde yanıtlanır.",
       },
       contact: {
         title: "Bize ulaş",
-        body: "Gizlilikle ilgili sorular için Talep/Şikayet formunu kullanabilirsin.",
+        body: "Gizlilikle ilgili sorular ve KVKK başvuruları için Talep/Şikayet formunu kullanabilirsin.",
       },
     },
     contactLink: "Talep Gönder",
+    termsLink: "Kullanım Şartları",
+  },
+  terms: {
+    title: "Kullanım Şartları",
+    intro:
+      "Hemdem'i kullanarak aşağıdaki şartları kabul etmiş olursun. Bu, hukuki bir belgedir ama sade tutmaya çalıştık; anlaşılmayan bir yer olursa bize ulaşabilirsin.",
+    sections: {
+      service: {
+        title: "Hizmetin tanımı",
+        body: "Hemdem, kişilik testleri üzerinden benzer düşünen insanları bir araya getiren bir eğlence ve arkadaşlık uygulamasıdır. Testler bilimsel/klinik bir değerlendirme aracı değildir, profesyonel psikolojik tavsiye yerine geçmez.",
+      },
+      ageRequirement: {
+        title: "Yaş şartı",
+        body: "Hemdem'i kullanmak için en az 18 yaşında olman gerekir. Kayıt olarak 18 yaşından büyük olduğunu beyan etmiş olursun.",
+      },
+      account: {
+        title: "Hesabın ve sorumlulukların",
+        body: "Doğru bilgi vermekten, hesabının ve şifrenin güvenliğinden sen sorumlusun. Bir hesap yalnızca kendi kullanımın içindir; hesabında meydana gelen işlemlerden sen sorumlu tutulursun.",
+      },
+      content: {
+        title: "Kullanıcı içeriği ve yasak davranışlar",
+        body: "Küfür, argo, taciz, nefret söylemi, cinsel içerik veya yasa dışı herhangi bir içerik paylaşmak yasaktır. Gönderiler, testler ve mesajlar otomatik bir filtreden geçer; yasaklı bir kelime tespit edilirse hangi kelime(ler) olduğu sana gösterilir ve içerik paylaşılmaz. Bu filtreyi aşmaya çalışmak (harf değiştirme, sembol kullanma vb.) da bir ihlaldir.",
+      },
+      moderation: {
+        title: "Moderasyon ve hesap kapatma hakkı",
+        body: "Şikayet edilen veya bu şartları ihlal ettiğini tespit ettiğimiz hesapları uyarabilir, askıya alabilir veya kalıcı olarak kapatabiliriz. Uzun süre (24 aydan fazla) giriş yapılmayan hesapları ve verilerini önceden bildirmeksizin silme hakkımız saklıdır.",
+      },
+      virtualGoods: {
+        title: "Coin ve sanal ürünler",
+        body: "Uygulama içindeki coin ve puanların gerçek para karşılığı, nakde çevrilebilirliği veya piyasa değeri yoktur; yalnızca uygulama içi özellikleri (boost, profil görüntüleyenleri açma gibi) kullanmaya yarar ve iade edilmez. İleride ücretli/premium bir özellik sunulursa bu bölüm, ilgili mağazanın (App Store/Google Play) satın alma kurallarına göre güncellenecektir.",
+      },
+      liability: {
+        title: "Sorumluluk sınırlaması",
+        body: "Test sonuçları eğlence amaçlıdır, kesinlik iddia etmez. Kullanıcılar arasındaki mesajlaşma, buluşma veya diğer etkileşimlerden Hemdem sorumlu değildir; şüpheli bir hesapla karşılaşırsan engelle/şikayet et özelliğini kullan.",
+      },
+      changes: {
+        title: "Fesih ve şartlarda değişiklik",
+        body: "Hesabını istediğin zaman profil düzenleme sayfasından kalıcı olarak silebilirsin. Bu şartları zaman zaman güncelleyebiliriz; önemli değişikliklerde uygulama içinden bilgilendirileceksin.",
+      },
+      contact: {
+        title: "İletişim",
+        body: "Bu şartlarla ilgili sorular için Talep/Şikayet formunu kullanabilirsin.",
+      },
+    },
+    contactLink: "Talep Gönder",
+    privacyLink: "Gizlilik Politikası",
   },
   share: {
     button: "🔗 Paylaş",

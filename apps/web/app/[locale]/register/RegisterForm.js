@@ -21,10 +21,17 @@ export function RegisterForm({ locale }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [confirmEmailNotice, setConfirmEmailNotice] = useState(false);
+  const [consentAccepted, setConsentAccepted] = useState(false);
 
   async function handleSubmit(event) {
     event.preventDefault();
     setError(null);
+
+    if (!consentAccepted) {
+      setError(t("auth.consent.required"));
+      return;
+    }
+
     setLoading(true);
 
     if (USE_MOCK_DATA) {
@@ -106,9 +113,39 @@ export function RegisterForm({ locale }) {
         />
       </div>
 
+      <label className="flex items-start gap-2 text-sm text-muted-foreground">
+        <input
+          type="checkbox"
+          checked={consentAccepted}
+          onChange={(e) => setConsentAccepted(e.target.checked)}
+          className="mt-0.5 size-4 shrink-0"
+        />
+        <span>
+          {t("auth.consent.text")}{" "}
+          <a
+            href={`/${locale}/terms`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-foreground underline"
+          >
+            {t("auth.consent.termsLink")}
+          </a>{" "}
+          {t("auth.consent.and")}{" "}
+          <a
+            href={`/${locale}/privacy`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-foreground underline"
+          >
+            {t("auth.consent.privacyLink")}
+          </a>{" "}
+          {t("auth.consent.suffix")}
+        </span>
+      </label>
+
       {error && <p className="text-sm text-destructive">{error}</p>}
 
-      <Button type="submit" variant="confirm" loading={loading}>
+      <Button type="submit" variant="confirm" loading={loading} disabled={!consentAccepted}>
         {t("auth.register.submit")}
       </Button>
 

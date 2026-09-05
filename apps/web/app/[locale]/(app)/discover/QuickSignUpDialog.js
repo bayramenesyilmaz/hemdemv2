@@ -24,10 +24,17 @@ export function QuickSignUpDialog({ locale, target, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [confirmEmailNotice, setConfirmEmailNotice] = useState(false);
+  const [consentAccepted, setConsentAccepted] = useState(false);
 
   async function handleSubmit(event) {
     event.preventDefault();
     setError(null);
+
+    if (!consentAccepted) {
+      setError(t("auth.consent.required"));
+      return;
+    }
+
     setLoading(true);
 
     let userId;
@@ -98,13 +105,43 @@ export function QuickSignUpDialog({ locale, target, onClose, onSuccess }) {
               onChange={(e) => setPassword(e.target.value)}
             />
 
+            <label className="flex items-start gap-2 text-sm text-muted-foreground">
+              <input
+                type="checkbox"
+                checked={consentAccepted}
+                onChange={(e) => setConsentAccepted(e.target.checked)}
+                className="mt-0.5 size-4 shrink-0"
+              />
+              <span>
+                {t("auth.consent.text")}{" "}
+                <a
+                  href={`/${locale}/terms`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-foreground underline"
+                >
+                  {t("auth.consent.termsLink")}
+                </a>{" "}
+                {t("auth.consent.and")}{" "}
+                <a
+                  href={`/${locale}/privacy`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-foreground underline"
+                >
+                  {t("auth.consent.privacyLink")}
+                </a>{" "}
+                {t("auth.consent.suffix")}
+              </span>
+            </label>
+
             {error && <p className="text-sm text-destructive">{error}</p>}
 
             <div className="mt-2 flex justify-end gap-3">
               <Button type="button" variant="outline" onClick={onClose}>
                 {t("profile.cancel")}
               </Button>
-              <Button type="submit" variant="confirm" loading={loading}>
+              <Button type="submit" variant="confirm" loading={loading} disabled={!consentAccepted}>
                 {t("discover.quickSignUpSubmit")}
               </Button>
             </div>

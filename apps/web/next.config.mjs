@@ -38,6 +38,25 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_USE_MOCK_DATA: useMockData ? "true" : "false",
   },
+  // Gerçek kullanıcı verisiyle çalışmadan önce eklenen minimum güvenlik
+  // başlıkları — tam bir CSP (Content-Security-Policy) bilinçli olarak
+  // dahil edilmedi: next/image, service worker (PWA) ve Turbopack'in dev
+  // overlay'i gibi mevcut parçaları kırma riski taşıyor, kapsamlı test
+  // gerektiriyor. Bunlar hiçbir mevcut özelliği bozmayan, güvenli
+  // varsayılanlar.
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=()" },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

@@ -6,13 +6,14 @@ import { SectionCard } from "@/components/SectionCard";
 import { Button } from "@/components/ui/Button";
 
 const SECTION_KEYS = [
-  "controller",
-  "collected",
-  "use",
-  "sharing",
-  "retention",
-  "security",
-  "rights",
+  "service",
+  "ageRequirement",
+  "account",
+  "content",
+  "moderation",
+  "virtualGoods",
+  "liability",
+  "changes",
   "contact",
 ];
 
@@ -23,40 +24,40 @@ export async function generateMetadata({ params }) {
 
   return buildMetadata({
     locale,
-    path: "/privacy",
-    title: t("privacy.title"),
-    description: t("privacy.intro"),
+    path: "/terms",
+    title: t("terms.title"),
+    description: t("terms.intro"),
   });
 }
 
-export default async function PrivacyPage({ params }) {
+export default async function TermsPage({ params }) {
   const { locale } = await params;
   setStaticParamsLocale(locale);
   const t = await getI18n();
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-6 lg:px-6 lg:py-8">
-      <PageTitle>{t("privacy.title")}</PageTitle>
+      <PageTitle>{t("terms.title")}</PageTitle>
 
       <SectionCard>
-        <p className="text-foreground">{t("privacy.intro")}</p>
+        <p className="text-foreground">{t("terms.intro")}</p>
       </SectionCard>
 
       <div className="flex flex-col gap-3">
         {SECTION_KEYS.map((key) => (
           <SectionCard key={key} className="flex flex-col gap-1">
-            <p className="font-medium text-foreground">{t(`privacy.sections.${key}.title`)}</p>
-            <p className="text-sm text-muted-foreground">{t(`privacy.sections.${key}.body`)}</p>
+            <p className="font-medium text-foreground">{t(`terms.sections.${key}.title`)}</p>
+            <p className="text-sm text-muted-foreground">{t(`terms.sections.${key}.body`)}</p>
           </SectionCard>
         ))}
       </div>
 
       <div className="flex flex-wrap gap-3">
         <Button href={`/${locale}/support`} variant="send" className="self-start">
-          {t("privacy.contactLink")}
+          {t("terms.contactLink")}
         </Button>
-        <Button href={`/${locale}/terms`} variant="outline" className="self-start">
-          {t("privacy.termsLink")}
+        <Button href={`/${locale}/privacy`} variant="outline" className="self-start">
+          {t("terms.privacyLink")}
         </Button>
       </div>
     </main>
