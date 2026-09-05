@@ -95,12 +95,16 @@ takip et** — ana yazma işleminden sonraki her ek adım ayrı korunmalı.
 ## Tamamlanmış özellikler (özet)
 
 Auth + onboarding · Keşfet/swipe (filtreler kalıcı, kapı testi) · Testler
-(uyum/eşleşme sistemi, oluşturma/etiketleme, sonuç karşılaştırma) ·
-Mesajlaşma (polling, süper mesaj) · Bildirimler (genel + mesaj ayrı) ·
-Gönderiler (feed, modal composer) · Profil (görüntüleme/düzenleme,
-görüntüleyenler — ilk 3 ücretsiz) · Coin/puan sistemi + liderlik tablosu ·
-Admin panel (kullanıcılar, test onayları, talepler) · PWA · SEO (sitemap,
-JSON-LD, OG) · i18n (tr/en) · Mobil kabuk (BottomNav/Sidebar, `/menu` route).
+(uyum/eşleşme sistemi, oluşturma/etiketleme, sonuç karşılaştırma, +18/küfür
+içerik filtresi) · Mesajlaşma (polling, süper mesaj, "Görüldü") ·
+Bildirimler (genel + mesaj ayrı, `daily_match` dahil) · Gönderiler (feed,
+modal composer) · Profil (görüntüleme/düzenleme, görüntüleyenler — ilk 3
+ücretsiz, 3'e kadar fotoğraf galerisi, çevrimiçi durumu, doğrulama rozeti) ·
+Boost (coin karşılığı keşfette öne çıkma) · Günün Eşleşmesi (cron ile günlük
+kürate edilmiş öneri) · Engelleme/şikayet · Coin/puan sistemi + liderlik
+tablosu · Admin panel (kullanıcılar, test onayları, doğrulama onayları,
+talepler) · PWA · SEO (sitemap, JSON-LD, OG) · i18n (tr/en) · Mobil kabuk
+(BottomNav/Sidebar, `/menu` route).
 
 Sayfa listesi (`apps/web/app/[locale]/`): `register`, `login`,
 `forgot-password`, `reset-password`, `onboarding`, ve giriş yapmış kullanıcı
@@ -108,9 +112,9 @@ kabuğu altında (`(app)/`): `discover`, `tests` (+ `create`, `mine`, `history`,
 `[id]`, `[id]/result`, `[id]/compare/[otherUserId]`), `messages` (+ `[chatId]`),
 `likes`, `posts`, `profile` (+ `edit`, `viewers`), `notifications`, `coins`,
 `leaderboard`, `menu`, `help`, `support`, `admin` (+ `users`, `tests`,
-`requests`), ve herkese açık profil `u/[id]`.
+`verifications`, `requests`), ve herkese açık profil `u/[id]`.
 
-## Mobil (apps/mobile, Expo) — iskelet kuruldu, ekranlar henüz eksik
+## Mobil (apps/mobile, Expo) — web ile büyük ölçüde feature-parity
 
 Öncelik **web'i bozmadan kusursuz bir mobil geçiş** — Vite'a olası bir
 web geçişi şu an gündemde değil, ayrı bir gelecek kararı, mobil işini
@@ -120,10 +124,16 @@ etkilememeli.
   `packages/core` **hiç değiştirilmeden** doğrudan reuse ediliyor —
   `apps/mobile/lib/repositories.js` web'deki `apps/web/lib/repositories.js`
   ile birebir aynı composition-root deseni, sadece şimdilik sabit mock
-  (henüz gerçek/mock anahtarı yok). Şu an sadece 2 ekran var: giriş
-  (`app/index.js`, mock auth ile) ve keşfet (`app/discover.js`,
-  `fetchDiscoverCandidates` usecase'ini doğrudan çağıran düz bir liste —
-  henüz swipe kart destesi değil).
+  (henüz gerçek/mock anahtarı yok — `createMockRepositories()` doğrudan
+  export ediliyor, env'e göre anahtarlama yok).
+- Ekran kapsamı artık web'e yakın: `(tabs)/` altında `discover` (swipe
+  destesi + günün eşleşmesi şeridi), `messages` (+ `[chatId]`, üçüncü sekme
+  olarak "Profiline Bakanlar"), `notifications`, `coins`, `leaderboard`,
+  `posts`, `privacy`, `menu`, `profile` (+ `edit` — 3 fotoğraf galerisi,
+  boost, doğrulama kamerası —, `viewers`), `tests` (+ `create`, `mine`,
+  `history`, `[id]`, `[id]/result`, `[id]/compare/[otherUserId]`), ve
+  herkese açık profil `u/[id]`. Web'e göre eksik kalanlar: admin panel ve
+  yardım/talep formları (mobilde henüz yok).
 - **pnpm monorepo + Metro:** Beklenenin aksine `.npmrc`'de `node-linker=hoisted`
   gibi bir ayara gerek YOK — Expo SDK 57'nin `@expo/metro-config`'i pnpm'in
   symlink'li workspace yapısını ve `packages/core`'un `package.json`
@@ -138,11 +148,16 @@ etkilememeli.
   gerek yok.
 - Mock seed'deki `avatarUrl` bir `data:image/svg+xml` URI'dir — React
   Native'in `Image`'ı bunu render edemez (SVG data URI desteklemiyor).
-  Mobilde `components/InitialsAvatar.js` (düz View/Text ile baş harf
-  rozeti) kullanılıyor; ileride gerçek fotoğraf yüklemesi eklenince bu
-  zaten devre dışı kalacak.
-- Radix Dialog yerine bottom-sheet kütüphanesi, fotoğraf yükleme için Expo
-  API'leri gibi geri kalan UI katmanı adaptasyonları henüz yapılmadı.
+  `lib/avatar.js`'deki `isRenderableImageUri` bu durumu filtreler,
+  render edilemeyen bir URI'de `components/InitialsAvatar.js` (düz
+  View/Text ile baş harf rozeti) devreye giriyor. Gerçek fotoğraf
+  yüklemesi (`expo-image-picker`, galeriden 3'e kadar profil fotoğrafı +
+  doğrulama için zorunlu kamera çekimi) zaten eklendi — bu fallback artık
+  sadece seed verisindeki SVG avatarlar için çalışıyor.
+- Radix Dialog'un mobil karşılığı bottom-sheet bir kütüphane değil, React
+  Native'in kendi `Modal`'ı (bkz. `profile/edit.js`, `discover.js` gibi
+  ekranlardaki silme onayı/filtre/mesaj compose modalları) — bilinçli bir
+  basitleştirme, eksik değil.
 - **Önemli mimari not:** `apps/web`'de `SUPABASE_SERVICE_ROLE_KEY` sadece
   sunucu tarafında (server actions) kullanılıyor. Mobilde JS bundle'ı
   doğrudan cihazda çalıştığı için bu anahtar hiçbir şekilde mobil koda

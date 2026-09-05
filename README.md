@@ -50,7 +50,13 @@ eklenmeli — local'deki `.env.local` Vercel'e otomatik taşınmıyor.
 | `NEXT_PUBLIC_USE_MOCK_DATA` | Hayır | `true` ise sahte in-memory veri kullanılır; `next.config.mjs` production build'de bunu her koşulda `false`'a sabitliyor (bkz. `CLAUDE.md`) |
 | `NEXT_PUBLIC_DOMAIN` | Evet | Kanonik URL/SEO/paylaşım linkleri için taban domain |
 | `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Hayır | Google Search Console doğrulama meta etiketi |
-| `CRON_SECRET` | **Evet (production'da)** | `vercel.json`'daki cron uçlarını (`/api/cron/leaderboard-rewards`, `/api/cron/daily-match`) yetkisiz çağrılara karşı korur — boş bırakılırsa bu uçlar kimlik doğrulamasız kalır |
+| `CRON_SECRET` | **Evet (production'da)** — henüz Vercel'de ayarlanmadı, TODO | `vercel.json`'daki cron uçlarını (`/api/cron/leaderboard-rewards`, `/api/cron/daily-match`) yetkisiz çağrılara karşı korur — boş bırakılırsa bu uçlar kimlik doğrulamasız kalır |
+
+Mobil (`apps/mobile/.env`, `.env.example`'dan kopyalanır) ayrı bir env
+dosyası kullanır: `EXPO_PUBLIC_WEB_BASE_URL` (paylaşım linklerinin taban
+URL'i — `EXPO_PUBLIC_*` build zamanında client bundle'ına gömülür, gizli
+değildir). EAS build'leri `eas.json`'daki `env` bloklarından kendi
+değerini alır.
 
 ## Durum
 
