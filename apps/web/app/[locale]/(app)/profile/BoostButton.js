@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useI18n } from "@/locales/client";
 import { Button } from "@/components/ui/Button";
 import { activateBoostAction } from "@/lib/actions/profileActions";
@@ -19,6 +20,7 @@ function minutesLeft(boostedUntil) {
  */
 export function BoostButton({ cost, initialBoostedUntil }) {
   const t = useI18n();
+  const router = useRouter();
   const [boostedUntil, setBoostedUntil] = useState(initialBoostedUntil);
   const [remaining, setRemaining] = useState(() => minutesLeft(initialBoostedUntil));
   const [loading, setLoading] = useState(false);
@@ -43,6 +45,11 @@ export function BoostButton({ cost, initialBoostedUntil }) {
 
     setBoostedUntil(result.data.boostedUntil);
     setRemaining(minutesLeft(result.data.boostedUntil));
+    // Coin bakiyesi bu bileşenin dışında, sunucu tarafında render edilen
+    // profil sayfasında gösteriliyor — düşülen 30 coin ekranda yansısın
+    // diye sunucu verisini tazeliyoruz (bkz. AdWatchTierList.js'teki aynı
+    // desen).
+    router.refresh();
   }
 
   if (remaining > 0) {
