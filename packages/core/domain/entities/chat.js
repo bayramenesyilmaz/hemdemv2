@@ -18,6 +18,7 @@
  */
 
 import { orderUserPair } from "./swipe.js";
+import { containsProfanity } from "./moderation.js";
 
 const MAX_MESSAGE_LENGTH = 2000;
 
@@ -40,5 +41,6 @@ export function validateMessageContent(content) {
   const errors = [];
   if (!content || content.trim().length === 0) errors.push("content_required");
   if (content && content.length > MAX_MESSAGE_LENGTH) errors.push("content_too_long");
+  if (content && containsProfanity(content)) errors.push("inappropriate_content");
   return { valid: errors.length === 0, errors };
 }

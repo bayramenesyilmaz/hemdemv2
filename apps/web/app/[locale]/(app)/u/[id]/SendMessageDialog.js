@@ -25,7 +25,11 @@ export function SendMessageDialog({ locale, recipientId, recipientName, trigger 
     setLoading(false);
 
     if (result.status === "error") {
-      setError(t(`messages.errors.${result.message}`));
+      setError(
+        result.message === "inappropriate_content"
+          ? t("messages.errors.inappropriate_content", { words: (result.data?.flaggedWords ?? []).join(", ") })
+          : t(`messages.errors.${result.message}`)
+      );
       return;
     }
 

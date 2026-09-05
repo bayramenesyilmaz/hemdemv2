@@ -1,4 +1,5 @@
 import { validatePost } from "../../domain/entities/post.js";
+import { findProfanityMatches } from "../../domain/entities/moderation.js";
 
 /**
  * @param {object} repositories
@@ -8,7 +9,8 @@ import { validatePost } from "../../domain/entities/post.js";
 export async function createPost(repositories, userId, input) {
   const { valid, errors } = validatePost({ content: input.content });
   if (!valid) {
-    return { status: "error", message: errors[0] };
+    const data = errors[0] === "inappropriate_content" ? { flaggedWords: findProfanityMatches(input.content) } : undefined;
+    return { status: "error", message: errors[0], data };
   }
 
   const post = await repositories.post.create({

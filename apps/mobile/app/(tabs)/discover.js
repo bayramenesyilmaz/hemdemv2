@@ -18,6 +18,7 @@ import { DiscoverFiltersModal } from "../../components/discover/DiscoverFiltersM
 import { MessageComposerModal } from "../../components/MessageComposerModal";
 import { VerificationBadge } from "../../components/VerificationBadge";
 import { isRenderableImageUri } from "../../lib/avatar";
+import { describeSendMessageError } from "../../lib/chatErrors";
 
 export default function DiscoverScreen() {
   const router = useRouter();
@@ -121,7 +122,7 @@ export default function DiscoverScreen() {
     const result = await sendMessage(repositories, userId, messageTarget.id, content);
     setMessageSending(false);
     if (result.status === "error") {
-      setMessageError(result.message);
+      setMessageError(describeSendMessageError(result.message, result.data));
       return;
     }
     setMessageTarget(null);

@@ -1,3 +1,5 @@
+import { containsProfanity } from "./moderation.js";
+
 /**
  * @typedef {object} Post
  * @property {number} id
@@ -20,6 +22,9 @@ export function validatePost(input) {
   }
   if (input.content && input.content.length > MAX_POST_LENGTH) {
     errors.push("content_too_long");
+  }
+  if (input.content && containsProfanity(input.content)) {
+    errors.push("inappropriate_content");
   }
   return { valid: errors.length === 0, errors };
 }

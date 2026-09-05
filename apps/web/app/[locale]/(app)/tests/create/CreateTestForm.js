@@ -37,7 +37,7 @@ export function CreateTestForm({ locale }) {
     });
 
     if (result.status === "error") {
-      setError(result.message);
+      setError(result);
       setLoading(false);
       return;
     }
@@ -86,7 +86,13 @@ export function CreateTestForm({ locale }) {
 
       <TestQuestionsBuilder questions={questions} onChange={setQuestions} />
 
-      {error && <p className="text-sm text-destructive">{t(`tests.errors.${error}`)}</p>}
+      {error && (
+        <p className="text-sm text-destructive">
+          {error.message === "inappropriate_content"
+            ? t("tests.errors.inappropriate_content", { words: (error.data?.flaggedWords ?? []).join(", ") })
+            : t(`tests.errors.${error.message}`)}
+        </p>
+      )}
 
       <Button type="submit" variant="confirm" loading={loading}>
         {t("tests.submitCreate")}

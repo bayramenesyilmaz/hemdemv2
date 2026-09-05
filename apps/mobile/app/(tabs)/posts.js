@@ -14,6 +14,19 @@ import { EmptyState } from "../../components/ui/EmptyState";
 import { AppTopBar } from "../../components/nav/AppTopBar";
 import { TestPickerModal } from "../../components/TestPickerModal";
 
+function describePostError(message, data) {
+  if (message === "inappropriate_content") {
+    const words = (data?.flaggedWords ?? []).join(", ");
+    return `İçerikte yasaklı kelime(ler) tespit edildi: (${words}).`;
+  }
+  const MESSAGES = {
+    content_required: "Gönderi boş olamaz.",
+    content_too_long: "Gönderi çok uzun.",
+    not_authenticated: "Bu işlem için giriş yapmalısın.",
+  };
+  return MESSAGES[message] ?? "Bir şeyler ters gitti, tekrar dene.";
+}
+
 export default function PostsScreen() {
   const router = useRouter();
   const { userId } = useSession();
@@ -21,6 +34,7 @@ export default function PostsScreen() {
   const [loading, setLoading] = useState(true);
   const [draft, setDraft] = useState("");
   const [posting, setPosting] = useState(false);
+  const [postError, setPostError] = useState(null);
   const [taggedTest, setTaggedTest] = useState(null);
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -38,13 +52,16 @@ export default function PostsScreen() {
     const content = draft.trim();
     if (!content) return;
     setPosting(true);
+    setPostError(null);
     const result = await createPost(repositories, userId, { content, taggedTestId: taggedTest?.id });
     setPosting(false);
-    if (result.status === "success") {
-      setDraft("");
-      setTaggedTest(null);
-      load();
+    if (result.status === "error") {
+      setPostError(describePostError(result.message, result.data));
+      return;
     }
+    setDraft("");
+    setTaggedTest(null);
+    load();
   }
 
   if (loading) {
@@ -90,6 +107,8 @@ export default function PostsScreen() {
                   <Text style={styles.tagLinkText}>📋 Test etiketle</Text>
                 </Pressable>
               )}
+
+              {postError && <Text style={styles.postError}>{postError}</Text>}
 
               <Button
                 variant="primary"
@@ -157,6 +176,10 @@ const styles = StyleSheet.create({
     color: colors.foreground,
     minHeight: 40,
     fontSize: 14,
+  },
+  postError: {
+    color: colors.danger,
+    fontSize: 12,
   },
   tagLink: {
     alignSelf: "flex-start",

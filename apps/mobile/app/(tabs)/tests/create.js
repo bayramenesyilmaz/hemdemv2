@@ -27,7 +27,6 @@ const ERROR_MESSAGES = {
   invalid_question: "Her sorunun metni ve en az iki şıkkı olmalı.",
   too_many_options: `Bir soruda en fazla ${TEST_LIMITS.maxOptions} şık olabilir.`,
   invalid_option: "Boş şık bırakma.",
-  inappropriate_content: "Başlık veya sorularda uygunsuz içerik tespit edildi.",
   insufficient_coins: "Test oluşturmak için yeterli coin'in yok.",
 };
 
@@ -112,7 +111,12 @@ export default function CreateTestScreen() {
     setLoading(false);
 
     if (result.status === "error") {
-      setError(ERROR_MESSAGES[result.message] ?? result.message);
+      if (result.message === "inappropriate_content") {
+        const words = (result.data?.flaggedWords ?? []).join(", ");
+        setError(`Başlık veya sorularda yasaklı kelime(ler) tespit edildi: (${words}).`);
+      } else {
+        setError(ERROR_MESSAGES[result.message] ?? result.message);
+      }
       return;
     }
 

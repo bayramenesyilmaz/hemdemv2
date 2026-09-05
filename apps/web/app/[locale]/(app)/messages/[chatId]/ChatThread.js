@@ -80,7 +80,11 @@ export function ChatThread({ chatId, currentUserId, initialMessages, initialRead
     setSending(false);
 
     if (result.status === "error") {
-      setError(t(`messages.errors.${result.message}`));
+      setError(
+        result.message === "inappropriate_content"
+          ? t("messages.errors.inappropriate_content", { words: (result.data?.flaggedWords ?? []).join(", ") })
+          : t(`messages.errors.${result.message}`)
+      );
       return;
     }
 

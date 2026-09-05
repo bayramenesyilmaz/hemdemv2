@@ -13,6 +13,7 @@ import { SafetyMenu } from "../../../components/SafetyMenu";
 import { ProfileHero } from "../../../components/profile/ProfileHero";
 import { SolvedTestsList } from "../../../components/profile/SolvedTestsList";
 import { MessageComposerModal } from "../../../components/MessageComposerModal";
+import { describeSendMessageError } from "../../../lib/chatErrors";
 
 const SOLVED_TESTS_LIMIT = 5;
 
@@ -99,7 +100,7 @@ export default function PublicProfileScreen() {
     const result = await sendMessage(repositories, userId, id, content);
     setSending(false);
     if (result.status === "error") {
-      setMessageStatus(result.message);
+      setMessageStatus(describeSendMessageError(result.message, result.data));
       return;
     }
     setMessageOpen(false);

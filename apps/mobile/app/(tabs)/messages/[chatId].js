@@ -24,6 +24,7 @@ import { ScreenHeader } from "../../../components/ui/ScreenHeader";
 import { useScreenInsets } from "../../../components/ui/Screen";
 import { SafetyMenu } from "../../../components/SafetyMenu";
 import { VerificationBadge } from "../../../components/VerificationBadge";
+import { describeSendMessageError } from "../../../lib/chatErrors";
 
 const POLL_INTERVAL_MS = 3000;
 
@@ -38,6 +39,7 @@ export default function ChatThreadScreen() {
   const [loading, setLoading] = useState(true);
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState(null);
   const listRef = useRef(null);
 
   useEffect(() => {
@@ -76,13 +78,18 @@ export default function ChatThreadScreen() {
   async function handleSend() {
     const content = draft.trim();
     if (!content || !otherUser) return;
-    setDraft("");
     setSending(true);
+    setSendError(null);
     const result = await sendMessage(repositories, userId, otherUser.id, content);
     setSending(false);
-    if (result.status === "success") {
-      setMessages((prev) => [...prev, result.data.message]);
+    if (result.status === "error") {
+      // Taslak korunur — içerik filtresine takılan bir mesaj sessizce
+      // kaybolmasın, kullanıcı düzenleyip tekrar deneyebilsin.
+      setSendError(describeSendMessageError(result.message, result.data));
+      return;
     }
+    setDraft("");
+    setMessages((prev) => [...prev, result.data.message]);
   }
 
   // Sadece kendi gönderdiğim SON mesajın altında "Görüldü" gösterilir —
@@ -157,6 +164,8 @@ export default function ChatThreadScreen() {
           );
         }}
       />
+
+      {sendError && <Text style={styles.sendError}>{sendError}</Text>}
 
       <View style={styles.inputRow}>
         <TextInput
@@ -233,6 +242,12 @@ const styles = StyleSheet.create({
   },
   bubbleTextMine: {
     color: "#fff",
+  },
+  sendError: {
+    color: colors.danger,
+    fontSize: 12,
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing.xs,
   },
   inputRow: {
     flexDirection: "row",

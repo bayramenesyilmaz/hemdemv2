@@ -84,3 +84,23 @@ export function containsProfanity(text) {
   if (!text) return false;
   return BLOCKED_PATTERN.test(normalize(text));
 }
+
+const BLOCKED_PATTERN_GLOBAL = new RegExp(BLOCKED_PATTERN.source, "g");
+
+/**
+ * `containsProfanity`'nin aynısı ama kullanıcıya hangi kelime(ler)in
+ * yasaklı olduğunu göstermek için eşleşen kelimeleri de döner (bkz.
+ * gönderi/mesaj/test oluşturma hata mesajları — "(kelime)" şeklinde
+ * gösteriliyor). Normalize edilmiş hâliyle döner (ör. "s1ktir" girilse
+ * bile "siktir" olarak gösterilir) — kullanıcı için yeterince açık,
+ * ayrıca orijinal (leet-speak'li) hâlini göstermek filtreyi atlatma
+ * yollarını ifşa eder.
+ *
+ * @param {string} text
+ * @returns {string[]}
+ */
+export function findProfanityMatches(text) {
+  if (!text) return [];
+  const matches = normalize(text).match(BLOCKED_PATTERN_GLOBAL) ?? [];
+  return [...new Set(matches)];
+}

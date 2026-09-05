@@ -1,6 +1,13 @@
 import { validatePost } from "../../domain/entities/post.js";
 import { validateTest } from "../../domain/entities/test.js";
 import { COIN_COSTS } from "../../domain/entities/coin.js";
+import { findProfanityMatches } from "../../domain/entities/moderation.js";
+
+function collectTestText(test) {
+  return [test.title, ...(test.questions ?? []).flatMap((q) => [q.text, ...(q.options ?? []).map((o) => o.text)])]
+    .filter(Boolean)
+    .join(" ");
+}
 
 /**
  * Gönderiyi paylaşırken o an yeni bir test oluşturur ve gönderiyi bu teste
@@ -19,12 +26,18 @@ import { COIN_COSTS } from "../../domain/entities/coin.js";
 export async function createPostWithTest(repositories, userId, input) {
   const postCheck = validatePost({ content: input.content });
   if (!postCheck.valid) {
-    return { status: "error", message: postCheck.errors[0] };
+    const data =
+      postCheck.errors[0] === "inappropriate_content" ? { flaggedWords: findProfanityMatches(input.content) } : undefined;
+    return { status: "error", message: postCheck.errors[0], data };
   }
 
   const testCheck = validateTest(input.test);
   if (!testCheck.valid) {
-    return { status: "error", message: testCheck.errors[0] };
+    const data =
+      testCheck.errors[0] === "inappropriate_content"
+        ? { flaggedWords: findProfanityMatches(collectTestText(input.test)) }
+        : undefined;
+    return { status: "error", message: testCheck.errors[0], data };
   }
 
   const { ok, newBalance } = await repositories.coin.decrementIfSufficient(
@@ -37,7 +50,7 @@ export async function createPostWithTest(repositories, userId, input) {
 
   let test;
   try {
-    test = await repositories.test.create({ ...input.test, createdBy: userId, approved: false });
+    test = await repositories.test.create({ ...input.test, createdBy: userId, approved: true });
   } catch (error) {
     await repositories.coin.increment(userId, COIN_COSTS.createTest);
     throw error;

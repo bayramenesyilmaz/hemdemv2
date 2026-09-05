@@ -69,7 +69,11 @@ export function PostComposer({ locale, author, onSuccess }) {
     setLoading(false);
 
     if (result.status === "error") {
-      setError(t(`posts.errors.${result.message}`));
+      setError(
+        result.message === "inappropriate_content"
+          ? t("posts.errors.inappropriate_content", { words: (result.data?.flaggedWords ?? []).join(", ") })
+          : t(`posts.errors.${result.message}`)
+      );
       return;
     }
 

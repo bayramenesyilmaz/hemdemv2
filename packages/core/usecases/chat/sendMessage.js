@@ -1,5 +1,6 @@
 import { validateMessageContent } from "../../domain/entities/chat.js";
 import { COIN_COSTS } from "../../domain/entities/coin.js";
+import { findProfanityMatches } from "../../domain/entities/moderation.js";
 import { hasPerfectTestMatch } from "../tests/hasPerfectTestMatch.js";
 import { safeCreateNotification } from "../notifications/safeCreateNotification.js";
 import { safeIsBlocked } from "../safety/safeBlockQueries.js";
@@ -24,7 +25,8 @@ export async function sendMessage(repositories, senderId, recipientId, content) 
 
   const { valid, errors } = validateMessageContent(content);
   if (!valid) {
-    return { status: "error", message: errors[0] };
+    const data = errors[0] === "inappropriate_content" ? { flaggedWords: findProfanityMatches(content) } : undefined;
+    return { status: "error", message: errors[0], data };
   }
 
   const recipient = await repositories.user.findById(recipientId);
